@@ -1,0 +1,38 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Node / Vite
+node_modules/
+dist/
+.vite/
+coverage/
+vite*.log
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Local runtime data and generated exports
+backend/logs/*
+!backend/logs/.gitkeep
+backend/data/temp/*
+!backend/data/temp/.gitkeep
+backend/data/archive/*
+!backend/data/archive/.gitkeep
+backend/data/diagnostics/
+*.html
+*.htm
+*.xls
+*.xlsx
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
