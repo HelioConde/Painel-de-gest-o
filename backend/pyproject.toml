@@ -1,0 +1,13 @@
+[project]
+name = "painel-de-gestao-backend"
+version = "0.1.0"
+description = "Base modular do backend do Painel de Gestão"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

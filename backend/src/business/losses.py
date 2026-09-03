@@ -1,0 +1,1 @@
+"""Regras futuras de perdas."""

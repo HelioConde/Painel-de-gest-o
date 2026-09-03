@@ -1,0 +1,1 @@
+"""Repositórios futuros do Supabase."""

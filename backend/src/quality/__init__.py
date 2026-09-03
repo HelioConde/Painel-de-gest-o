@@ -1,0 +1,1 @@
+"""Validações de qualidade futuras."""

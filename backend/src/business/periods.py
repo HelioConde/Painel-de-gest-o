@@ -1,0 +1,1 @@
+"""Cálculos futuros de períodos."""
