@@ -33,10 +33,10 @@ backend/data/loss_runs/
 backend/data/runs/
 backend/tmp_debug_executor/
 backend/Releases/
-*.html
-*.htm
-*.xls
-*.xlsx
+backend/**/*.html
+backend/**/*.htm
+backend/**/*.xls
+backend/**/*.xlsx
 
 # OS and editor files
 .DS_Store
