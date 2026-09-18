@@ -1,21 +1,36 @@
-# Automação SUPERUS — fase 2
+# Automação SUPERUS
 
-A automação usa somente `ctypes` e mensagens Win32 direcionadas por HWND. O fluxo normal não contém mouse físico, teclado global nem chamadas de foreground; os três contadores de auditoria permanecem zero.
+A automação consolidada está documentada em [`AUTOMACAO_COMPLETA.md`](AUTOMACAO_COMPLETA.md).
 
-Janelas iniciais: `TFormMenuPrincipal`, `TFormPedidos`, `TFormRelPedidos`, `TFormPreview`, `TFormMensagem` e `TFormRelEstMin_ProdEstrategico`. Classes, captions e instances devem ser confirmadas por `python main.py --inspect-superus`, que cria `data/diagnostics/<run_id>/controls.json`.
+O backend usa mensagens Win32 direcionadas por HWND. `pywin32` é usado quando disponível para preservar o comportamento comprovado do menu nativo; há fallback `ctypes` para as primitivas Win32. O fluxo normal não usa mouse físico, teclado global nem chamadas `SetForegroundWindow`, `BringWindowToTop` ou `SetFocus`.
 
-Comandos:
+## Diagnóstico
 
-```powershell
+```cmd
+python main.py --inspect-environment
 python main.py --inspect-superus
-python main.py --collect-one --loja 307 --inicio 01/09/2026 --fim 01/09/2026 --stop-before-generate
-python main.py --collect-one --loja 307 --inicio 01/09/2026 --fim 01/09/2026
+python main.py --inspect-sales-report
 ```
 
-O HTM é o formato alvo. `wait_file_stable` exige arquivo existente, não vazio, legível e com tamanho estável. A coleta falha fechada enquanto o inspect não comprovar: o comando do menu Pedidos, a aba Produtos, os campos de loja/data, o botão de gerar e o controle de exportação do preview.
+## Vendas
 
-## Descoberta do ambiente
+```cmd
+python main.py --plan
+python main.py --daily-auto --dry-run
+python main.py --daily-auto --only-job daily
+python main.py --daily-auto
+```
 
-As lojas possuem mapeamento canônico no código: 307→17, 212→15608, 600→63395, 120→66471, 033→72731 e 018→74964. Esses valores não são segredos e não pertencem ao `.env`.
+## Perdas
 
-Use `python main.py --inspect-environment` antes de qualquer coleta. A prioridade é uma sessão existente, seguida por `SUPERUS_LAUNCHER_PATH`, `C:\Superus\Launcher.exe`, `SUPERUS_EXECUTABLE_PATH` e `C:\Superus\Superus.exe`. Paths vazios são aceitos; nenhum candidato ambíguo é executado.
+```cmd
+python main.py --losses-gui
+```
+
+ou:
+
+```cmd
+python main.py --losses-auto --inicio 01/09/2026 --fim 03/09/2026 --lojas 307,212,600,120,033,018
+```
+
+Mapeamento interno: 307→17, 212→15608, 600→63395, 120→66471, 033→72731 e 018→74964.

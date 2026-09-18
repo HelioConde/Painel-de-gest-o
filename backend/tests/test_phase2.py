@@ -7,8 +7,8 @@ from src.app.controller import parse_date
 from src.config.settings import Settings
 from src.config.stores import STORES, get_store
 from src.parsers.html_report import read_html, validate_html
+from src.superus import launcher as superus_launcher
 from src.superus.export_html import wait_file_stable
-from src.superus.launcher import select_startup
 
 
 def test_canonical_store_codes() -> None:
@@ -37,7 +37,7 @@ class FakeWin32:
 def test_startup_prefers_existing_session(tmp_path: Path) -> None:
     launcher = tmp_path / 'Launcher.exe'
     launcher.touch()
-    selection = select_startup(
+    selection = superus_launcher.select_startup(
         FakeWin32({'TFormPedidos': 99}),  # type: ignore[arg-type]
         Settings(superus_launcher_path=launcher),
     )
@@ -48,21 +48,34 @@ def test_startup_prefers_existing_session(tmp_path: Path) -> None:
 def test_startup_prefers_configured_launcher(tmp_path: Path) -> None:
     launcher = tmp_path / 'Launcher.exe'
     launcher.touch()
-    selection = select_startup(FakeWin32({}), Settings(superus_launcher_path=launcher))  # type: ignore[arg-type]
+    selection = superus_launcher.select_startup(
+        FakeWin32({}),  # type: ignore[arg-type]
+        Settings(superus_launcher_path=launcher),
+    )
     assert selection.method == 'launcher'
     assert selection.path == launcher
 
 
-def test_startup_can_use_executable(tmp_path: Path) -> None:
+def test_startup_can_use_executable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(superus_launcher, 'DEFAULT_LAUNCHER', tmp_path / 'missing-launcher.exe')
+    monkeypatch.setattr(superus_launcher, 'DEFAULT_EXECUTABLE', tmp_path / 'missing-superus.exe')
     executable = tmp_path / 'Superus.exe'
     executable.touch()
-    selection = select_startup(FakeWin32({}), Settings(superus_executable_path=executable))  # type: ignore[arg-type]
+    selection = superus_launcher.select_startup(
+        FakeWin32({}),  # type: ignore[arg-type]
+        Settings(superus_executable_path=executable),
+    )
     assert selection.method == 'superus_executable'
     assert selection.path == executable
 
 
-def test_startup_is_clear_when_no_executable() -> None:
-    selection = select_startup(FakeWin32({}), Settings())  # type: ignore[arg-type]
+def test_startup_is_clear_when_no_executable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(superus_launcher, 'DEFAULT_LAUNCHER', tmp_path / 'missing-launcher.exe')
+    monkeypatch.setattr(superus_launcher, 'DEFAULT_EXECUTABLE', tmp_path / 'missing-superus.exe')
+    selection = superus_launcher.select_startup(FakeWin32({}), Settings())  # type: ignore[arg-type]
     assert selection.method == 'unavailable'
 
 
@@ -88,3 +101,34 @@ def test_wait_file_stable(tmp_path: Path) -> None:
     report = tmp_path / 'report.htm'
     report.write_text('<html>ok</html>', encoding='utf-8')
     assert wait_file_stable(report, poll_seconds=0.001, stable_reads=1) == report
+
+
+def test_quickreport_period_div_is_extracted(tmp_path: Path) -> None:
+    from datetime import date
+
+    from src.parsers.html_report import extract_report_period
+
+    report = tmp_path / 'quickreport.htm'
+    report.write_text(
+        '<html><body>'
+        '<div ID="QRLabel11">Periodo:</div>'
+        '<div ID="Periodo">03/09/2026&nbsp;a&nbsp;&nbsp;03/09/2026</div>'
+        '</body></html>',
+        encoding='iso-8859-1',
+    )
+    content, _ = read_html(report)
+    start, end, _ = extract_report_period(content)
+    assert start == date(2026, 9, 3)
+    assert end == date(2026, 9, 3)
+
+
+def test_real_login_class_is_tformlogonusuario() -> None:
+    from src.superus.login import LOGIN_CLASS
+
+    assert LOGIN_CLASS == 'TFormLogonUsuario'
+
+
+def test_html_export_default_coordinate_is_confirmed() -> None:
+    from src.superus.export_html import DEFAULT_HTML_X, DEFAULT_HTML_Y
+
+    assert (DEFAULT_HTML_X, DEFAULT_HTML_Y) == (437, 16)

@@ -1,0 +1,41 @@
+// Metas comerciais fixas do resumo de Perdas.
+// Valores podem ser ajustados futuramente em um único ponto, sem mudar os componentes.
+export const LOSS_SECTOR_ORDER = [
+  'ACOUGUE',
+  'BAZAR',
+  'BEBIDA',
+  'EMPORIO',
+  'FAST FOOD',
+  'FLORICULTURA',
+  'FLV MANIPULADOS',
+  'HIGIENE BELEZA',
+  'HORTIFRUTI',
+  'LIMPEZA',
+  'MERCEARIA',
+  'PADARIA',
+  'PEIXARIA',
+  'PERECIVEIS',
+  'PIZZARIA',
+  'ROTISSERIA',
+  'SUSHI',
+]
+
+export const LOSS_SECTOR_TARGETS = {
+  ACOUGUE: 1,
+  BAZAR: 1,
+  BEBIDA: 1,
+  EMPORIO: 1,
+  'FAST FOOD': 3,
+  FLORICULTURA: 5,
+  'FLV MANIPULADOS': 5,
+  'HIGIENE BELEZA': 1,
+  HORTIFRUTI: 5,
+  LIMPEZA: 1,
+  MERCEARIA: 1,
+  PADARIA: 4,
+  PEIXARIA: 5,
+  PERECIVEIS: 1,
+  PIZZARIA: 1,
+  ROTISSERIA: 3,
+  SUSHI: 5,
+}

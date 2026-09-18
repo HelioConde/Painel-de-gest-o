@@ -9,6 +9,8 @@ dist/
 .vite/
 coverage/
 vite*.log
+frontend/qa-output/
+frontend/tmp/
 
 # Python
 .venv/
@@ -26,6 +28,11 @@ backend/data/temp/*
 backend/data/archive/*
 !backend/data/archive/.gitkeep
 backend/data/diagnostics/
+backend/data/logs/
+backend/data/loss_runs/
+backend/data/runs/
+backend/tmp_debug_executor/
+backend/Releases/
 *.html
 *.htm
 *.xls

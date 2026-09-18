@@ -1,0 +1,22 @@
+{
+  "source": "12 HTMs enviados na conversa",
+  "run_id_detected_from_titles": "20260905T043919_a06cc2d3fe9b49b294f501f1178e24fe",
+  "status": "PASS",
+  "current_period": {
+    "start": "2026-09-01",
+    "end": "2026-09-05"
+  },
+  "previous_period": {
+    "start": "2025-09-01",
+    "end": "2025-09-05"
+  },
+  "store_count": 6,
+  "totals": {
+    "current_record_count": 1566,
+    "previous_record_count": 1881,
+    "current_loss_quantity": 16986.773,
+    "previous_loss_quantity": 25644.479,
+    "current_total_value": 175420.85,
+    "previous_total_value": 304360.96
+  }
+}
