@@ -1,11 +1,11 @@
-import PosterCard from './PosterCard'
+import PosterCard, { PosterBackground } from './PosterCard'
 
-export default function PosterSheet({ format, products, template, invertSecondPoster = false, showGuide = false, showLayoutDebug = false, className = '', showBadges = false, startIndex = 0, selectedProductId = null, onSelectProduct }) {
+export default function PosterSheet({ format, products, template, layoutPlans, showBackground = false, showLayoutDebug = false, editable = false, onBoxPointerDown, className = '', showBadges = false, startIndex = 0, selectedProductId = null, onSelectProduct }) {
   const slots = Array.from({ length: format.postersPerSheet }, (_, index) => products[index] || null)
 
   return (
     <section
-      className={`poster-sheet ${className}`.trim()}
+      className={`poster-sheet ${format.backgroundScope === 'sheet' && showBackground ? 'poster-sheet-has-background' : ''} ${className}`.trim()}
       aria-label={`Folha ${format.label}`}
       style={{
         '--sheet-width': `${format.widthMm}mm`,
@@ -14,6 +14,7 @@ export default function PosterSheet({ format, products, template, invertSecondPo
         '--sheet-rows': format.rows,
       }}
     >
+      {format.backgroundScope === 'sheet' && showBackground ? <PosterBackground template={template} widthMm={format.widthMm} heightMm={format.heightMm} className="poster-sheet-background" /> : null}
       {slots.map((product, index) => (
         <div className={`poster-slot ${product ? '' : 'poster-slot-empty'}`} key={product?.id || `empty-${index}`}>
           {product ? (
@@ -21,9 +22,12 @@ export default function PosterSheet({ format, products, template, invertSecondPo
               product={product}
               format={format}
               template={template}
-              showGuide={showGuide}
+              layoutPlan={layoutPlans?.[product.id]}
+              showBackground={showBackground && format.backgroundScope === 'card'}
               showLayoutDebug={showLayoutDebug}
-              inverted={format.supportsInvertSecond && invertSecondPoster && index === 1}
+              editable={editable}
+              onBoxPointerDown={onBoxPointerDown}
+              inverted={format.invertedSlots.includes(index)}
               badgeLabel={showBadges ? startIndex + index + 1 : null}
               selected={product.id === selectedProductId}
               onSelect={onSelectProduct ? () => onSelectProduct(product.id) : undefined}

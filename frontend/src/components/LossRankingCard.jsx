@@ -1,7 +1,8 @@
 import { ChevronRight } from 'lucide-react'
 import LossProductTable from './LossProductTable'
+import { money } from '../utils/formatters'
 
-export default function LossRankingCard({ id, title, subtitle = null, products, onTitleClick = null, showValue = false }) {
+export default function LossRankingCard({ id, title, subtitle = null, products, productCount = products.length, totalValue = null, ranking = 'value', onTitleClick = null, showValue = false }) {
   return (
     <article className={`loss-top-card loss-ranking-card ${subtitle ? 'has-subtitle' : ''}`} id={id}>
       <header>
@@ -13,9 +14,9 @@ export default function LossRankingCard({ id, title, subtitle = null, products, 
           ) : <span className="loss-ranking-title">{title}</span>}
           {subtitle ? <span className="loss-ranking-subtitle">{subtitle}</span> : null}
         </div>
-        <small>{products.length} {products.length === 1 ? 'produto' : 'produtos'}</small>
+        <small title="Total de perdas válidas do setor">{productCount} {productCount === 1 ? 'produto' : 'produtos'}{totalValue !== null ? ` · ${money(totalValue)}` : null}</small>
       </header>
-      <LossProductTable products={products} label={`Ranking de ${title}`} showValue={showValue} />
+      <LossProductTable products={products} label={`Ranking de ${title}`} ranking={ranking} showValue={showValue} />
     </article>
   )
 }

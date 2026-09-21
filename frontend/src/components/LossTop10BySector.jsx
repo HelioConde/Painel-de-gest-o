@@ -1,6 +1,6 @@
 import { PackageSearch } from 'lucide-react'
-import { useMemo } from 'react'
-import { buildTopLossesBySector } from '../utils/lossDashboard'
+import { useMemo, useState } from 'react'
+import { buildTopLossesBySector, LOSS_RANKING_OPTIONS } from '../utils/lossDashboard'
 import { isoDate } from '../utils/formatters'
 import { LOSS_STORE_SEQUENCE } from '../utils/losses'
 import LossRankingCard from './LossRankingCard'
@@ -23,7 +23,8 @@ function compactStoreLabel(row) {
 }
 
 export default function LossTop10BySector({ row, onSelectSector }) {
-  const sectors = useMemo(() => buildTopLossesBySector(row), [row])
+  const [ranking, setRanking] = useState('value')
+  const sectors = useMemo(() => buildTopLossesBySector(row, ranking), [row, ranking])
   const storeCode = String(row.store_code).padStart(3, '0')
   const storeSequence = LOSS_STORE_SEQUENCE[storeCode] || storeCode
 
@@ -36,7 +37,7 @@ export default function LossTop10BySector({ row, onSelectSector }) {
         storeLabel={`Loja ${storeSequence} - ${storeCode}`}
         storeDetail={row.store_name}
       />
-      <div className="section-heading loss-top-heading">
+        <div className="section-heading loss-top-heading">
         <div>
           <div className="section-kicker"><PackageSearch size={14} /> Top perdas</div>
           <h2>Top 10 produtos por setor</h2>
@@ -44,11 +45,25 @@ export default function LossTop10BySector({ row, onSelectSector }) {
             <strong>{row.store_name}</strong>
             <span>{compactStoreLabel(row)}</span>
           </div>
-          <p>
-            {isoDate(row.current_start)} a {isoDate(row.current_end)}. Setores sem perda não são exibidos.
-          </p>
+          <p>{isoDate(row.current_start)} a {isoDate(row.current_end)}. Comparativo: {isoDate(row.previous_start)} a {isoDate(row.previous_end)}.</p>
         </div>
-        <span className="loss-top-sector-count">{sectors.length} setores com perda</span>
+        <div className="loss-top-heading-actions">
+          <div className="loss-ranking-selector no-print" role="group" aria-label="Ordenar ranking de perdas">
+            <span>Ordenar por</span>
+            {Object.entries(LOSS_RANKING_OPTIONS).map(([key, option]) => (
+              <button
+                type="button"
+                key={key}
+                className={ranking === key ? 'active' : ''}
+                aria-pressed={ranking === key}
+                onClick={() => setRanking(key)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <span className="loss-top-sector-count">{sectors.length} setores com perda</span>
+        </div>
       </div>
 
       {sectors.length === 0 ? (
@@ -62,6 +77,9 @@ export default function LossTop10BySector({ row, onSelectSector }) {
               id={`loss-sector-${normalize(sector.name).replace(/[^a-z0-9]+/g, '-')}`}
               title={sector.name}
               products={sector.products}
+              productCount={sector.productCount}
+              totalValue={sector.totalValue}
+              ranking={ranking}
               onTitleClick={() => onSelectSector(sector.name)}
               key={sector.name}
             />

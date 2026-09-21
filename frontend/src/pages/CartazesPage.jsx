@@ -8,10 +8,12 @@ import {
   getPosterFormat,
   POSTER_FORMAT_OPTIONS,
 } from '../config/posterFormats'
-import { getDefaultTemplateForFormat, getPosterTemplatesForFormat } from '../config/posterTemplates'
+import { getDefaultTemplateForFormat } from '../config/posterTemplates'
 import { countProductLines, parseProducts } from '../utils/posterParser'
 import { deletePosterJob, listPosterJobs, savePosterJob } from '../utils/posterHistoryStorage'
 import { loadPosterTemplate } from '../utils/posterTemplateStorage'
+import { createPosterLayouts } from '../poster-engine/layoutPlan'
+import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 
 const PRINT_STYLE_ID = 'poster-dynamic-page'
 const FIELD_COLUMNS = [
@@ -48,12 +50,12 @@ function clearPosterPrintPage() {
 export default function CartazesPage() {
   const [sourceText, setSourceText] = useState('')
   const [productData, setProductData] = useState([])
-  const [formatId, setFormatId] = useState('A4_4X1')
-  const [templateId, setTemplateId] = useState(() => getDefaultTemplateForFormat('A4_4X1').id)
-  const [templateConfig, setTemplateConfig] = useState(() => loadPosterTemplate(getDefaultTemplateForFormat('A4_4X1').id))
+  const [formatId, setFormatId] = useState('A4X4')
+  const [templateId, setTemplateId] = useState(() => getDefaultTemplateForFormat('A4X4').id)
+  const [templateConfig, setTemplateConfig] = useState(() => loadPosterTemplate(getDefaultTemplateForFormat('A4X4').id))
   const [currentPage, setCurrentPage] = useState(0)
   const [printDialogOpen, setPrintDialogOpen] = useState(false)
-  const [printConfig, setPrintConfig] = useState({ invertSecondPoster: false, copies: 1 })
+  const [printConfig, setPrintConfig] = useState({ copies: 1 })
   const [activeSection, setActiveSection] = useState('create')
   const [historyItems, setHistoryItems] = useState(() => listPosterJobs())
   const [currentJobId, setCurrentJobId] = useState(null)
@@ -62,7 +64,11 @@ export default function CartazesPage() {
   const [fontAvailable, setFontAvailable] = useState(null)
 
   const formatConfig = getPosterFormat(formatId)
-  const formatTemplates = useMemo(() => getPosterTemplatesForFormat(formatId), [formatId])
+  const posterTextMeasure = useMemo(() => createBrowserTextMeasure(), [fontAvailable])
+  const layoutPlans = useMemo(
+    () => createPosterLayouts(productData, templateConfig, formatConfig, posterTextMeasure),
+    [formatConfig, posterTextMeasure, productData, templateConfig],
+  )
   const inputCount = countProductLines(sourceText)
   const pages = useMemo(
     () => splitIntoPages(productData, formatConfig.postersPerSheet),
@@ -90,12 +96,6 @@ export default function CartazesPage() {
   }, [templateId])
 
   useEffect(() => {
-    if (!formatConfig.supportsInvertSecond && printConfig.invertSecondPoster) {
-      setPrintConfig((current) => ({ ...current, invertSecondPoster: false }))
-    }
-  }, [formatConfig.supportsInvertSecond, printConfig.invertSecondPoster])
-
-  useEffect(() => {
     let active = true
     document.fonts.load('16px "Burbank Big Cd Bk"').then(() => {
       if (active) setFontAvailable(document.fonts.check('16px "Burbank Big Cd Bk"'))
@@ -115,18 +115,17 @@ export default function CartazesPage() {
       productCount: products.length,
       pageCount: getPageCount(products.length, getPosterFormat(formatId)),
       products,
-      invertSecondPoster: printConfig.invertSecondPoster,
     })
     setCurrentJobId(saved.id)
     setHistoryItems(listPosterJobs())
     return saved
-  }, [currentJobId, formatId, printConfig.invertSecondPoster, productData, sourceText, templateId])
+  }, [currentJobId, formatId, productData, sourceText, templateId])
 
   useEffect(() => {
     if (!currentJobId || !productData.length) return undefined
     const timer = window.setTimeout(() => persistCurrentJob(), 350)
     return () => window.clearTimeout(timer)
-  }, [currentJobId, formatId, persistCurrentJob, printConfig.invertSecondPoster, productData, templateId])
+  }, [currentJobId, formatId, persistCurrentJob, productData, templateId])
 
   const generatePosters = () => {
     const products = parseProducts(sourceText)
@@ -186,9 +185,9 @@ export default function CartazesPage() {
     const cloned = savePosterJob({ ...job, id: undefined, createdAt: undefined, updatedAt: undefined })
     setSourceText(job.sourceText || '')
     setProductData(job.products || [])
-    setFormatId(job.formatId)
-    setTemplateId(job.templateId || getDefaultTemplateForFormat(job.formatId).id)
-    setPrintConfig((current) => ({ ...current, invertSecondPoster: Boolean(job.invertSecondPoster) }))
+    const historyFormat = getPosterFormat(job.formatId)
+    setFormatId(historyFormat.id)
+    setTemplateId(getDefaultTemplateForFormat(historyFormat.id).id)
     setCurrentJobId(cloned.id)
     setCurrentPage(0)
     setSelectedProductId(job.products?.[0]?.id || null)
@@ -203,8 +202,6 @@ export default function CartazesPage() {
   }
 
   const closePrintDialog = useCallback(() => setPrintDialogOpen(false), [])
-  const updatePrintConfig = (change) => setPrintConfig((current) => ({ ...current, ...change }))
-
   const printPosters = (confirmedConfig) => {
     if (fontAvailable === false) return
     setPrintConfig(confirmedConfig)
@@ -266,12 +263,7 @@ export default function CartazesPage() {
                       ))}
                     </select>
                   </label>
-                  <label className="poster-format-select">
-                    <span>Template</span>
-                    <select value={templateId} onChange={(event) => setTemplateId(event.target.value)}>
-                      {formatTemplates.map((template) => <option value={template.id} key={template.id}>{template.name}</option>)}
-                    </select>
-                  </label>
+                  <div className="poster-format-select poster-background-reference"><span>Fundo</span><strong>{templateConfig.backgroundFile}</strong></div>
                 </div>
               </div>
 
@@ -360,7 +352,8 @@ export default function CartazesPage() {
                 format={formatConfig}
                 products={pageProducts}
                 template={templateConfig}
-                invertSecondPoster={printConfig.invertSecondPoster}
+                layoutPlans={layoutPlans}
+                showBackground
                 startIndex={currentPage * formatConfig.postersPerSheet}
                 selectedProductId={selectedProductId}
                 onSelectProduct={selectProduct}
@@ -372,16 +365,7 @@ export default function CartazesPage() {
                 <button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1} aria-label="Próxima folha"><ChevronRight size={18} /></button>
               </div>
 
-              {formatConfig.supportsInvertSecond ? (
-                <label className="poster-toggle-row">
-                  <input
-                    type="checkbox"
-                    checked={printConfig.invertSecondPoster}
-                    onChange={(event) => updatePrintConfig({ invertSecondPoster: event.target.checked })}
-                  />
-                  <span>Inverter 2ª placa</span>
-                </label>
-              ) : null}
+              {formatConfig.invertedSlots.length ? <p className="poster-format-note">A placa superior já sai invertida neste formato.</p> : null}
 
               <button type="button" className="poster-button poster-button-primary poster-print-action" onClick={() => setPrintDialogOpen(true)} disabled={!productData.length || fontAvailable === false}>
                 <Printer size={17} /> Imprimir
@@ -433,8 +417,8 @@ export default function CartazesPage() {
             format={formatConfig}
             products={products}
             template={templateConfig}
-            invertSecondPoster={printConfig.invertSecondPoster}
-            showGuide={false}
+            layoutPlans={layoutPlans}
+            showBackground
           />
         )))}
       </div>

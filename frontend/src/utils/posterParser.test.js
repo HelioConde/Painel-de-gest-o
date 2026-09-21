@@ -55,12 +55,12 @@ test('entrada com vírgulas inválida volta ao parser automático', () => {
 })
 
 test('calcula folhas sem confundir produtos e cartazes', () => {
-  assert.equal(getPageCount(4, POSTER_FORMATS.A4_4X1), 1)
-  assert.equal(getPageCount(5, POSTER_FORMATS.A4_4X1), 2)
-  assert.equal(getPageCount(2, POSTER_FORMATS.A4_2X1), 1)
-  assert.equal(getPageCount(3, POSTER_FORMATS.A4_2X1), 2)
-  assert.equal(getPageCount(8, POSTER_FORMATS.A4_2X1), 4)
-  assert.equal(getPageCount(8, POSTER_FORMATS.A4_4X1), 2)
+  assert.equal(getPageCount(4, POSTER_FORMATS.A4X4), 1)
+  assert.equal(getPageCount(5, POSTER_FORMATS.A4X4), 2)
+  assert.equal(getPageCount(2, POSTER_FORMATS.A4X2_CIMA_BAIXO), 1)
+  assert.equal(getPageCount(3, POSTER_FORMATS.A4X2_CIMA_BAIXO), 2)
+  assert.equal(getPageCount(8, POSTER_FORMATS.A4X2_CIMA_BAIXO), 4)
+  assert.equal(getPageCount(8, POSTER_FORMATS.A4X4), 2)
   assert.equal(getPageCount(2, POSTER_FORMATS.A4), 2)
   assert.equal(getPageCount(2, POSTER_FORMATS.A5), 2)
   assert.equal(getPageCount(8, POSTER_FORMATS.A3), 8)

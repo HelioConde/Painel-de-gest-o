@@ -3,7 +3,7 @@ import PosterSheet from './PosterSheet'
 
 const PX_PER_MM = 96 / 25.4
 
-export default function PosterPreview({ format, products, template, invertSecondPoster, showGuide = false, showLayoutDebug = false, startIndex = 0, selectedProductId = null, onSelectProduct }) {
+export default function PosterPreview({ format, products, template, layoutPlans, showBackground = false, showLayoutDebug = false, startIndex = 0, selectedProductId = null, onSelectProduct }) {
   const frameRef = useRef(null)
   const [scale, setScale] = useState(0.4)
 
@@ -40,8 +40,8 @@ export default function PosterPreview({ format, products, template, invertSecond
             format={format}
             products={products}
             template={template}
-            invertSecondPoster={invertSecondPoster}
-            showGuide={showGuide}
+            layoutPlans={layoutPlans}
+            showBackground={showBackground}
             showLayoutDebug={showLayoutDebug}
             showBadges
             startIndex={startIndex}

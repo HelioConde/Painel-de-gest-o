@@ -18,4 +18,5 @@ test('print stylesheet hides controls and formats store groups', () => {
   assert.match(printCss, /\.no-print\s*\{\s*display:\s*none\s*!important/)
   assert.match(printCss, /\.loss-top-card\s*\{[^}]*break-inside:\s*avoid\s*!important/s)
   assert.match(printCss, /\.loss-grouped-table\s*\{[^}]*table-layout:\s*fixed\s*!important/s)
+  assert.match(printCss, /\.loss-top-table\.has-ranking-metrics th,[\s\S]*display:\s*table-cell\s*!important/)
 })

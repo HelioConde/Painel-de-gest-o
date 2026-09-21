@@ -40,7 +40,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
           <div><dt>Cartazes</dt><dd>{productCount}</dd></div>
           <div><dt>Folhas</dt><dd>{pageCount} por cópia · {totalSheets} no total</dd></div>
           <div><dt>Frente e verso</dt><dd>Não</dd></div>
-          <div><dt>2ª placa invertida</dt><dd>{format.supportsInvertSecond && printConfig.invertSecondPoster ? 'Sim' : 'Não'}</dd></div>
+          <div><dt>Placa superior invertida</dt><dd>{format.invertedSlots.includes(0) ? 'Sim' : 'Não'}</dd></div>
         </dl>
 
         <div className="poster-copy-control">

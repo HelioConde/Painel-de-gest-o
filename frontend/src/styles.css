@@ -3026,3 +3026,53 @@ input:focus-visible {
 
   /* Top perdas mobile: manter em tabela compacta e evitar o bug da resolução 400px */
 }
+
+/* V2.3 - ranking gerencial de perdas -------------------------------------- */
+.loss-top-heading-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.loss-ranking-selector { display: inline-flex; align-items: center; gap: 3px; padding: 3px; border: 1px solid #dce4ee; border-radius: 7px; background: #f8fafc; }
+.loss-ranking-selector > span { padding: 0 5px; color: #64748b; font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.loss-ranking-selector button { min-height: 26px; padding: 4px 7px; border: 0; border-radius: 5px; background: transparent; color: #64748b; cursor: pointer; font-size: 8.5px; font-weight: 850; }
+.loss-ranking-selector button:hover { background: #e8eef6; color: #17395c; }
+.loss-ranking-selector button.active { background: #17395c; color: #fff; box-shadow: 0 1px 2px rgba(15,39,67,.18); }
+.loss-top-table.has-ranking-metrics col.loss-col-pos { width: 5%; }
+.loss-top-table.has-ranking-metrics col.loss-col-code { width: 9%; }
+.loss-top-table.has-ranking-metrics col.loss-col-name { width: 24%; }
+.loss-top-table.has-ranking-metrics col.loss-col-loss { width: 11%; }
+.loss-top-table.has-ranking-metrics col.loss-col-sold { width: 10%; }
+.loss-top-table.has-ranking-metrics col.loss-col-percent { width: 9%; }
+.loss-top-table.has-ranking-metrics col.loss-col-value { width: 13%; }
+.loss-top-table.has-ranking-metrics col.loss-col-share { width: 8%; }
+.loss-top-table.has-ranking-metrics col.loss-col-comparison { width: 11%; }
+.loss-top-table.has-ranking-metrics th,
+.loss-top-table.has-ranking-metrics td { font-size: 8px; padding: 5px 4px; }
+.loss-top-table.has-ranking-metrics th { font-size: 7px; }
+.loss-comparison { display: inline-block; font-weight: 850; }
+.loss-comparison.up { color: #be123c; }
+.loss-comparison.down { color: #15803d; }
+.loss-comparison.new { color: #1d4ed8; }
+.loss-comparison.neutral { color: #64748b; }
+
+@media screen and (max-width: 760px) {
+  .loss-top-heading { align-items: flex-start; }
+  .loss-top-heading-actions { width: 100%; justify-content: space-between; }
+  .loss-ranking-selector { width: 100%; overflow-x: auto; }
+  .loss-ranking-selector > span { flex: 0 0 auto; }
+  .loss-ranking-selector button { flex: 0 0 auto; }
+  .loss-top-table.has-ranking-metrics col.loss-col-pos { width: 8%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-name { width: 36%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-loss { width: 19%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-percent { width: 16%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-value { width: 21%; }
+  .loss-top-table.has-ranking-metrics .loss-col-code,
+  .loss-top-table.has-ranking-metrics .loss-col-sold,
+  .loss-top-table.has-ranking-metrics .loss-col-share,
+  .loss-top-table.has-ranking-metrics .loss-col-comparison,
+  .loss-top-table.has-ranking-metrics th:nth-child(2),
+  .loss-top-table.has-ranking-metrics td:nth-child(2),
+  .loss-top-table.has-ranking-metrics th:nth-child(5),
+  .loss-top-table.has-ranking-metrics td:nth-child(5),
+  .loss-top-table.has-ranking-metrics th:nth-child(8),
+  .loss-top-table.has-ranking-metrics td:nth-child(8),
+  .loss-top-table.has-ranking-metrics th:nth-child(9),
+  .loss-top-table.has-ranking-metrics td:nth-child(9) { display: none; }
+}

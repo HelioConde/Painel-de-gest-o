@@ -1,5 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react'
-import PosterCard from './PosterCard'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import PosterSheet from './PosterSheet'
+import { createPosterLayouts } from '../../poster-engine/layoutPlan.js'
+import { createBrowserTextMeasure } from '../../utils/posterBrowserMeasure.js'
 
 const PX_PER_MM = 96 / 25.4
 
@@ -15,7 +17,6 @@ export default function PosterAdminCanvas({
   format,
   template,
   product,
-  viewMode,
   selectedBox,
   onSelectBox,
   onBoxChange,
@@ -24,10 +25,17 @@ export default function PosterAdminCanvas({
 }) {
   const frameRef = useRef(null)
   const [scale, setScale] = useState(0.55)
-  const posterWidthMm = format.widthMm / format.columns
-  const posterHeightMm = format.heightMm / format.rows
-  const naturalWidth = posterWidthMm * PX_PER_MM
-  const naturalHeight = posterHeightMm * PX_PER_MM
+  const naturalWidth = format.widthMm * PX_PER_MM
+  const naturalHeight = format.heightMm * PX_PER_MM
+  const measure = useMemo(() => createBrowserTextMeasure(), [])
+  const previewProducts = useMemo(
+    () => Array.from({ length: format.postersPerSheet }, (_, index) => ({ ...product, id: `admin-preview-${index}` })),
+    [format.postersPerSheet, product],
+  )
+  const layoutPlans = useMemo(
+    () => createPosterLayouts(previewProducts, template, format, measure),
+    [format, measure, previewProducts, template],
+  )
 
   useLayoutEffect(() => {
     const frame = frameRef.current
@@ -88,11 +96,12 @@ export default function PosterAdminCanvas({
         >
           <div className="poster-admin-center-guide poster-admin-center-guide-x" />
           <div className="poster-admin-center-guide poster-admin-center-guide-y" />
-          <PosterCard
-            product={product}
+          <PosterSheet
             format={format}
             template={template}
-            showGuide={viewMode === 'guide'}
+            products={previewProducts}
+            layoutPlans={layoutPlans}
+            showBackground
             showLayoutDebug
             editable
             onBoxPointerDown={startInteraction}

@@ -150,6 +150,18 @@
   .loss-top-table.has-value col.loss-col-name { width: 31%; } .loss-top-table.has-value col.loss-col-loss { width: 14%; }
   .loss-top-table.has-value col.loss-col-sold { width: 13%; } .loss-top-table.has-value col.loss-col-percent { width: 11%; }
   .loss-top-table.has-value col.loss-col-value { width: 16%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-pos { width: 4%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-code { width: 8%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-name { width: 23%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-loss { width: 10%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-sold { width: 10%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-percent { width: 9%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-value { width: 13%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-share { width: 9%; }
+  .loss-top-table.has-ranking-metrics col.loss-col-comparison { width: 14%; }
+  .loss-top-table.has-ranking-metrics th,
+  .loss-top-table.has-ranking-metrics td { display: table-cell !important; }
+  .loss-top-panel .loss-ranking-selector { display: none !important; }
 
   .loss-grouped-panel { display: block !important; overflow: visible !important; border: 0 !important; box-shadow: none !important; }
   .loss-store-groups { display: block !important; padding: 0 !important; }

@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, Image, RotateCcw, Save, Upload } from 'lucide-react'
+import { ArrowLeft, Copy, Image, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PosterAdminCanvas from '../components/posters/PosterAdminCanvas'
@@ -45,12 +45,11 @@ function SelectField({ label, value, onChange, options }) {
 }
 
 export default function CartazesLayoutAdminPage() {
-  const initialTemplate = getDefaultTemplateForFormat('A4_4X1')
+  const initialTemplate = getDefaultTemplateForFormat('A4X4')
   const [templateId, setTemplateId] = useState(initialTemplate.id)
   const [template, setTemplate] = useState(() => loadPosterTemplate(initialTemplate.id))
   const [testProduct, setTestProduct] = useState(TEST_PRODUCT_DEFAULT)
   const [selectedBox, setSelectedBox] = useState('contentBox')
-  const [viewMode, setViewMode] = useState('guide')
   const [snapEnabled, setSnapEnabled] = useState(true)
   const [snapStep, setSnapStep] = useState(1)
   const [duplicateFormat, setDuplicateFormat] = useState('A4')
@@ -88,20 +87,6 @@ export default function CartazesLayoutAdminPage() {
     textStyles: { ...current.textStyles, [field]: { ...current.textStyles[field], scale } },
   }))
 
-  const updateGuide = (change) => setTemplate((current) => ({ ...current, ...change }))
-
-  const uploadGuide = (event) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    if (file.size > 2 * 1024 * 1024) {
-      setStatus('A imagem deve ter no máximo 2 MB.')
-      return
-    }
-    const reader = new FileReader()
-    reader.onload = () => updateGuide({ guideImage: reader.result, guideVisible: true })
-    reader.readAsDataURL(file)
-  }
-
   const save = () => {
     savePosterTemplate(template)
     setStatus('Template salvo neste navegador.')
@@ -133,7 +118,7 @@ export default function CartazesLayoutAdminPage() {
         <div>
           <Link to="/cartazes" className="poster-admin-back"><ArrowLeft size={16} /> Cartazes</Link>
           <span className="poster-page-kicker">Área administrativa</span>
-          <h1>Layout de templates</h1>
+          <h1>Layout dos fundos</h1>
         </div>
         <div className="poster-admin-header-actions">
           <button type="button" className="poster-button poster-button-secondary" onClick={restore}><RotateCcw size={16} /> Restaurar padrão</button>
@@ -143,7 +128,7 @@ export default function CartazesLayoutAdminPage() {
 
       <div className="poster-admin-toolbar poster-panel">
         <label>
-          <span>Template</span>
+          <span>Formato</span>
           <select value={templateId} onChange={(event) => selectTemplate(event.target.value)}>
             {templatesByFormat.map((group) => (
               <optgroup label={group.label} key={group.id}>
@@ -152,10 +137,6 @@ export default function CartazesLayoutAdminPage() {
             ))}
           </select>
         </label>
-        <div className="poster-admin-view-toggle" role="tablist" aria-label="Modo de visualização">
-          <button type="button" role="tab" aria-selected={viewMode === 'guide'} className={viewMode === 'guide' ? 'active' : ''} onClick={() => setViewMode('guide')}>Guia</button>
-          <button type="button" role="tab" aria-selected={viewMode === 'print'} className={viewMode === 'print' ? 'active' : ''} onClick={() => setViewMode('print')}>Impressão</button>
-        </div>
         <label className="poster-admin-check"><input type="checkbox" checked={snapEnabled} onChange={(event) => setSnapEnabled(event.target.checked)} /> Snap</label>
         <SelectField label="Passo" value={snapStep} onChange={(value) => setSnapStep(Number(value))} options={[{ value: 1, label: '1%' }, { value: 2, label: '2%' }]} />
         {status ? <span className="poster-admin-status">{status}</span> : null}
@@ -167,7 +148,6 @@ export default function CartazesLayoutAdminPage() {
             format={format}
             template={template}
             product={testProduct}
-            viewMode={viewMode}
             selectedBox={selectedBox}
             onSelectBox={setSelectedBox}
             onBoxChange={changeBox}
@@ -209,17 +189,10 @@ export default function CartazesLayoutAdminPage() {
           </section>
 
           <section className="poster-panel poster-admin-section">
-            <div className="poster-admin-section-heading"><span>Imagem-guia</span><Image size={16} /></div>
-            <label className="poster-admin-upload"><Upload size={16} /> Escolher imagem<input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadGuide} /></label>
-            <label className="poster-admin-check"><input type="checkbox" checked={template.guideVisible} onChange={(event) => updateGuide({ guideVisible: event.target.checked })} /> Mostrar guia</label>
-            <label className="poster-admin-range"><span>Opacidade</span><input type="range" min="0" max="1" step="0.05" value={template.guideOpacity} onChange={(event) => updateGuide({ guideOpacity: Number(event.target.value) })} /><strong>{Math.round(template.guideOpacity * 100)}%</strong></label>
-            <div className="poster-admin-grid-2">
-              <SelectField label="Rotação" value={template.guideRotation} onChange={(value) => updateGuide({ guideRotation: Number(value) })} options={[0, 90, 180, 270].map((value) => ({ value, label: `${value}°` }))} />
-              <SelectField label="Ajuste" value={template.guideFit} onChange={(value) => updateGuide({ guideFit: value })} options={[{ value: 'fill', label: 'Preencher' }, { value: 'contain', label: 'Conter' }, { value: 'cover', label: 'Cobrir' }]} />
-              <SelectField label="Posição X" value={template.guidePositionX} onChange={(value) => updateGuide({ guidePositionX: value })} options={[{ value: 'left', label: 'Esquerda' }, { value: 'center', label: 'Centro' }, { value: 'right', label: 'Direita' }]} />
-              <SelectField label="Posição Y" value={template.guidePositionY} onChange={(value) => updateGuide({ guidePositionY: value })} options={[{ value: 'top', label: 'Topo' }, { value: 'center', label: 'Centro' }, { value: 'bottom', label: 'Base' }]} />
-            </div>
-            <NumberField label="Área segura" value={template.safeArea} onChange={(value) => updateGuide({ safeArea: value })} max={20} step={0.5} />
+            <div className="poster-admin-section-heading"><span>Fundo oficial</span><Image size={16} /></div>
+            <div className="poster-admin-background-file"><strong>{template.backgroundFile}</strong><span>{template.backgroundScope === 'sheet' ? 'Fundo da folha completa' : 'Fundo individual por placa'}</span></div>
+            <p className="poster-admin-help">O arquivo é definido pela pasta Fundo. Ajuste apenas as caixas e a tipografia deste formato.</p>
+            <NumberField label="Área segura" value={template.safeArea} onChange={(value) => setTemplate((current) => ({ ...current, safeArea: value }))} max={20} step={0.5} />
           </section>
 
           <section className="poster-panel poster-admin-section">

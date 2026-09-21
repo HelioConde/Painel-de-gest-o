@@ -1,6 +1,6 @@
-import { LOSS_SECTOR_ORDER, LOSS_SECTOR_TARGETS } from '../config/lossTargets'
-import { normalizeName, sectorLossValue } from './losses'
-import { isExcludedLossProduct } from './lossProducts'
+import { LOSS_SECTOR_ORDER, LOSS_SECTOR_TARGETS } from '../config/lossTargets.js'
+import { normalizeName, sectorLossValue } from './losses.js'
+import { isExcludedLossProduct } from './lossProducts.js'
 
 const CANONICAL_BY_KEY = new Map(LOSS_SECTOR_ORDER.map((name) => [normalizeName(name), name]))
 
@@ -27,6 +27,78 @@ function ratio(loss, sales) {
   const saleValue = number(sales)
   if (!saleValue) return number(loss) ? null : 0
   return (number(loss) / saleValue) * 100
+}
+
+export const LOSS_RANKING_OPTIONS = {
+  value: { label: 'Valor R$', field: 'total_value' },
+  quantity: { label: 'Quantidade', field: 'loss_quantity' },
+  percent: { label: '% Perda', field: 'loss_quantity_sales_percent' },
+}
+
+function productKey(product) {
+  const code = String(product?.product_code || '').replace(/\D/g, '')
+  if (code) return `code:${code}`
+  return `fallback:${normalizeName(product?.product_name)}:${normalizeName(product?.unit)}`
+}
+
+function productsByCanonicalSector(side) {
+  const sectors = new Map()
+  for (const sector of side?.sectors || []) {
+    const sectorName = canonicalLossSectorName(sector?.name)
+    if (!sectorName) continue
+    const products = sectors.get(sectorName) || []
+    for (const mip of sector?.mips || []) {
+      products.push(...(mip?.products || []).filter((product) => !isExcludedLossProduct(product)))
+    }
+    sectors.set(sectorName, products)
+  }
+  return sectors
+}
+
+function aggregateProducts(products = []) {
+  const grouped = new Map()
+  for (const product of products) {
+    if (number(product?.loss_quantity) <= 0) continue
+    const key = productKey(product)
+    const previous = grouped.get(key) || {
+      ...product,
+      product_key: key,
+      loss_quantity: 0,
+      total_value: 0,
+      gross_cost_total: 0,
+      sale_price_total: 0,
+      quantity_sold: null,
+      record_count: 0,
+    }
+    previous.loss_quantity += number(product?.loss_quantity)
+    previous.total_value += number(product?.total_value)
+    previous.gross_cost_total += number(product?.gross_cost_total)
+    previous.sale_price_total += number(product?.sale_price_total)
+    const sold = product?.quantity_sold
+    if (sold !== null && sold !== undefined && Number.isFinite(Number(sold))) {
+      previous.quantity_sold = Math.max(number(previous.quantity_sold), number(sold))
+    }
+    previous.record_count += 1
+    grouped.set(key, previous)
+  }
+  return grouped
+}
+
+function comparison(current, previous, ranking) {
+  if (!previous) return { kind: 'new', value: null }
+  const field = LOSS_RANKING_OPTIONS[ranking]?.field || LOSS_RANKING_OPTIONS.value.field
+  const currentValue = number(current?.[field])
+  const previousValue = previous?.[field]
+  if (previousValue === null || previousValue === undefined || !number(previousValue)) {
+    return currentValue ? { kind: 'no-base', value: null } : { kind: 'equal', value: 0 }
+  }
+  const variation = ((currentValue - number(previousValue)) / number(previousValue)) * 100
+  if (Math.abs(variation) < 0.005) return { kind: 'equal', value: 0 }
+  return { kind: variation > 0 ? 'up' : 'down', value: variation }
+}
+
+function rankingValue(product, ranking) {
+  return number(product?.[LOSS_RANKING_OPTIONS[ranking]?.field || 'total_value'])
 }
 
 function mergeLossSectors(sectors = []) {
@@ -117,18 +189,35 @@ export function buildSectorSummary(row) {
   }
 }
 
-export function buildTopLossesBySector(row) {
-  const merged = mergeLossSectors(row?.details?.current?.sectors || [])
+export function buildTopLossesBySector(row, ranking = 'value') {
+  const currentBySector = productsByCanonicalSector(row?.details?.current)
+  const previousBySector = productsByCanonicalSector(row?.details?.previous)
   return LOSS_SECTOR_ORDER.map((name) => {
-    const sector = merged.get(name)
-    if (!sector) return null
-    const products = sector.topLosses
-      .filter((item) => number(item?.loss_quantity) > 0)
-      .sort((a, b) => number(b?.loss_quantity) - number(a?.loss_quantity))
+    const current = aggregateProducts(currentBySector.get(name) || [])
+    if (!current.size) return null
+    const previous = aggregateProducts(previousBySector.get(name) || [])
+    const sectorTotalValue = [...current.values()].reduce((sum, product) => sum + number(product.total_value), 0)
+    const products = [...current.values()]
+      .map((item) => {
+        const lossQuantitySalesPercent = ratio(item.loss_quantity, item.quantity_sold)
+        const currentProduct = { ...item, loss_quantity_sales_percent: lossQuantitySalesPercent }
+        const previousItem = previous.get(item.product_key)
+        const previousProduct = previousItem
+          ? { ...previousItem, loss_quantity_sales_percent: ratio(previousItem.loss_quantity, previousItem.quantity_sold) }
+          : null
+        return {
+          ...currentProduct,
+          sector_share_percent: sectorTotalValue ? (number(item.total_value) / sectorTotalValue) * 100 : null,
+          comparison: comparison(currentProduct, previousProduct, ranking),
+        }
+      })
+      .sort((a, b) => rankingValue(b, ranking) - rankingValue(a, ranking)
+        || number(b.total_value) - number(a.total_value)
+        || String(a.product_name || '').localeCompare(String(b.product_name || ''), 'pt-BR'))
       .slice(0, 10)
       .map((item, index) => ({ ...item, rank: index + 1 }))
     if (!products.length) return null
-    return { name, products }
+    return { name, products, productCount: current.size, totalValue: sectorTotalValue }
   }).filter(Boolean)
 }
 
