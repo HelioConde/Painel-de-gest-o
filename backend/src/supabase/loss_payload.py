@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 import unicodedata
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
-from src.business.loss_products import filter_excluded_loss_products
+from src.business.loss_products import filter_loss_indicator_products
 from src.config.stores import STORES, get_store
 from src.parsers.loss_html import parse_loss_html
 from src.parsers.sales_html import (
@@ -120,7 +121,11 @@ def _augment_loss_sectors(
     return result
 
 
-def build_loss_rows(run_dir: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def build_loss_rows(
+    run_dir: Path,
+    *,
+    logger: logging.Logger | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Monta uma linha Supabase por loja, juntando perdas + vendas current/previous."""
     run_dir = Path(run_dir)
     raw_dir = run_dir / 'raw'
@@ -135,11 +140,11 @@ def build_loss_rows(run_dir: Path) -> tuple[list[dict[str, Any]], dict[str, Any]
 
     # O período comum é conhecido pelo primeiro par de perdas e depois validado em cada loja.
     first_store = min(pairs, key=lambda code: get_store(code).sequence)
-    first_current = filter_excluded_loss_products(
-        parse_loss_html(pairs[first_store]['current'], expected_store=first_store)
+    first_current = filter_loss_indicator_products(
+        parse_loss_html(pairs[first_store]['current'], expected_store=first_store, logger=logger)
     )
-    first_previous = filter_excluded_loss_products(
-        parse_loss_html(pairs[first_store]['previous'], expected_store=first_store)
+    first_previous = filter_loss_indicator_products(
+        parse_loss_html(pairs[first_store]['previous'], expected_store=first_store, logger=logger)
     )
     sales_current = parse_sales_html(
         sales_current_path,
@@ -160,11 +165,19 @@ def build_loss_rows(run_dir: Path) -> tuple[list[dict[str, Any]], dict[str, Any]
     common_previous_period: tuple[str, str] | None = None
 
     for store_code in sorted(pairs, key=lambda code: get_store(code).sequence):
-        current = first_current if store_code == first_store else filter_excluded_loss_products(
-            parse_loss_html(pairs[store_code]['current'], expected_store=store_code)
+        current = first_current if store_code == first_store else filter_loss_indicator_products(
+            parse_loss_html(
+                pairs[store_code]['current'],
+                expected_store=store_code,
+                logger=logger,
+            )
         )
-        previous = first_previous if store_code == first_store else filter_excluded_loss_products(
-            parse_loss_html(pairs[store_code]['previous'], expected_store=store_code)
+        previous = first_previous if store_code == first_store else filter_loss_indicator_products(
+            parse_loss_html(
+                pairs[store_code]['previous'],
+                expected_store=store_code,
+                logger=logger,
+            )
         )
 
         current_start = date.fromisoformat(current['report']['period_start'])
@@ -352,7 +365,17 @@ def build_loss_rows(run_dir: Path) -> tuple[list[dict[str, Any]], dict[str, Any]
 
 
 def write_loss_payload_preview(run_dir: Path) -> Path:
-    rows, preview = build_loss_rows(run_dir)
+    run_dir = Path(run_dir)
+    logger = logging.getLogger(f'loss-payload.{run_dir.name}')
+    logger.setLevel(logging.INFO)
+    handler = logging.FileHandler(run_dir / 'reconciliation.log', encoding='utf-8')
+    handler.setFormatter(logging.Formatter('%(asctime)s | %(levelname)s | %(message)s'))
+    logger.addHandler(handler)
+    try:
+        rows, preview = build_loss_rows(run_dir, logger=logger)
+    finally:
+        logger.removeHandler(handler)
+        handler.close()
     destination = Path(run_dir) / 'payload_preview.json'
     destination.write_text(
         json.dumps(

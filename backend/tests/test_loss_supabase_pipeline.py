@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -63,6 +64,28 @@ def test_parse_loss_html_real_shape(tmp_path: Path):
     assert product['quantity_sold'] == 20.0
     assert product['loss_quantity'] == 2.0
     assert product['unit'] == 'KG'
+
+
+def test_parse_accepts_rounding_delta_and_logs_it(tmp_path: Path, caplog):
+    html = _html('SUPERMERCADO PRIMOR 01 307', '01/09/2026', '05/09/2026')
+    html = html.replace('left:797px">5,0000', 'left:797px">1000,0000', 1)
+    html = html.replace('left:792px">5,0000', 'left:792px">1000,0108', 1)
+    path = tmp_path / 'loss_307_current.htm'
+    path.write_text(html, encoding='iso-8859-1')
+
+    caplog.set_level(logging.INFO)
+    parsed = parse_loss_html(path, logger=logging.getLogger('loss-reconciliation-test'))
+
+    reconciliation = next(
+        item for item in parsed['quality']['monetary_reconciliation']
+        if item['field'] == 'gross_cost_total'
+    )
+    assert reconciliation['delta'] == -0.0108
+    assert reconciliation['status'] == 'OK'
+    assert reconciliation['outcome'] == 'accepted_rounding_difference'
+    assert reconciliation['passed'] is True
+    assert 'accepted_rounding_difference' in caplog.text
+    assert 'delta=-0.0108' in caplog.text
 
 
 def test_build_loss_rows_pairs_current_previous(tmp_path: Path):

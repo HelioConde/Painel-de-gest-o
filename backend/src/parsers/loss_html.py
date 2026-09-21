@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import re
 from bisect import bisect_right
 from collections import defaultdict
@@ -12,8 +13,15 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
+from src.config.loss_rules import (
+    MONEY_RECONCILIATION_TOLERANCE,
+    classify_money_reconciliation,
+)
 from src.config.stores import get_store
 from src.superus.errors import ReportValidationError
+
+
+MONEY_RECONCILIATION_QUANTUM = Decimal("0.0001")
 
 
 def _normalize_text(value: str | None) -> str:
@@ -163,6 +171,7 @@ def parse_loss_html(
     expected_store: str | None = None,
     expected_start: date | None = None,
     expected_end: date | None = None,
+    logger: logging.Logger | None = None,
 ) -> dict[str, Any]:
     """Converte um ``Pedidos por MIP`` HTM em JSON canônico.
 
@@ -299,6 +308,9 @@ def parse_loss_html(
                 f'Produto sem descrição em {path.name}: codigo={code_element.text!r}.'
             )
 
+        gross_cost_total = _decimal_br(row_text(top, 'qrdbtCustoTotal'))
+        sale_price_total = _decimal_br(row_text(top, 'qrdbtPrecoTotal'))
+        total_value = _decimal_br(row_text(top, 'QRDBText5'))
         products.append(
             {
                 'sector': sector_name,
@@ -312,12 +324,17 @@ def parse_loss_html(
                 'loss_purchase_percent': _json_number(_decimal_br(row_text(top, 'QRLabel22'))),
                 'loss_sale_percent': _json_number(_decimal_br(row_text(top, 'QRLabel23'))),
                 'loss_quantity': _json_number(_decimal_br(row_text(top, 'QRDBText13'))),
-                'gross_cost_total': _json_number(_decimal_br(row_text(top, 'qrdbtCustoTotal'))),
-                'sale_price_total': _json_number(_decimal_br(row_text(top, 'qrdbtPrecoTotal'))),
+                'gross_cost_total': _json_number(gross_cost_total),
+                'sale_price_total': _json_number(sale_price_total),
                 'loss_quantity_sales_percent': _json_number(
                     _decimal_br(row_text(top, 'lblQuantPorVendas'))
                 ),
-                'total_value': _json_number(_decimal_br(row_text(top, 'QRDBText5'))),
+                'total_value': _json_number(total_value),
+                '_monetary_decimals': {
+                    'gross_cost_total': gross_cost_total or Decimal('0'),
+                    'sale_price_total': sale_price_total or Decimal('0'),
+                    'total_value': total_value or Decimal('0'),
+                },
             }
         )
 
@@ -335,6 +352,7 @@ def parse_loss_html(
 
     # Totais por setor: QRExpr4/12/9/8 aparecem na faixa final de cada setor.
     sector_reported_totals: dict[str, dict[str, float | None]] = {}
+    sector_reported_monetary: dict[str, dict[str, Decimal | None]] = {}
     for total_element in by_id.get('QRExpr4', []):
         if total_element.top is None:
             continue
@@ -345,11 +363,19 @@ def parse_loss_html(
         if sector_index + 1 < len(sector_tops) and top >= sector_tops[sector_index + 1]:
             continue
         sector_name = sector_events[sector_index][1]
+        gross_cost_total = _decimal_br(row_text(top, 'QRExpr12'))
+        sale_price_total = _decimal_br(row_text(top, 'QRExpr9'))
+        total_value = _decimal_br(row_text(top, 'QRExpr8'))
         sector_reported_totals[sector_name] = {
             'loss_quantity': _json_number(_decimal_br(row_text(top, 'QRExpr4'))),
-            'gross_cost_total': _json_number(_decimal_br(row_text(top, 'QRExpr12'))),
-            'sale_price_total': _json_number(_decimal_br(row_text(top, 'QRExpr9'))),
-            'total_value': _json_number(_decimal_br(row_text(top, 'QRExpr8'))),
+            'gross_cost_total': _json_number(gross_cost_total),
+            'sale_price_total': _json_number(sale_price_total),
+            'total_value': _json_number(total_value),
+        }
+        sector_reported_monetary[sector_name] = {
+            'gross_cost_total': gross_cost_total,
+            'sale_price_total': sale_price_total,
+            'total_value': total_value,
         }
 
     sectors: list[dict[str, Any]] = []
@@ -374,22 +400,57 @@ def parse_loss_html(
         reported = sector_reported_totals.get(sector_name, {})
         calculated = {}
         for key in ('gross_cost_total', 'sale_price_total', 'total_value'):
-            calculated[key] = round(
-                sum(float(product[key] or 0) for product in sector_products),
-                4,
-            )
+            calculated_decimal = sum(
+                (product['_monetary_decimals'][key] for product in sector_products),
+                Decimal("0"),
+            ).quantize(MONEY_RECONCILIATION_QUANTUM)
+
             reported_value = reported.get(key)
-            delta = None if reported_value is None else round(calculated[key] - reported_value, 4)
+            reported_decimal = sector_reported_monetary.get(sector_name, {}).get(key)
+            delta_decimal = (
+                None
+                if reported_decimal is None
+                else (calculated_decimal - reported_decimal).quantize(
+                    MONEY_RECONCILIATION_QUANTUM
+                )
+            )
+            status = None if delta_decimal is None else classify_money_reconciliation(delta_decimal)
+            passed = status in {'OK', 'WARNING'}
+            outcome = (
+                'accepted_rounding_difference'
+                if status == 'OK' and delta_decimal != Decimal('0')
+                else status.lower() if status else 'missing_reported_total'
+            )
+
+            calculated[key] = float(calculated_decimal)
             monetary_reconciliation.append(
                 {
                     'sector': sector_name,
                     'field': key,
                     'reported': reported_value,
-                    'calculated': calculated[key],
-                    'delta': delta,
-                    'passed': delta is not None and abs(delta) <= 0.01,
+                    'calculated': float(calculated_decimal),
+                    'delta': None if delta_decimal is None else float(delta_decimal),
+                    'tolerance': float(MONEY_RECONCILIATION_TOLERANCE),
+                    'status': status,
+                    'outcome': outcome,
+                    'passed': passed,
                 }
             )
+            if logger and delta_decimal is not None and delta_decimal != Decimal('0'):
+                logger.info(
+                    '[PERDAS RECONCILIATION] file=%s store=%s sector=%s field=%s '
+                    'reported=%s calculated=%s delta=%s tolerance=%s status=%s outcome=%s',
+                    path.name,
+                    store.code,
+                    sector_name,
+                    key,
+                    reported_decimal,
+                    calculated_decimal,
+                    delta_decimal,
+                    MONEY_RECONCILIATION_TOLERANCE,
+                    status,
+                    outcome,
+                )
 
         sectors.append(
             {
@@ -430,6 +491,9 @@ def parse_loss_html(
             f'{failed_reconciliation[:5]!r}'
         )
 
+    for product in products:
+        product.pop('_monetary_decimals', None)
+
     grand_totals = {
         'record_count': record_count,
         'loss_quantity': _json_number(last_number('QRExpr2')),
@@ -438,8 +502,11 @@ def parse_loss_html(
         'total_value': _json_number(last_number('QRExpr3')),
     }
 
+    warning_reconciliation = [
+        item for item in monetary_reconciliation if item['status'] == 'WARNING'
+    ]
     quality = {
-        'status': 'PASS',
+        'status': 'WARNING' if warning_reconciliation else 'PASS',
         'checks': {
             'title': True,
             'single_period': True,
@@ -451,6 +518,8 @@ def parse_loss_html(
         'sector_count': len(sectors),
         'product_count': len(products),
         'monetary_reconciliation_rows': len(monetary_reconciliation),
+        'monetary_reconciliation_warning_rows': len(warning_reconciliation),
+        'monetary_reconciliation': monetary_reconciliation,
     }
 
     emissions = texts('QRSysData6')
