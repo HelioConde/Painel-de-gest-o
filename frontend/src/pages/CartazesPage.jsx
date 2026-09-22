@@ -1,7 +1,9 @@
 import { ChevronLeft, ChevronRight, ClipboardPaste, History, LayoutGrid, Plus, Printer, RotateCcw, Settings, Trash2 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import PosterInputActionsMenu from '../components/posters/PosterInputActionsMenu'
 import PosterPreview from '../components/posters/PosterPreview'
 import PosterPrintDialog from '../components/posters/PosterPrintDialog'
+import PosterFormatPickerModal from '../components/posters/PosterFormatPickerModal'
 import PosterSheet from '../components/posters/PosterSheet'
 import {
   getPageCount,
@@ -16,6 +18,7 @@ import { createPosterLayouts } from '../poster-engine/layoutPlan'
 import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 
 const PRINT_STYLE_ID = 'poster-dynamic-page'
+const FORMAT_PICKER_SESSION_KEY = 'poster-format-picked'
 const FIELD_COLUMNS = [
   ['description', 'Descrição'],
   ['subdescription', 'Subdescrição'],
@@ -23,6 +26,31 @@ const FIELD_COLUMNS = [
   ['unit', 'Gramatura'],
   ['price', 'Venda'],
 ]
+const EXAMPLE_PRODUCTS = 'Cerveja Heineken Long Neck 300ml 5,99\nPão Francês kg 10,90\nPão de queijo kg 20,90'
+
+function normalizeImportedPrice(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value.toFixed(2).replace('.', ',')
+  return String(value || '').trim().replace(/^R\$\s*/i, '').replace(/^(\d+)\.(\d{2})$/, '$1,$2')
+}
+
+function isHeaderRow(values) {
+  const text = values.join(' ').toLocaleLowerCase('pt-BR')
+  return /descri[cç][aã]o|produto|pre[cç]o|venda|gramatura|unidade/.test(text)
+}
+
+function spreadsheetRowsToSource(rows) {
+  const contentRows = rows
+    .map((row) => row.filter((value) => String(value ?? '').trim()))
+    .filter((row) => row.length)
+  const dataRows = isHeaderRow((contentRows[0] || []).map((value) => String(value).trim())) ? contentRows.slice(1) : contentRows
+
+  return dataRows.map((row) => {
+    if (row.length === 1) return String(row[0]).trim()
+    const values = row.map((value) => String(value ?? '').trim())
+    values[values.length - 1] = normalizeImportedPrice(row.at(-1))
+    return values.join(' ')
+  }).join('\n')
+}
 
 function splitIntoPages(products, perPage) {
   if (!products.length) return [[]]
@@ -49,6 +77,9 @@ function clearPosterPrintPage() {
 
 export default function CartazesPage() {
   const [sourceText, setSourceText] = useState('')
+  const sourceTextareaRef = useRef(null)
+  const generalFileInputRef = useRef(null)
+  const excelFileInputRef = useRef(null)
   const [productData, setProductData] = useState([])
   const [formatId, setFormatId] = useState('A4X4')
   const [templateId, setTemplateId] = useState(() => getDefaultTemplateForFormat('A4X4').id)
@@ -62,6 +93,9 @@ export default function CartazesPage() {
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [checkedProductIds, setCheckedProductIds] = useState([])
   const [fontAvailable, setFontAvailable] = useState(null)
+  const [formatPickerOpen, setFormatPickerOpen] = useState(() => window.sessionStorage.getItem(FORMAT_PICKER_SESSION_KEY) !== 'true')
+  const [inputActionsOpen, setInputActionsOpen] = useState(false)
+  const [importError, setImportError] = useState('')
 
   const formatConfig = getPosterFormat(formatId)
   const posterTextMeasure = useMemo(() => createBrowserTextMeasure(), [fontAvailable])
@@ -105,11 +139,11 @@ export default function CartazesPage() {
     return () => { active = false }
   }, [])
 
-  const persistCurrentJob = useCallback((products = productData, forcedId = currentJobId) => {
+  const persistCurrentJob = useCallback((products = productData, forcedId = currentJobId, jobSource = sourceText) => {
     if (!products.length) return null
     const saved = savePosterJob({
       id: forcedId,
-      sourceText,
+      sourceText: jobSource,
       formatId,
       templateId,
       productCount: products.length,
@@ -127,13 +161,58 @@ export default function CartazesPage() {
     return () => window.clearTimeout(timer)
   }, [currentJobId, formatId, persistCurrentJob, productData, templateId])
 
-  const generatePosters = () => {
-    const products = parseProducts(sourceText)
+  const applyProductSource = (nextSource) => {
+    const products = parseProducts(nextSource)
+    setSourceText(nextSource)
     setProductData(products)
     setCurrentPage(0)
     setSelectedProductId(products[0]?.id || null)
     setCheckedProductIds([])
-    persistCurrentJob(products)
+    persistCurrentJob(products, currentJobId, nextSource)
+  }
+
+  const generatePosters = () => applyProductSource(sourceText)
+
+  const clearProductList = () => {
+    setSourceText('')
+    setProductData([])
+    setCurrentJobId(null)
+    setSelectedProductId(null)
+    setCheckedProductIds([])
+    setCurrentPage(0)
+    setImportError('')
+    window.requestAnimationFrame(() => sourceTextareaRef.current?.focus())
+  }
+
+  const importProductFile = async (file) => {
+    if (!file) return
+    setImportError('')
+    try {
+      const extension = file.name.split('.').pop()?.toLocaleLowerCase('pt-BR')
+      let importedSource = ''
+      if (extension === 'txt') {
+        importedSource = await file.text()
+      } else if (extension === 'csv' || extension === 'xls' || extension === 'xlsx') {
+        const XLSX = await import('@e965/xlsx')
+        const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array' })
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
+        importedSource = spreadsheetRowsToSource(XLSX.utils.sheet_to_json(firstSheet, { header: 1, raw: true, defval: '' }))
+      } else {
+        throw new Error('Formato não suportado.')
+      }
+      if (!importedSource.trim()) throw new Error('O arquivo não possui produtos para importar.')
+      applyProductSource(importedSource)
+      window.requestAnimationFrame(() => sourceTextareaRef.current?.focus())
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : 'Não foi possível importar o arquivo.')
+    }
+  }
+
+  const handleInputAction = (action) => {
+    if (action === 'file') generalFileInputRef.current?.click()
+    if (action === 'excel') excelFileInputRef.current?.click()
+    if (action === 'example') applyProductSource(EXAMPLE_PRODUCTS)
+    if (action === 'clear') clearProductList()
   }
 
   const updateProduct = (id, field, value) => {
@@ -202,6 +281,17 @@ export default function CartazesPage() {
   }
 
   const closePrintDialog = useCallback(() => setPrintDialogOpen(false), [])
+  const closeFormatPicker = () => {
+    window.sessionStorage.setItem(FORMAT_PICKER_SESSION_KEY, 'true')
+    setFormatPickerOpen(false)
+  }
+  const selectFormat = (nextFormat) => {
+    setFormatId(nextFormat)
+    setTemplateId(getDefaultTemplateForFormat(nextFormat).id)
+    setCurrentPage(0)
+    closeFormatPicker()
+  }
+
   const printPosters = (confirmedConfig) => {
     if (fontAvailable === false) return
     setPrintConfig(confirmedConfig)
@@ -250,19 +340,10 @@ export default function CartazesPage() {
                   <h2>Cole seus produtos</h2>
                 </div>
                 <div className="poster-config-selects">
-                  <label className="poster-format-select">
+                  <div className="poster-format-select">
                     <span>Formato</span>
-                    <select value={formatId} onChange={(event) => {
-                      const nextFormat = event.target.value
-                      setFormatId(nextFormat)
-                      setTemplateId(getDefaultTemplateForFormat(nextFormat).id)
-                      setCurrentPage(0)
-                    }}>
-                      {POSTER_FORMAT_OPTIONS.map((format) => (
-                        <option value={format.id} key={format.id}>{format.label} · {format.postersPerSheet} por folha</option>
-                      ))}
-                    </select>
-                  </label>
+                    <button type="button" className="poster-format-trigger" onClick={() => setFormatPickerOpen(true)}>{formatConfig.label}<span>Alterar</span></button>
+                  </div>
                   <div className="poster-format-select poster-background-reference"><span>Fundo</span><strong>{templateConfig.backgroundFile}</strong></div>
                 </div>
               </div>
@@ -270,6 +351,7 @@ export default function CartazesPage() {
               <label className="poster-textarea-field">
                 <span>Uma linha por produto</span>
                 <textarea
+                  ref={sourceTextareaRef}
                   value={sourceText}
                   onChange={(event) => setSourceText(event.target.value)}
                   placeholder={'Pão Francês kg 10,90\nCerveja Heineken Long Neck 300ml 5,99\nCoca Cola Zero 2L 9,99'}
@@ -279,10 +361,13 @@ export default function CartazesPage() {
                   }}
                 />
               </label>
+              <input ref={generalFileInputRef} className="poster-visually-hidden" type="file" accept=".txt,.csv,.xls,.xlsx,text/plain,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { importProductFile(event.target.files?.[0]); event.target.value = '' }} />
+              <input ref={excelFileInputRef} className="poster-visually-hidden" type="file" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { importProductFile(event.target.files?.[0]); event.target.value = '' }} />
+              {importError ? <p className="poster-import-error" role="alert">{importError}</p> : null}
 
               <div className="poster-input-footer">
                 <div className="poster-input-meta">
-                  <button type="button" className="poster-icon-button" aria-label="Adicionar linha" onClick={() => setSourceText((current) => `${current}${current && !current.endsWith('\n') ? '\n' : ''}`)}><Plus size={17} /></button>
+                  <PosterInputActionsMenu open={inputActionsOpen} onOpenChange={setInputActionsOpen} onAction={handleInputAction} />
                   <span><strong>{inputCount}</strong> {inputCount === 1 ? 'produto identificado' : 'produtos identificados'} · Ctrl+Enter</span>
                 </div>
                 <button type="button" className="poster-button poster-button-primary" onClick={generatePosters} disabled={!inputCount}>
@@ -418,7 +503,7 @@ export default function CartazesPage() {
             products={products}
             template={templateConfig}
             layoutPlans={layoutPlans}
-            showBackground
+            showBackground={false}
           />
         )))}
       </div>
@@ -431,6 +516,13 @@ export default function CartazesPage() {
         printConfig={printConfig}
         onClose={closePrintDialog}
         onPrint={printPosters}
+      />
+      <PosterFormatPickerModal
+        open={formatPickerOpen}
+        currentFormatId={formatId}
+        formats={POSTER_FORMAT_OPTIONS}
+        onClose={closeFormatPicker}
+        onSelect={selectFormat}
       />
     </div>
   )

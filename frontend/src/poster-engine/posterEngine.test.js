@@ -139,7 +139,7 @@ test('calcula geometria física para todos os sete formatos suportados', () => {
 
 test('mantém somente a lista oficial de formatos de placa', () => {
   assert.deepEqual(Object.keys(POSTER_FORMATS), [
-    'A5', 'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A3',
+    'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A5', 'A3',
   ])
   assert.deepEqual(POSTER_FORMATS.A4X2_INVERTIDO.invertedSlots, [0])
   assert.equal(POSTER_FORMATS.A4X2_APP.orientation, 'landscape')

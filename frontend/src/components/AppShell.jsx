@@ -9,7 +9,7 @@ const NAV = [
   { to: '/diaria', label: 'Venda Diária', initial: 'D', tone: 'daily', icon: TrendingUp },
   { to: '/mensal', label: 'Venda Mensal', initial: 'M', tone: 'monthly', icon: BarChart3 },
   { to: '/perdas', label: 'Perdas', initial: 'P', tone: 'losses', icon: TrendingDown },
-  { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText },
+  { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText, isNew: true },
 ]
 
 export default function AppShell({ children }) {
@@ -47,17 +47,19 @@ export default function AppShell({ children }) {
         </div>
 
         <nav className="nav-list" aria-label="Navegação principal">
-          {NAV.map(({ to, label, initial, tone, icon: Icon }) => (
+          {NAV.map(({ to, label, initial, tone, icon: Icon, isNew = false }) => (
             <NavLink
               key={to}
               to={to}
               onClick={() => setOpen(false)}
               className={({ isActive }) => `nav-item nav-${tone} ${isActive ? 'active' : ''}`}
-              title={collapsed ? label : undefined}
+              title={collapsed ? (isNew ? `${label}: nova funcionalidade` : label) : undefined}
+              aria-label={isNew ? `${label}, nova funcionalidade` : label}
             >
               <span className={`nav-initial nav-initial-${tone}`} aria-hidden="true">{initial}</span>
               <Icon className="nav-icon" size={18} />
               <span className="nav-label">{label}</span>
+              {isNew ? <span className="nav-new-badge" title="Nova ferramenta para criação e impressão de cartazes" aria-hidden="true">Novo</span> : null}
             </NavLink>
           ))}
         </nav>

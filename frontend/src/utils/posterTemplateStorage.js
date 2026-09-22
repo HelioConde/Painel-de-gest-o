@@ -22,6 +22,7 @@ function sanitizeTextStyles(saved, fallback, useDefaultBounds) {
   }))
 }
 export function mergePosterTemplate(defaultTemplate, saved = {}) {
+  if (Number(saved.configVersion) !== defaultTemplate.configVersion) return structuredClone(defaultTemplate)
   const useDefaultBounds = Number(saved.configVersion || 0) < defaultTemplate.configVersion
   return { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
 }
@@ -29,5 +30,8 @@ export function loadPosterTemplate(templateId) {
   const defaults = getPosterTemplate(templateId)
   try { const raw = window.localStorage.getItem(`${KEY_PREFIX}${templateId}`); return raw ? mergePosterTemplate(defaults, JSON.parse(raw)) : structuredClone(defaults) } catch { return structuredClone(defaults) }
 }
-export function savePosterTemplate(template) { const { backgroundImage, ...persistable } = template; window.localStorage.setItem(`${KEY_PREFIX}${template.id}`, JSON.stringify(persistable)) }
+export function savePosterTemplate(template) {
+  const { backgroundImage, ...persistable } = template
+  window.localStorage.setItem(`${KEY_PREFIX}${template.id}`, JSON.stringify({ ...persistable, configVersion: template.configVersion }))
+}
 export function resetPosterTemplate(templateId) { window.localStorage.removeItem(`${KEY_PREFIX}${templateId}`); return structuredClone(getPosterTemplate(templateId)) }
