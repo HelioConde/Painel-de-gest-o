@@ -1,4 +1,4 @@
-import { BarChart3, CalendarDays, ChevronLeft, FileText, Menu, TrendingDown, TrendingUp, X } from 'lucide-react'
+import { BarChart3, Bot, CalendarDays, ChevronLeft, FileText, Menu, TrendingDown, TrendingUp, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import primorLogoWide from '../assets/primor-logo-wide.png'
@@ -9,8 +9,10 @@ const NAV = [
   { to: '/diaria', label: 'Venda Diária', initial: 'D', tone: 'daily', icon: TrendingUp },
   { to: '/mensal', label: 'Venda Mensal', initial: 'M', tone: 'monthly', icon: BarChart3 },
   { to: '/perdas', label: 'Perdas', initial: 'P', tone: 'losses', icon: TrendingDown },
+  { to: '/analise-ia', label: 'Análise com IA', initial: 'IA', tone: 'ai', icon: Bot, isNew: true },
   { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText, isNew: true },
 ]
+
 
 export default function AppShell({ children }) {
   const [open, setOpen] = useState(false)

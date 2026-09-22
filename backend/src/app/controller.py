@@ -566,7 +566,14 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument('--inicio', type=parse_date)
     parser.add_argument('--fim', type=parse_date)
     parser.add_argument('--stop-before-generate', action='store_true')
+    parser.add_argument('--ai-api', action='store_true', help='Inicia a API local segura da Análise com IA.')
     args = parser.parse_args(argv)
+
+    if args.ai_api:
+        from src.ai.server import run_ai_server
+
+        run_ai_server()
+        return 0
 
     if args.inspect_superus:
         return inspect_superus()

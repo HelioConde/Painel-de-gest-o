@@ -6,6 +6,7 @@ import EventsPage from './pages/EventsPage'
 import LossesPage from './pages/LossesPage'
 import CartazesPage from './pages/CartazesPage'
 import CartazesLayoutAdminPage from './pages/CartazesLayoutAdminPage'
+import AiAnalysisPage from './pages/AiAnalysisPage'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/mensal" element={<MonthlyPage />} />
         <Route path="/eventos" element={<EventsPage />} />
         <Route path="/perdas" element={<LossesPage />} />
+        <Route path="/analise-ia" element={<AiAnalysisPage />} />
         <Route path="/cartazes" element={<CartazesPage />} />
         <Route path="/cartazes/admin-layout" element={<CartazesLayoutAdminPage />} />
         <Route path="*" element={<Navigate to="/diaria" replace />} />

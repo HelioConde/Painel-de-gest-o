@@ -24,7 +24,9 @@ function sanitizeTextStyles(saved, fallback, useDefaultBounds) {
 export function mergePosterTemplate(defaultTemplate, saved = {}) {
   if (Number(saved.configVersion) !== defaultTemplate.configVersion) return structuredClone(defaultTemplate)
   const useDefaultBounds = Number(saved.configVersion || 0) < defaultTemplate.configVersion
-  return { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
+  const merged = { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), showCurrency: typeof saved.showCurrency === 'boolean' ? saved.showCurrency : defaultTemplate.showCurrency, currencyFromBackground: typeof saved.currencyFromBackground === 'boolean' ? saved.currencyFromBackground : defaultTemplate.currencyFromBackground, contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
+  if (defaultTemplate.specialLayout === 'app-offer') ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => { merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false) })
+  return merged
 }
 export function loadPosterTemplate(templateId) {
   const defaults = getPosterTemplate(templateId)

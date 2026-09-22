@@ -2,9 +2,9 @@ import { Check, X } from 'lucide-react'
 import { useEffect } from 'react'
 import { getDefaultTemplateForFormat } from '../../config/posterTemplates'
 
-export default function PosterFormatPickerModal({ open, currentFormatId, formats, onClose, onSelect }) {
+export default function PosterFormatPickerModal({ open, currentFormatId, formats, onClose, onSelect, required = false }) {
   useEffect(() => {
-    if (!open || !currentFormatId) return undefined
+    if (!open || required) return undefined
     const closeOnEscape = (event) => {
       if (event.key === 'Escape') onClose()
     }
@@ -15,7 +15,7 @@ export default function PosterFormatPickerModal({ open, currentFormatId, formats
   if (!open) return null
 
   return (
-    <div className="poster-modal-backdrop poster-format-picker-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+    <div className="poster-modal-backdrop poster-format-picker-backdrop" role="presentation" onMouseDown={(event) => !required && event.target === event.currentTarget && onClose()}>
       <section className="poster-modal poster-format-picker" role="dialog" aria-modal="true" aria-labelledby="poster-format-picker-title">
         <header>
           <div>
@@ -23,7 +23,7 @@ export default function PosterFormatPickerModal({ open, currentFormatId, formats
             <h2 id="poster-format-picker-title">Qual formato deseja criar?</h2>
             <p>Troque o formato sem perder seus produtos ou personalizações.</p>
           </div>
-          <button type="button" className="poster-icon-button" onClick={onClose} aria-label="Fechar seleção de formato"><X size={18} /></button>
+          {!required ? <button type="button" className="poster-icon-button" onClick={onClose} aria-label="Fechar seleção de formato"><X size={18} /></button> : null}
         </header>
         <div className="poster-format-picker-grid">
           {formats.map((format) => {

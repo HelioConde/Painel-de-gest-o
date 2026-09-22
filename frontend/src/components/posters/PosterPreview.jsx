@@ -3,7 +3,7 @@ import PosterSheet from './PosterSheet'
 
 const PX_PER_MM = 96 / 25.4
 
-export default function PosterPreview({ format, products, template, layoutPlans, showBackground = false, showLayoutDebug = false, startIndex = 0, selectedProductId = null, onSelectProduct }) {
+export default function PosterPreview({ format, products, template, layoutPlans, showBackground = false, showLayoutDebug = false, startIndex = 0, selectedProductId = null, onSelectProduct, onOpen, fitViewport = false }) {
   const frameRef = useRef(null)
   const [scale, setScale] = useState(0.4)
 
@@ -12,11 +12,13 @@ export default function PosterPreview({ format, products, template, layoutPlans,
     if (!frame) return undefined
 
     const resize = () => {
-      const availableWidth = Math.max(220, frame.clientWidth - 28)
-      const availableHeight = Math.max(300, Math.min(620, window.innerHeight - 245))
+      const availableWidth = Math.max(1, frame.clientWidth - (fitViewport ? 24 : 28))
+      const availableHeight = fitViewport
+        ? Math.max(1, frame.clientHeight - 24)
+        : Math.max(300, Math.min(620, window.innerHeight - 245))
       const naturalWidth = format.widthMm * PX_PER_MM
       const naturalHeight = format.heightMm * PX_PER_MM
-      setScale(Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight, 0.72))
+      setScale(Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight, fitViewport ? 1 : 0.72))
     }
 
     resize()
@@ -33,7 +35,7 @@ export default function PosterPreview({ format, products, template, layoutPlans,
   const naturalHeight = format.heightMm * PX_PER_MM
 
   return (
-    <div className="poster-preview-frame" ref={frameRef}>
+    <div className={`poster-preview-frame ${fitViewport ? 'poster-preview-frame-fit' : ''}`} ref={frameRef} onClick={onOpen}>
       <div className="poster-preview-stage" style={{ width: naturalWidth * scale, height: naturalHeight * scale }}>
         <div className="poster-preview-scale" style={{ transform: `scale(${scale})` }}>
           <PosterSheet

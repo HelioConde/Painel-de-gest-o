@@ -74,7 +74,9 @@
 }
 .poster-module-nav button:hover,
 .poster-module-nav button.active { color: #1d4ed8; background: #eff6ff; }
-.poster-module-nav > span { margin-left: auto; padding: 0 9px; color: #64748b; font-size: 10px; font-weight: 850; }
+.poster-format-chip { margin-left: auto; min-height: 30px !important; padding: 0 9px !important; border: 1px solid #dce5ef !important; border-radius: 999px !important; background: #f8fbff !important; color: #34465f !important; font-size: 10px !important; }
+.poster-format-chip span { color: #2563eb; font-weight: 850; }
+.poster-format-chip:hover { border-color: #93b4ef !important; background: #eff6ff !important; }
 .poster-font-error { margin-bottom: 14px; padding: 10px 12px; border: 1px solid #fecaca; border-radius: 8px; background: #fff1f2; color: #b42318; font-size: 11px; font-weight: 800; }
 
 .poster-workspace {
@@ -170,7 +172,8 @@
   box-shadow: 0 0 0 3px #eff6ff;
 }
 
-.poster-textarea-field { display: grid; gap: 6px; margin-top: 16px; }
+.poster-textarea-field { display: grid; gap: 6px; margin-top: 8px; }
+.poster-textarea-field > .poster-input-subtitle { color: #7a8494; font-size: 10px; font-weight: 700; letter-spacing: 0; text-transform: none; }
 .poster-textarea-field textarea {
   width: 100%;
   min-height: 142px;
@@ -246,6 +249,18 @@
 .poster-product-table .poster-select-column input { width: 15px; height: 15px; accent-color: #2563eb; }
 .poster-product-table input { width: 100%; height: 34px; padding: 0 8px; border-radius: 7px; font-size: 10.5px; font-weight: 700; }
 .poster-product-table td:last-child input { color: #c1121f; font-weight: 900; text-align: right; }
+.poster-product-table-app { min-width: 0; table-layout: auto; }
+.poster-product-table-app thead { display: none; }
+.poster-product-table-app tbody { display: grid; gap: 8px; padding: 9px; }
+.poster-product-table-app tbody tr { display: grid; grid-template-columns: 30px repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+.poster-product-table-app td { display: grid; grid-template-rows: auto 34px; gap: 3px; padding: 0; border: 0; }
+.poster-product-table-app td::before { content: attr(data-label); overflow: hidden; color: #8792a5; font-size: 7.5px; font-weight: 850; letter-spacing: .04em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.poster-product-table-app .poster-select-column { display: grid; grid-template-rows: 1fr; place-items: center; width: auto; padding: 0; }
+.poster-product-table-app .poster-select-column::before { display: none; }
+.poster-product-table-app td:nth-child(6) { grid-column: 2 / 3; }
+.poster-product-table-app td:nth-child(7) { grid-column: 3 / 4; }
+.poster-product-table-app td:nth-child(8) { grid-column: 4 / 5; }
+.poster-product-table-app td:nth-child(6) input { color: #c1121f; font-weight: 900; text-align: right; }
 
 .poster-empty-table {
   min-height: 210px;
@@ -337,6 +352,20 @@
   transform-origin: center;
 }
 .poster-card-inverted .poster-card-layers { transform: rotate(180deg); }
+.poster-app-card { position: relative; overflow: hidden; background: #fff; color: #111827; container-type: inline-size; }
+.poster-app-card::after { content: ''; position: absolute; inset: 2.5%; border: .35mm solid #d7dce5; pointer-events: none; }
+.poster-sheet-app .poster-app-card { background: transparent; }
+.poster-sheet-app .poster-app-card::after { display: none; }
+.poster-app-box { position: absolute; z-index: 2; display: flex; align-items: var(--app-align-y); justify-content: var(--app-align-x); overflow: hidden; text-align: center; }
+.poster-app-box.poster-layout-box-debug { overflow: visible; border: .45mm solid #2563eb; background: rgba(37,99,235,.08); cursor: move; touch-action: none; }
+.poster-app-box.poster-layout-box-debug small { z-index: 10; }
+.poster-app-box > span { width: 100%; max-height: 100%; overflow: hidden; font-family: "Burbank Big Cd Bk"; font-weight: 900; line-height: .94; letter-spacing: 0; }
+.poster-app-appTitle > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; white-space: pre-line; font-size: clamp(var(--app-font-min), calc(8cqi * var(--app-scale)), var(--app-font-max)); }
+.poster-app-appPrice > span { color: #df1725; font-size: clamp(var(--app-font-min), calc(15cqi * var(--app-scale)), var(--app-font-max)); -webkit-text-stroke: .2mm #7f1020; paint-order: stroke fill; }
+.poster-app-appValidity > span { color: #1769c2; font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.6cqi * var(--app-scale)), var(--app-font-max)); font-weight: 850; }
+.poster-app-appRegularLabel > span { font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.7cqi * var(--app-scale)), var(--app-font-max)); font-weight: 800; }
+.poster-app-appRegularPrice > span { color: #078043; font-size: clamp(var(--app-font-min), calc(7cqi * var(--app-scale)), var(--app-font-max)); }
+.poster-app-box small { position: absolute; top: 0; left: 0; padding: 1mm; background: #172033; color: #fff; font: 700 2.2mm/1 Inter, sans-serif; }
 
 .poster-background-layer, .poster-sheet-background { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .poster-background-layer img, .poster-sheet-background img { position: absolute; left: 50%; top: 50%; max-width: none; max-height: none; transform-origin: center; }
@@ -489,6 +518,8 @@
 .poster-toggle-row input { width: 34px; height: 18px; accent-color: #2563eb; }
 .poster-format-note { margin: 10px 0 0; color: #64748b; font-size: 10px; font-weight: 750; text-align: center; }
 .poster-print-action { width: 100%; margin-top: 10px; }
+.poster-preview-open { width: 100%; min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; border: 1px solid #dfe5ee; border-radius: 7px; background: #fff; color: #475467; font-size: 10px; font-weight: 800; }
+.poster-preview-open:hover { border-color: #93b4ef; background: #f5f9ff; color: #1d4ed8; }
 
 .poster-modal-backdrop {
   position: fixed;
@@ -497,6 +528,7 @@
   display: grid;
   place-items: center;
   padding: 18px;
+  overflow: hidden;
   background: rgba(15,23,42,.48);
 }
 .poster-modal {
@@ -522,6 +554,13 @@
 .poster-stepper button:disabled { opacity: .35; cursor: default; }
 .poster-stepper strong { text-align: center; font-size: 12px; }
 .poster-modal > footer { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px 18px; }
+.poster-preview-dialog { width: min(1120px, calc(100% - 24px)); height: min(900px, calc(100% - 24px)); max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+.poster-preview-dialog-canvas { min-height: 0; flex: 1 1 auto; display: grid; place-items: center; overflow: hidden; padding: 12px; background: #edf2f7; }
+.poster-preview-frame-fit { width: 100%; height: 100%; min-height: 0; margin: 0; padding: 10px; cursor: default; }
+.poster-preview-frame-fit .poster-preview-scale .poster-sheet { box-shadow: 0 14px 34px rgba(15,23,42,.22); }
+.poster-preview-dialog > .poster-preview-nav { width: min(300px, 100%); margin: 12px auto 0; }
+.poster-preview-dialog > footer { flex-wrap: wrap; }
+.poster-preview-dialog > footer .poster-button { min-width: 0; white-space: nowrap; }
 
 .poster-format-picker-backdrop { overflow: hidden; align-items: center; }
 .poster-format-picker { width: min(960px, calc(100vw - 36px)); max-height: min(720px, calc(100vh - 36px)); display: flex; flex-direction: column; margin: 0; }
@@ -634,7 +673,7 @@
   .poster-page-header p, .poster-header-stat span { display: none; }
   .poster-module-nav { align-items: stretch; }
   .poster-module-nav button { flex: 1 1 calc(50% - 4px); justify-content: center; }
-  .poster-module-nav > span { display: none; }
+  .poster-format-chip { flex: 1 1 100%; margin-left: 0; }
   .poster-panel-heading { align-items: stretch; flex-direction: column; }
   .poster-config-selects { width: 100%; grid-template-columns: 1fr; }
   .poster-input-panel { padding: 14px; }
@@ -648,6 +687,13 @@
   .poster-product-table tr { padding: 9px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff !important; }
   .poster-product-table td { display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: center; gap: 8px; padding: 4px; border: 0; }
   .poster-product-table td::before { content: attr(data-label); color: #8792a5; font-size: 8px; font-weight: 850; text-transform: uppercase; }
+  .poster-product-table-app tbody { padding: 0; }
+  .poster-product-table-app tbody tr { display: block; padding: 9px; }
+  .poster-product-table-app td { display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-rows: none; gap: 8px; padding: 4px; }
+  .poster-product-table-app td:nth-child(6), .poster-product-table-app td:nth-child(7), .poster-product-table-app td:nth-child(8) { grid-column: auto; }
+  .poster-product-table-app td::before { content: attr(data-label); }
+  .poster-product-table-app .poster-select-column { display: grid; grid-template-columns: 92px minmax(0, 1fr); place-items: center start; }
+  .poster-product-table-app .poster-select-column::before { display: block; }
   .poster-preview-panel { padding: 12px; }
   .poster-preview-frame { min-height: 360px; padding: 10px; }
   .poster-format-picker-backdrop { padding: 0; }
@@ -666,6 +712,10 @@
   .poster-admin-preview-panel { min-height: 540px; }
   .poster-admin-canvas { min-height: 500px; }
   .poster-admin-properties { max-height: none; overflow: visible; }
+  .poster-preview-dialog { width: 100vw; height: 100dvh; min-height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .poster-preview-dialog-canvas { padding: 8px; }
+  .poster-preview-dialog > footer { gap: 5px; padding: 10px 12px 12px; }
+  .poster-preview-dialog > footer .poster-button { flex: 1 1 30%; min-width: 0; padding: 0 6px; font-size: 9px; }
 }
 
 @media print {
@@ -697,6 +747,7 @@
   body.poster-printing .poster-slot { border-color: #a8a8a8 !important; }
   body.poster-printing .poster-background-layer,
   body.poster-printing .poster-sheet-background { display: none !important; }
+  body.poster-printing .poster-sheet-app .poster-sheet-background { display: block !important; }
   body.poster-printing .poster-sheet,
   body.poster-printing .poster-card { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   body.poster-printing .poster-preview-badge { display: none !important; }

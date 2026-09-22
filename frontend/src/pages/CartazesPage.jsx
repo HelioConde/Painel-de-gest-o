@@ -1,5 +1,6 @@
-import { ChevronLeft, ChevronRight, ClipboardPaste, History, LayoutGrid, Plus, Printer, RotateCcw, Settings, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ClipboardPaste, History, LayoutGrid, Maximize2, Pencil, Printer, Settings, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PosterInputActionsMenu from '../components/posters/PosterInputActionsMenu'
 import PosterPreview from '../components/posters/PosterPreview'
 import PosterPrintDialog from '../components/posters/PosterPrintDialog'
@@ -18,13 +19,21 @@ import { createPosterLayouts } from '../poster-engine/layoutPlan'
 import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 
 const PRINT_STYLE_ID = 'poster-dynamic-page'
-const FORMAT_PICKER_SESSION_KEY = 'poster-format-picked'
 const FIELD_COLUMNS = [
   ['description', 'Descrição'],
   ['subdescription', 'Subdescrição'],
   ['complement', 'Complemento'],
   ['unit', 'Gramatura'],
   ['price', 'Venda'],
+]
+const APP_FIELD_COLUMNS = [
+  ['description', 'Descrição'],
+  ['subdescription', 'Subdescrição'],
+  ['complement', 'Complemento'],
+  ['unit', 'Gramatura'],
+  ['price', 'Preço App'],
+  ['validity', 'Validade'],
+  ['regularPrice', 'Preço fora do App'],
 ]
 const EXAMPLE_PRODUCTS = 'Cerveja Heineken Long Neck 300ml 5,99\nPão Francês kg 10,90\nPão de queijo kg 20,90'
 
@@ -59,6 +68,10 @@ function splitIntoPages(products, perPage) {
   ))
 }
 
+function productDisplayName(product) {
+  return [product?.description, product?.subdescription, product?.complement, product?.unit].filter(Boolean).join(' ') || 'Cartazes'
+}
+
 function applyPosterPrintPage(format) {
   let style = document.getElementById(PRINT_STYLE_ID)
   if (!style) {
@@ -76,13 +89,14 @@ function clearPosterPrintPage() {
 }
 
 export default function CartazesPage() {
+  const navigate = useNavigate()
   const [sourceText, setSourceText] = useState('')
   const sourceTextareaRef = useRef(null)
   const generalFileInputRef = useRef(null)
   const excelFileInputRef = useRef(null)
   const [productData, setProductData] = useState([])
-  const [formatId, setFormatId] = useState('A4X4')
-  const [templateId, setTemplateId] = useState(() => getDefaultTemplateForFormat('A4X4').id)
+  const [formatId, setFormatId] = useState(null)
+  const [templateId, setTemplateId] = useState(null)
   const [templateConfig, setTemplateConfig] = useState(() => loadPosterTemplate(getDefaultTemplateForFormat('A4X4').id))
   const [currentPage, setCurrentPage] = useState(0)
   const [printDialogOpen, setPrintDialogOpen] = useState(false)
@@ -93,10 +107,13 @@ export default function CartazesPage() {
   const [selectedProductId, setSelectedProductId] = useState(null)
   const [checkedProductIds, setCheckedProductIds] = useState([])
   const [fontAvailable, setFontAvailable] = useState(null)
-  const [formatPickerOpen, setFormatPickerOpen] = useState(() => window.sessionStorage.getItem(FORMAT_PICKER_SESSION_KEY) !== 'true')
+  const [formatPickerOpen, setFormatPickerOpen] = useState(true)
   const [inputActionsOpen, setInputActionsOpen] = useState(false)
   const [importError, setImportError] = useState('')
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
+  const [printOnlyCurrentPage, setPrintOnlyCurrentPage] = useState(false)
 
+  const hasFormat = Boolean(formatId)
   const formatConfig = getPosterFormat(formatId)
   const posterTextMeasure = useMemo(() => createBrowserTextMeasure(), [fontAvailable])
   const layoutPlans = useMemo(
@@ -120,10 +137,12 @@ export default function CartazesPage() {
   }, [pageCount])
 
   useEffect(() => {
+    if (!templateId) return
     setTemplateConfig(loadPosterTemplate(templateId))
   }, [templateId])
 
   useEffect(() => {
+    if (!templateId) return undefined
     const refreshTemplate = () => setTemplateConfig(loadPosterTemplate(templateId))
     window.addEventListener('focus', refreshTemplate)
     return () => window.removeEventListener('focus', refreshTemplate)
@@ -162,7 +181,14 @@ export default function CartazesPage() {
   }, [currentJobId, formatId, persistCurrentJob, productData, templateId])
 
   const applyProductSource = (nextSource) => {
-    const products = parseProducts(nextSource)
+    if (!hasFormat) { setFormatPickerOpen(true); return }
+    const appTemplate = getDefaultTemplateForFormat('A4X2_APP')
+    const products = parseProducts(nextSource).map((product) => formatId === 'A4X2_APP' ? ({
+      ...product,
+      validity: appTemplate.appValidityText.replace(/^OFERTA VÁLIDA ATÉ\s*/i, ''),
+      regularLabel: appTemplate.appRegularLabel,
+      regularPrice: '',
+    }) : product)
     setSourceText(nextSource)
     setProductData(products)
     setCurrentPage(0)
@@ -216,7 +242,7 @@ export default function CartazesPage() {
   }
 
   const updateProduct = (id, field, value) => {
-    const normalized = field === 'price' ? value : value.toLocaleUpperCase('pt-BR')
+    const normalized = ['price', 'regularPrice'].includes(field) ? value : value.toLocaleUpperCase('pt-BR')
     setProductData((products) => products.map((product) => (
       product.id === id ? { ...product, [field]: normalized } : product
     )))
@@ -249,7 +275,7 @@ export default function CartazesPage() {
     setCurrentPage(0)
   }
 
-  const startNewJob = () => {
+  const startNewPosterJob = () => {
     persistCurrentJob()
     setSourceText('')
     setProductData([])
@@ -258,6 +284,10 @@ export default function CartazesPage() {
     setCheckedProductIds([])
     setCurrentPage(0)
     setActiveSection('create')
+    setFormatId(null)
+    setTemplateId(null)
+    setFormatPickerOpen(true)
+    window.requestAnimationFrame(() => sourceTextareaRef.current?.focus())
   }
 
   const openHistoryJob = (job) => {
@@ -281,15 +311,21 @@ export default function CartazesPage() {
   }
 
   const closePrintDialog = useCallback(() => setPrintDialogOpen(false), [])
-  const closeFormatPicker = () => {
-    window.sessionStorage.setItem(FORMAT_PICKER_SESSION_KEY, 'true')
-    setFormatPickerOpen(false)
-  }
+  const closeFormatPicker = () => setFormatPickerOpen(false)
   const selectFormat = (nextFormat) => {
     setFormatId(nextFormat)
     setTemplateId(getDefaultTemplateForFormat(nextFormat).id)
     setCurrentPage(0)
-    closeFormatPicker()
+    if (nextFormat === 'A4X2_APP') {
+      const appTemplate = getDefaultTemplateForFormat('A4X2_APP')
+      setProductData((products) => products.map((product) => ({
+        ...product,
+        validity: product.validity || appTemplate.appValidityText.replace(/^OFERTA VÁLIDA ATÉ\s*/i, ''),
+        regularLabel: product.regularLabel || appTemplate.appRegularLabel,
+        regularPrice: product.regularPrice || '',
+      })))
+    }
+    setFormatPickerOpen(false)
   }
 
   const printPosters = (confirmedConfig) => {
@@ -304,6 +340,18 @@ export default function CartazesPage() {
     window.addEventListener('afterprint', cleanup)
     requestAnimationFrame(() => requestAnimationFrame(() => window.print()))
     window.setTimeout(cleanup, 2000)
+  }
+
+  const printCurrentSheet = () => {
+    setPrintOnlyCurrentPage(true)
+    printPosters({ copies: 1 })
+    window.setTimeout(() => setPrintOnlyCurrentPage(false), 2200)
+  }
+
+  const editPreviewProduct = () => {
+    setPreviewDialogOpen(false)
+    if (selectedProductId) selectProduct(selectedProductId)
+    window.requestAnimationFrame(() => document.querySelector('.poster-products-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
   }
 
   return (
@@ -322,11 +370,10 @@ export default function CartazesPage() {
         </header>
 
         <nav className="poster-module-nav" aria-label="Cartaz Rápido">
-          <button type="button" className={activeSection === 'create' ? 'active' : ''} onClick={() => setActiveSection('create')}><LayoutGrid size={16} /> Criar cartaz</button>
-          <button type="button" onClick={startNewJob}><Plus size={16} /> Novo</button>
+          <button type="button" className={activeSection === 'create' ? 'active' : ''} onClick={startNewPosterJob}><LayoutGrid size={16} /> Novo cartaz</button>
           <button type="button" className={activeSection === 'history' ? 'active' : ''} onClick={() => { setHistoryItems(listPosterJobs()); setActiveSection('history') }}><History size={16} /> Histórico</button>
-          <button type="button" className={activeSection === 'settings' ? 'active' : ''} onClick={() => setActiveSection('settings')}><Settings size={16} /> Configurações</button>
-          <span>{formatConfig.label}</span>
+          <button type="button" onClick={() => navigate('/cartazes/admin-layout')}><Settings size={16} /> Configurações</button>
+          <button type="button" className="poster-format-chip" onClick={() => setFormatPickerOpen(true)}>{hasFormat ? formatConfig.label : 'Escolher formato'} <span>· Alterar formato</span></button>
         </nav>
 
         {fontAvailable === false ? <div className="poster-font-error" role="alert">Fonte Burbank Big Cd Bk não encontrada.</div> : null}
@@ -336,20 +383,12 @@ export default function CartazesPage() {
             <section className="poster-panel poster-input-panel">
               <div className="poster-panel-heading">
                 <div>
-                  <span className="poster-section-kicker"><ClipboardPaste size={14} /> Entrada</span>
                   <h2>Cole seus produtos</h2>
-                </div>
-                <div className="poster-config-selects">
-                  <div className="poster-format-select">
-                    <span>Formato</span>
-                    <button type="button" className="poster-format-trigger" onClick={() => setFormatPickerOpen(true)}>{formatConfig.label}<span>Alterar</span></button>
-                  </div>
-                  <div className="poster-format-select poster-background-reference"><span>Fundo</span><strong>{templateConfig.backgroundFile}</strong></div>
                 </div>
               </div>
 
               <label className="poster-textarea-field">
-                <span>Uma linha por produto</span>
+                <span className="poster-input-subtitle">Uma linha por produto</span>
                 <textarea
                   ref={sourceTextareaRef}
                   value={sourceText}
@@ -370,7 +409,7 @@ export default function CartazesPage() {
                   <PosterInputActionsMenu open={inputActionsOpen} onOpenChange={setInputActionsOpen} onAction={handleInputAction} />
                   <span><strong>{inputCount}</strong> {inputCount === 1 ? 'produto identificado' : 'produtos identificados'} · Ctrl+Enter</span>
                 </div>
-                <button type="button" className="poster-button poster-button-primary" onClick={generatePosters} disabled={!inputCount}>
+                <button type="button" className="poster-button poster-button-primary" onClick={generatePosters} disabled={!inputCount || !hasFormat}>
                   <LayoutGrid size={17} /> {productData.length ? 'Atualizar cartazes' : 'Gerar cartazes'}
                 </button>
               </div>
@@ -390,19 +429,19 @@ export default function CartazesPage() {
 
               {productData.length ? (
                 <div className="poster-table-wrap">
-                  <table className="poster-product-table">
-                    <thead><tr><th className="poster-select-column"><span className="sr-only">Selecionar</span></th>{FIELD_COLUMNS.map(([, label]) => <th key={label}>{label}</th>)}</tr></thead>
+                  <table className={`poster-product-table ${formatId === 'A4X2_APP' ? 'poster-product-table-app' : ''}`}>
+                    <thead><tr><th className="poster-select-column"><span className="sr-only">Selecionar</span></th>{(formatId === 'A4X2_APP' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([, label]) => <th key={label}>{label}</th>)}</tr></thead>
                     <tbody>
                       {productData.map((product) => (
                         <tr key={product.id} data-product-id={product.id} className={selectedProductId === product.id ? 'selected' : ''} onClick={() => selectProduct(product.id)}>
                           <td className="poster-select-column" data-label="Selecionar">
                             <input type="checkbox" aria-label={`Selecionar ${product.description || 'produto'}`} checked={checkedProductIds.includes(product.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleCheckedProduct(product.id)} />
                           </td>
-                          {FIELD_COLUMNS.map(([field, label]) => (
+                          {(formatId === 'A4X2_APP' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([field, label]) => (
                             <td key={field} data-label={label}>
                               <input
                                 aria-label={`${label} de ${product.description || 'produto'}`}
-                                value={product[field]}
+                                value={product[field] || ''}
                                 onFocus={() => selectProduct(product.id)}
                                 onChange={(event) => updateProduct(product.id, field, event.target.value)}
                               />
@@ -442,7 +481,9 @@ export default function CartazesPage() {
                 startIndex={currentPage * formatConfig.postersPerSheet}
                 selectedProductId={selectedProductId}
                 onSelectProduct={selectProduct}
+                onOpen={() => productData.length && setPreviewDialogOpen(true)}
               />
+              {productData.length ? <button type="button" className="poster-preview-open" onClick={() => setPreviewDialogOpen(true)}><Maximize2 size={15} /> Ampliar placa</button> : null}
 
               <div className="poster-preview-nav">
                 <button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} aria-label="Folha anterior"><ChevronLeft size={18} /></button>
@@ -469,33 +510,21 @@ export default function CartazesPage() {
               {historyItems.map((job) => (
                 <article key={job.id}>
                   <button type="button" className="poster-history-open" onClick={() => openHistoryJob(job)}>
-                    <strong>{job.products?.[0]?.description || 'Cartazes'}</strong>
+                    <strong>{productDisplayName(job.products?.[0])}</strong>
                     <span>{new Date(job.updatedAt).toLocaleString('pt-BR')} · {getPosterFormat(job.formatId).label}</span>
                     <small>{job.productCount} cartazes · {job.pageCount} folhas</small>
                   </button>
-                  <button type="button" className="poster-icon-button" aria-label={`Excluir ${job.products?.[0]?.description || 'trabalho'}`} onClick={() => removeHistoryJob(job.id)}><Trash2 size={17} /></button>
+                  <button type="button" className="poster-icon-button" aria-label={`Excluir ${productDisplayName(job.products?.[0])}`} onClick={() => removeHistoryJob(job.id)}><Trash2 size={17} /></button>
                 </article>
               ))}
             </div> : <div className="poster-empty-table"><History size={22} /><strong>Nenhum trabalho salvo</strong><span>Os trabalhos aparecem aqui depois de gerar ou atualizar placas.</span></div>}
           </section>
         ) : null}
 
-        {activeSection === 'settings' ? (
-          <section className="poster-panel poster-settings-panel">
-            <div className="poster-panel-heading"><div><span className="poster-section-kicker"><Settings size={14} /> Saída</span><h2>Configurações</h2></div></div>
-            <div className="poster-settings-grid">
-              <div><span>Fonte das placas</span><strong>Burbank Big Cd Bk</strong><small>{fontAvailable === false ? 'Não encontrada' : 'Disponível'}</small></div>
-              <div><span>Papel atual</span><strong>{formatConfig.paper}</strong><small>{formatConfig.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}</small></div>
-              <div><span>Modo de impressão</span><strong>Somente frente</strong><small>Simplex; frente e verso desativado</small></div>
-              <div><span>Propriedades</span><strong>Diálogo do sistema</strong><small>A impressora e a bandeja são escolhidas ao imprimir.</small></div>
-            </div>
-            <a href="#/cartazes/admin-layout" className="poster-button poster-button-secondary poster-settings-admin"><RotateCcw size={16} /> Ajustar templates</a>
-          </section>
-        ) : null}
       </div>
 
       <div className="poster-print-root" aria-hidden="true">
-        {Array.from({ length: printConfig.copies }, (_, copyIndex) => pages.map((products, pageIndex) => (
+        {Array.from({ length: printConfig.copies }, (_, copyIndex) => (printOnlyCurrentPage ? [pageProducts] : pages).map((products, pageIndex) => (
           <PosterSheet
             key={`${copyIndex}-${pageIndex}`}
             className="poster-print-sheet"
@@ -503,7 +532,7 @@ export default function CartazesPage() {
             products={products}
             template={templateConfig}
             layoutPlans={layoutPlans}
-            showBackground={false}
+            showBackground={formatConfig.specialLayout === 'app-offer'}
           />
         )))}
       </div>
@@ -523,7 +552,16 @@ export default function CartazesPage() {
         formats={POSTER_FORMAT_OPTIONS}
         onClose={closeFormatPicker}
         onSelect={selectFormat}
+        required={!hasFormat}
       />
+      {previewDialogOpen ? <div className="poster-modal-backdrop poster-preview-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPreviewDialogOpen(false)}>
+        <section className="poster-modal poster-preview-dialog" role="dialog" aria-modal="true" aria-label="Visualização ampliada da folha">
+          <header><div><span className="poster-modal-kicker">Visualização · {formatConfig.label}</span><h2>{productDisplayName(pageProducts[0])}</h2></div><button type="button" className="poster-icon-button" onClick={() => setPreviewDialogOpen(false)} aria-label="Fechar visualização"><X size={18} /></button></header>
+          <div className="poster-preview-dialog-canvas"><PosterPreview fitViewport format={formatConfig} products={pageProducts} template={templateConfig} layoutPlans={layoutPlans} showBackground startIndex={currentPage * formatConfig.postersPerSheet} selectedProductId={selectedProductId} onSelectProduct={selectProduct} /></div>
+          <div className="poster-preview-nav"><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} aria-label="Folha anterior"><ChevronLeft size={18} /></button><span><strong>{currentPage + 1}</strong> / {pageCount}</span><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1} aria-label="Próxima folha"><ChevronRight size={18} /></button></div>
+          <footer><button type="button" className="poster-button poster-button-secondary" onClick={editPreviewProduct}><Pencil size={16} /> Editar</button><button type="button" className="poster-button poster-button-secondary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir esta folha</button><button type="button" className="poster-button poster-button-primary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir / Salvar PDF</button></footer>
+        </section>
+      </div> : null}
     </div>
   )
 }

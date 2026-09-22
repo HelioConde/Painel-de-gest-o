@@ -47,6 +47,9 @@ class Settings:
     supabase_loss_table: str = 'loss_period_snapshots'
     supabase_sales_table: str = 'superus_period_snapshots'
     supabase_timeout: float = 30.0
+    gemini_api_key: str | None = None
+    gemini_model: str = 'gemini-2.0-flash'
+    gemini_timeout: float = 35.0
 
     @classmethod
     def from_environment(cls) -> 'Settings':
@@ -70,6 +73,9 @@ class Settings:
             supabase_loss_table=os.getenv('SUPABASE_LOSS_TABLE') or 'loss_period_snapshots',
             supabase_sales_table=os.getenv('SUPABASE_SALES_TABLE') or 'superus_period_snapshots',
             supabase_timeout=_float_env('SUPABASE_TIMEOUT', 30.0),
+            gemini_api_key=os.getenv('GEMINI_API_KEY') or None,
+            gemini_model=os.getenv('GEMINI_MODEL') or 'gemini-2.0-flash',
+            gemini_timeout=_float_env('GEMINI_TIMEOUT', 35.0),
         )
 
     def require_credentials(self) -> tuple[str, str]:

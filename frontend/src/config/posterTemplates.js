@@ -5,7 +5,7 @@ import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
 import backgroundApp from '../../Fundo/app.png'
 
-export const LAYOUT_CONFIG_VERSION = 4
+export const LAYOUT_CONFIG_VERSION = 7
 
 const baseTextStyles = {
   description: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
@@ -39,16 +39,41 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A3: { contentBox: content(9, 17, 85, 51), priceBox: price(16, 69, 77, 25), textScale: 1.9 },
 }
 
-function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0 }) {
+const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })
+const APP_LAYOUT = {
+  appTitleBox: appBox(8, 8, 84, 27),
+  appPriceBox: appBox(8, 36, 84, 25),
+  appValidityBox: appBox(8, 63, 84, 8),
+  appRegularLabelBox: appBox(8, 73, 84, 11),
+  appRegularPriceBox: appBox(8, 85, 84, 11),
+}
+
+function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0, specialLayout, backgroundVisible }) {
   const layout = DEFAULT_POSTER_LAYOUTS[format]
-  return { id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundVisible: true, backgroundOpacity: 1, backgroundRotation, backgroundFit: 'fill', backgroundPositionX: 'center', backgroundPositionY: 'center', safeArea: 3, contentBox: layout.contentBox, priceBox: layout.priceBox, textStyles: textStyles(layout.textScale, layout.textScales), configVersion: LAYOUT_CONFIG_VERSION }
+  const currencyFromBackground = specialLayout !== 'app-offer' && backgroundScope !== 'none'
+  const template = { id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundVisible: backgroundVisible ?? Boolean(backgroundImage), backgroundOpacity: 1, backgroundRotation, backgroundFit: 'fill', backgroundPositionX: 'center', backgroundPositionY: 'center', safeArea: 3, showCurrency: !currencyFromBackground, currencyFromBackground, contentBox: layout.contentBox, priceBox: layout.priceBox, textStyles: textStyles(layout.textScale, layout.textScales), configVersion: LAYOUT_CONFIG_VERSION }
+  if (specialLayout === 'app-offer') {
+    template.specialLayout = specialLayout
+    Object.assign(template, structuredClone(APP_LAYOUT))
+    template.appValidityText = 'OFERTA VÁLIDA ATÉ 22/09/26'
+    template.appRegularLabel = 'Preço fora do aplicativo'
+    template.textStyles = {
+      ...template.textStyles,
+      appTitle: { ...baseTextStyles.description, fontMin: 3, fontMax: 12, scale: 1 },
+      appPrice: { ...baseTextStyles.price, fontMin: 6, fontMax: 20, scale: 1 },
+      appValidity: { ...baseTextStyles.unit, fontMin: 2.1, fontMax: 5, scale: 1 },
+      appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.3, fontMax: 5, scale: 1 },
+      appRegularPrice: { ...baseTextStyles.price, fontMin: 4, fontMax: 10, scale: 1 },
+    }
+  }
+  return template
 }
 
 export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a4x4', name: 'A4 4x1', format: 'A4X4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a4x2-cima-baixo', name: 'A4 2x1', format: 'A4X2_CIMA_BAIXO', backgroundImage: backgroundA4X2, backgroundFile: 'a4x2.png', backgroundScope: 'sheet' }),
   createTemplate({ id: 'fundo-a4x2-invertido', name: 'A4 2x1 Invertido', format: 'A4X2_INVERTIDO', backgroundImage: backgroundA4X2Inverted, backgroundFile: 'a4x2 invertido.png', backgroundScope: 'sheet' }),
-  createTemplate({ id: 'fundo-a4x2-app', name: 'A4 2x1 App', format: 'A4X2_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet' }),
+  createTemplate({ id: 'fundo-a4x2-app', name: 'A4 2x1 App', format: 'A4X2_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
   createTemplate({ id: 'fundo-a4', name: 'A4', format: 'A4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),

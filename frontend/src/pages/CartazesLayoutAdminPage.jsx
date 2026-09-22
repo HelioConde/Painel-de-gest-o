@@ -13,6 +13,8 @@ const TEST_PRODUCT_DEFAULT = {
   complement: 'IMPRESSÃO',
   unit: '500G',
   price: '15,99',
+  validity: 'OFERTA VÁLIDA ATÉ 22/09/26',
+  regularPrice: '16,99',
 }
 
 const BOX_LABELS = { contentBox: 'Conteúdo', priceBox: 'Preço' }
@@ -23,6 +25,8 @@ const TEXT_LABELS = {
   unit: 'Gramatura',
   price: 'Preço',
 }
+const APP_BOX_LABELS = { appTitleBox: 'Título', appPriceBox: 'Preço App', appValidityBox: 'Validade', appRegularLabelBox: 'Texto auxiliar', appRegularPriceBox: 'Preço fora App' }
+const APP_TEXT_LABELS = { appTitle: 'Título', appPrice: 'Preço App', appValidity: 'Validade', appRegularLabel: 'Texto auxiliar', appRegularPrice: 'Preço fora App' }
 
 function NumberField({ label, value, onChange, min = 0, max = 100, step = 1 }) {
   return (
@@ -56,7 +60,9 @@ export default function CartazesLayoutAdminPage() {
   const [status, setStatus] = useState('')
 
   const format = getPosterFormat(template.format)
-  const selected = template[selectedBox]
+  const boxLabels = template.specialLayout === 'app-offer' ? APP_BOX_LABELS : BOX_LABELS
+  const textLabels = template.specialLayout === 'app-offer' ? APP_TEXT_LABELS : TEXT_LABELS
+  const selected = template[selectedBox] || template[Object.keys(boxLabels)[0]]
   const templatesByFormat = useMemo(() => POSTER_FORMAT_OPTIONS.map((formatOption) => ({
     ...formatOption,
     templates: POSTER_TEMPLATES.filter((item) => item.format === formatOption.id),
@@ -69,8 +75,10 @@ export default function CartazesLayoutAdminPage() {
   }, [duplicateFormat, template.format])
 
   const selectTemplate = (nextId) => {
+    const nextTemplate = loadPosterTemplate(nextId)
     setTemplateId(nextId)
-    setTemplate(loadPosterTemplate(nextId))
+    setTemplate(nextTemplate)
+    setSelectedBox(Object.keys(nextTemplate.specialLayout === 'app-offer' ? APP_BOX_LABELS : BOX_LABELS)[0])
     setStatus('')
   }
 
@@ -158,9 +166,9 @@ export default function CartazesLayoutAdminPage() {
 
         <aside className="poster-admin-properties">
           <section className="poster-panel poster-admin-section">
-            <div className="poster-admin-section-heading"><span>Caixas</span><strong>{BOX_LABELS[selectedBox]}</strong></div>
+            <div className="poster-admin-section-heading"><span>Caixas</span><strong>{boxLabels[selectedBox]}</strong></div>
             <div className="poster-admin-box-tabs">
-              {Object.entries(BOX_LABELS).map(([key, label]) => <button type="button" className={selectedBox === key ? 'active' : ''} onClick={() => setSelectedBox(key)} key={key}>{label}</button>)}
+              {Object.entries(boxLabels).map(([key, label]) => <button type="button" className={selectedBox === key ? 'active' : ''} onClick={() => setSelectedBox(key)} key={key}>{label}</button>)}
             </div>
             <div className="poster-admin-grid-2">
               <NumberField label="X" value={selected.x} onChange={(value) => patchSelectedBox('x', value)} />
@@ -177,28 +185,29 @@ export default function CartazesLayoutAdminPage() {
               <button type="button" onClick={() => centerBox('x')}>Centralizar horizontal</button>
               <button type="button" onClick={() => centerBox('y')}>Centralizar vertical</button>
             </div>
+            <label className="poster-admin-check"><input type="checkbox" checked={template.showCurrency} disabled={template.currencyFromBackground} onChange={(event) => setTemplate((current) => ({ ...current, showCurrency: event.target.checked }))} /> Exibir R$ no preço{template.currencyFromBackground ? ' (na arte)' : ''}</label>
           </section>
 
           <section className="poster-panel poster-admin-section">
             <div className="poster-admin-section-heading"><span>Tipografia</span><strong>Escala relativa</strong></div>
             <div className="poster-admin-scale-list">
-              {Object.entries(TEXT_LABELS).map(([field, label]) => (
+              {Object.entries(textLabels).map(([field, label]) => (
                 <label key={field}><span>{label}</span><input type="range" min="0.25" max="2" step="0.05" value={template.textStyles[field].scale} onChange={(event) => updateTextScale(field, Number(event.target.value))} /><strong>{template.textStyles[field].scale.toFixed(2)}</strong></label>
               ))}
             </div>
           </section>
 
           <section className="poster-panel poster-admin-section">
-            <div className="poster-admin-section-heading"><span>Fundo oficial</span><Image size={16} /></div>
-            <div className="poster-admin-background-file"><strong>{template.backgroundFile}</strong><span>{template.backgroundScope === 'sheet' ? 'Fundo da folha completa' : 'Fundo individual por placa'}</span></div>
-            <p className="poster-admin-help">O arquivo é definido pela pasta Fundo. Ajuste apenas as caixas e a tipografia deste formato.</p>
+            <div className="poster-admin-section-heading"><span>{template.specialLayout === 'app-offer' ? 'Modelo App' : 'Fundo oficial'}</span><Image size={16} /></div>
+            <div className="poster-admin-background-file"><strong>{template.backgroundFile}</strong><span>{template.specialLayout === 'app-offer' ? 'Layout branco exclusivo com duas ofertas lado a lado' : template.backgroundScope === 'sheet' ? 'Fundo da folha completa' : 'Fundo individual por placa'}</span></div>
+            <p className="poster-admin-help">{template.specialLayout === 'app-offer' ? 'Ajuste as cinco áreas do cartaz de aplicativo independentemente.' : 'O arquivo é definido pela pasta Fundo. Ajuste apenas as caixas e a tipografia deste formato.'}</p>
             <NumberField label="Área segura" value={template.safeArea} onChange={(value) => setTemplate((current) => ({ ...current, safeArea: value }))} max={20} step={0.5} />
           </section>
 
           <section className="poster-panel poster-admin-section">
             <div className="poster-admin-section-heading"><span>Texto de teste</span><strong>Não altera produtos</strong></div>
             <div className="poster-admin-test-fields">
-              {Object.entries(TEXT_LABELS).map(([field, label]) => <label key={field}><span>{label}</span><input value={testProduct[field]} onChange={(event) => setTestProduct((current) => ({ ...current, [field]: event.target.value.toLocaleUpperCase('pt-BR') }))} /></label>)}
+              {Object.entries(template.specialLayout === 'app-offer' ? { description: 'Título', price: 'Preço App', validity: 'Validade', regularPrice: 'Preço fora App' } : TEXT_LABELS).map(([field, label]) => <label key={field}><span>{label}</span><input value={testProduct[field] || ''} onChange={(event) => setTestProduct((current) => ({ ...current, [field]: ['price', 'regularPrice'].includes(field) ? event.target.value : event.target.value.toLocaleUpperCase('pt-BR') }))} /></label>)}
             </div>
           </section>
 
