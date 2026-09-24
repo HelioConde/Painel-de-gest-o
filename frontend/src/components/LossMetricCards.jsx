@@ -1,36 +1,58 @@
-import { ArrowDownRight, ArrowUpRight, BadgePercent } from 'lucide-react'
-import { money, percent } from '../utils/formatters'
-import { lossCardTone } from '../utils/losses'
+import {
+  ArrowUpRight,
+  BadgePercent,
+  CircleDollarSign,
+  Layers3,
+  Target,
+} from "lucide-react";
+import { money, percent } from "../utils/formatters";
+import { KpiCard } from "./dashboard/DashboardPrimitives";
 
-export default function LossMetricCards({ totals }) {
-  const difference = Number(totals?.loss_difference || 0)
-  const variation = totals?.loss_variation_percent
-  const lossSales = totals?.current_loss_sales_percent
-  const previousLossSales = totals?.previous_loss_sales_percent
-  const Direction = difference <= 0 ? ArrowDownRight : ArrowUpRight
+export default function LossMetricCards({ totals, sectorsAboveTarget = 0, sectorCount = 0 }) {
+  const difference = Number(totals?.loss_difference || 0);
+  const variation = Number(totals?.loss_variation_percent || 0);
+  const lossSales = Number(totals?.current_loss_sales_percent || 0);
+  const previousLossSales = Number(totals?.previous_loss_sales_percent || 0);
 
   return (
-    <div className="metric-grid loss-metric-grid">
-      <article className="metric-card loss-current-card">
-        <span>Perda atual</span>
-        <strong>{money(totals?.current_total_value)}</strong>
-        <small>Valor monetário perdido no período</small>
-      </article>
-      <article className="metric-card">
-        <span>Ano anterior</span>
-        <strong>{money(totals?.previous_total_value)}</strong>
-        <small>Período equivalente</small>
-      </article>
-      <article className={`metric-card ${lossCardTone(difference)}`}>
-        <span>Diferença da perda</span>
-        <strong>{money(difference)}</strong>
-        <small><Direction size={13} /> {percent(variation)} contra o ano anterior</small>
-      </article>
-      <article className="metric-card loss-ratio-card">
-        <span>Perda / Venda</span>
-        <strong>{percent(lossSales)}</strong>
-        <small><BadgePercent size={13} /> Ano anterior: {percent(previousLossSales)}</small>
-      </article>
-    </div>
-  )
+    <section className="kpi-grid loss-kpi-grid">
+      <KpiCard
+        label="Perda atual"
+        value={money(totals?.current_total_value)}
+        detail={null}
+        trend={variation}
+        icon={CircleDollarSign}
+        tone="red"
+      />
+      <KpiCard
+        label="Perda anterior"
+        value={money(totals?.previous_total_value)}
+        detail={null}
+        icon={Layers3}
+        tone="slate"
+      />
+      <KpiCard
+        label="Diferença da perda"
+        value={money(difference)}
+        detail={null}
+        trend={variation}
+        icon={ArrowUpRight}
+        tone={difference > 0 ? "orange" : "green"}
+      />
+      <KpiCard
+        label="% perda / venda"
+        value={percent(lossSales)}
+        detail={`ant. ${percent(previousLossSales)}`}
+        icon={BadgePercent}
+        tone="purple"
+      />
+      <KpiCard
+        label="Setores acima da meta"
+        value={`${sectorsAboveTarget} de ${sectorCount}`}
+        detail={null}
+        icon={Target}
+        tone={sectorsAboveTarget > 0 ? "amber" : "mint"}
+      />
+    </section>
+  );
 }

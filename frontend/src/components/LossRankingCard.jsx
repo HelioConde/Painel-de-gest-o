@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import LossProductTable from './LossProductTable'
+import { SectorIcon } from './dashboard/DashboardPrimitives'
 import { money } from '../utils/formatters'
 
 export default function LossRankingCard({ id, title, subtitle = null, products, productCount = products.length, totalValue = null, ranking = 'value', onTitleClick = null, showValue = false }) {
@@ -9,12 +10,16 @@ export default function LossRankingCard({ id, title, subtitle = null, products, 
         <div className="loss-ranking-card-copy">
           {onTitleClick ? (
             <button type="button" className="loss-top-sector-button" onClick={onTitleClick}>
-              <span>{title}</span><ChevronRight size={13} />
+              <SectorIcon name={title} size={17} />
+              <span>{title}</span><ChevronRight size={15} />
             </button>
-          ) : <span className="loss-ranking-title">{title}</span>}
+          ) : <span className="loss-ranking-title"><SectorIcon name={title} size={17} />{title}</span>}
           {subtitle ? <span className="loss-ranking-subtitle">{subtitle}</span> : null}
         </div>
-        <small title="Total de perdas válidas do setor">{productCount} {productCount === 1 ? 'produto' : 'produtos'}{totalValue !== null ? ` · ${money(totalValue)}` : null}</small>
+        <div className="loss-ranking-card-stats" title="Resumo das perdas válidas do setor">
+          <span>{productCount} {productCount === 1 ? 'produto' : 'produtos'}</span>
+          {totalValue !== null ? <strong>{money(totalValue)}</strong> : null}
+        </div>
       </header>
       <LossProductTable products={products} label={`Ranking de ${title}`} ranking={ranking} showValue={showValue} />
     </article>

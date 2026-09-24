@@ -1,4 +1,39 @@
-import { supabase } from '../supabaseClient.js'
+import { supabase, supabaseConfigured } from '../lib/supabase.js'
+
+function requireAiService() {
+  if (!supabaseConfigured || !supabase) {
+    throw new Error(
+      'A conexão com o serviço de IA ainda não está disponível.'
+    )
+  }
+
+  return supabase
+}
+
+function logContextSummary(analysisType, context) {
+  if (analysisType === 'sales') {
+    console.log('[AI][SALES] Context summary', {
+      loja: context?.loja,
+      periodo: context?.periodoAtual,
+      vendaAtual: context?.resumoVendas?.vendaAtual,
+      vendaAnterior: context?.resumoVendas?.vendaAnterior,
+      quantidadeSetores: context?.setores?.length || 0,
+      quantidadeSubgrupos: context?.subgrupos?.length || 0,
+      quantidadeEventos: context?.eventos?.length || 0,
+    })
+    return
+  }
+
+  console.log('[AI][LOSSES] Context summary', {
+    loja: context?.loja,
+    periodo: context?.periodoAtual,
+    vendaTotal: context?.resumo?.vendaTotal,
+    perdaTotal: context?.resumo?.perdaTotal,
+    percentualPerda: context?.resumo?.percentualPerda,
+    quantidadeSetores: context?.setores?.length || 0,
+    quantidadeProdutos: context?.topPerdas?.length || 0,
+  })
+}
 
 function getFriendlyAiMessage(error, data) {
   const code =
@@ -32,6 +67,12 @@ function getFriendlyAiMessage(error, data) {
     case 'INVALID_CONTEXT':
       return 'Os dados da análise não foram enviados corretamente.'
 
+    case 'INVALID_SALES_CONTEXT':
+      return 'O contexto de vendas está incompleto. Atualize os dados e tente novamente.'
+
+    case 'INVALID_LOSSES_CONTEXT':
+      return 'O contexto de perdas está incompleto. Atualize os dados e tente novamente.'
+
     default:
       return (
         data?.message ||
@@ -63,14 +104,20 @@ async function readFunctionError(error) {
 
 export async function requestAiAnalysis(
   context,
-  { force = false } = {}
+  { force = false, analysisType = 'losses' } = {}
 ) {
-  const { data, error } = await supabase.functions.invoke(
+  console.log('[AI] analysisType:', analysisType)
+  console.log('[AI] context enviado:', context)
+  console.log('[AI] context JSON:', JSON.stringify(context))
+  logContextSummary(analysisType, context)
+
+  const { data, error } = await requireAiService().functions.invoke(
     'ai-analysis',
     {
       body: {
         context,
         force,
+        analysisType,
       },
     }
   )
@@ -105,15 +152,17 @@ export async function requestAiAnalysis(
 export async function askAiQuestion(
   context,
   analysis,
-  question
+  question,
+  { analysisType = 'losses' } = {}
 ) {
-  const { data, error } = await supabase.functions.invoke(
+  const { data, error } = await requireAiService().functions.invoke(
     'ai-question',
     {
       body: {
         context,
         analysis,
         question,
+        analysisType,
       },
     }
   )

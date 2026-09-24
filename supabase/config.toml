@@ -1,0 +1,5 @@
+[functions.ai-analysis]
+verify_jwt = false
+
+[functions.ai-question]
+verify_jwt = false

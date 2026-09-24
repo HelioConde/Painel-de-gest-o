@@ -1,7 +1,6 @@
 import { PackageSearch } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { buildTopLossesBySector, LOSS_RANKING_OPTIONS } from '../utils/lossDashboard'
-import { isoDate } from '../utils/formatters'
 import { LOSS_STORE_SEQUENCE } from '../utils/losses'
 import LossRankingCard from './LossRankingCard'
 import LossRankingGrid from './LossRankingGrid'
@@ -14,13 +13,6 @@ function normalize(value) {
     .toLocaleLowerCase('pt-BR')
 }
 
-function compactStoreLabel(row) {
-  const code = String(row?.store_code || '').padStart(3, '0')
-  const name = String(row?.store_name || '')
-  const match = name.match(/(\d{2})\s+(\d{3})$/)
-  const seq = match?.[1] || code
-  return `Loja ${seq} • Código ${code}`
-}
 
 export default function LossTop10BySector({ row, onSelectSector }) {
   const [ranking, setRanking] = useState('value')
@@ -37,15 +29,10 @@ export default function LossTop10BySector({ row, onSelectSector }) {
         storeLabel={`Loja ${storeSequence} - ${storeCode}`}
         storeDetail={row.store_name}
       />
-        <div className="section-heading loss-top-heading">
+      <div className="section-heading loss-top-heading">
         <div>
           <div className="section-kicker"><PackageSearch size={14} /> Top perdas</div>
           <h2>Top 10 produtos por setor</h2>
-          <div className="loss-top-store-tag">
-            <strong>{row.store_name}</strong>
-            <span>{compactStoreLabel(row)}</span>
-          </div>
-          <p>{isoDate(row.current_start)} a {isoDate(row.current_end)}. Comparativo: {isoDate(row.previous_start)} a {isoDate(row.previous_end)}.</p>
         </div>
         <div className="loss-top-heading-actions">
           <div className="loss-ranking-selector no-print" role="group" aria-label="Ordenar ranking de perdas">

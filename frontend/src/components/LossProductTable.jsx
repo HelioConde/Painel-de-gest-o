@@ -45,8 +45,19 @@ export default function LossProductTable({ products, label, ranking = 'value', s
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
-            <tr key={`${product.store_code}-${product.product_code || product.product_name}-${product.rank}`}>
+          {products.map((product) => {
+            const lossPercent = Number(product.loss_quantity_sales_percent || 0)
+            const soldQuantity = Number(product.quantity_sold || 0)
+            const lostQuantity = Number(product.loss_quantity || 0)
+            const anomalyClass = soldQuantity <= 0 && lostQuantity > 0
+              ? 'loss-row-no-sales'
+              : lossPercent >= 100
+                ? 'loss-row-critical'
+                : lossPercent >= 50
+                  ? 'loss-row-warning'
+                  : ''
+            return (
+            <tr className={anomalyClass} key={`${product.store_code}-${product.product_code || product.product_name}-${product.rank}`}>
               <td className="loss-top-rank">{product.rank}</td>
               <td className="loss-top-code">{product.product_code || '—'}</td>
               <td className="loss-top-product-name"><div className="loss-top-product-scroll" title={product.product_name || 'Produto'}>{product.product_name || 'Produto'}</div></td>
@@ -56,7 +67,8 @@ export default function LossProductTable({ products, label, ranking = 'value', s
               {hasValue ? <td>{money(product.total_value)}</td> : null}
               {hasRankingMetrics ? <><td>{percent(product.sector_share_percent)}</td><td>{comparison(product.comparison)}</td></> : null}
             </tr>
-          ))}
+            )
+          })}
         </tbody>
       </table>
     </div>

@@ -2,7 +2,7 @@ import { buildSectorSummary, buildTopLossesBySector } from './lossDashboard'
 
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : null
 
-export function buildAnalysisContext(row) {
+export function buildLossAnalysisContext(row) {
   const sectorSummary = buildSectorSummary(row)
   const sectors = sectorSummary.sectors.map((sector) => ({
     setor: sector.name,
@@ -43,3 +43,6 @@ export function buildAnalysisContext(row) {
     topPerdas,
   }
 }
+
+// Mantém a importação antiga compatível enquanto a página passa a nomear o contexto por tipo.
+export const buildAnalysisContext = buildLossAnalysisContext
