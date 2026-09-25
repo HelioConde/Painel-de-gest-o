@@ -1,5 +1,6 @@
 import {
   corsHeaders,
+  authorizeAiRequest,
   errorCode,
   generateGeminiContent,
   hasValidContext,
@@ -213,6 +214,8 @@ Deno.serve(async (request) => {
     const body = await request.json()
     const analysisType = body?.analysisType === 'sales' ? 'sales' : 'losses'
     const { context } = body
+    const authorization = await authorizeAiRequest(request, analysisType)
+    if (!authorization.allowed) return jsonResponse(request, authorization.body, authorization.status)
     console.log('[AI] analysisType recebido:', analysisType)
     console.log('[AI] context keys:', Object.keys(context || {}))
     console.log('[AI] context recebido:', JSON.stringify(context).slice(0, 10000))

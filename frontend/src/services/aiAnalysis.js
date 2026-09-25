@@ -67,6 +67,12 @@ function getFriendlyAiMessage(error, data) {
     case 'INVALID_CONTEXT':
       return 'Os dados da análise não foram enviados corretamente.'
 
+    case 'FORBIDDEN':
+      return 'Seu perfil não possui acesso a esta análise.'
+
+    case 'UNAUTHORIZED':
+      return 'Sua sessão expirou. Entre novamente para continuar.'
+
     case 'INVALID_SALES_CONTEXT':
       return 'O contexto de vendas está incompleto. Atualize os dados e tente novamente.'
 

@@ -10,7 +10,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DataStatusBanner from "../components/DataStatusBanner";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
@@ -31,12 +31,23 @@ import {
   SectorIcon,
   SimpleBarChart,
 } from "../components/dashboard/DashboardPrimitives";
+import { useAuth } from "../auth/AuthProvider";
+import { canUseAnalysis } from "../auth/permissions";
 
 const SUGGESTIONS = [
   "Quais indicadores merecem atenção primeiro?",
   "Quais setores devo investigar?",
   "Onde está concentrado o maior impacto financeiro?",
   "Compare o período atual com o anterior.",
+];
+
+const SALES_STORES = [
+  { store_code: "307", store_name: "SUPERMERCADO PRIMOR 01 307" },
+  { store_code: "212", store_name: "SUPERMERCADO PRIMOR 02 212" },
+  { store_code: "600", store_name: "SUPERMERCADO PRIMOR 03 600" },
+  { store_code: "120", store_name: "SUPERMERCADO PRIMOR 04 120" },
+  { store_code: "033", store_name: "SUPERMERCADO PRIMOR 05 033" },
+  { store_code: "018", store_name: "SUPERMERCADO PRIMOR 06 018" },
 ];
 
 function alertIcon(level) {
@@ -465,15 +476,22 @@ function SharedResults({
 }
 
 export default function AiAnalysisPage() {
-  const lossRequest = useAsyncData(getLatestLossRun, []);
+  const { role } = useAuth();
+  const allowsSales = canUseAnalysis(role, "sales");
+  const allowsLosses = canUseAnalysis(role, "losses");
+  const lossRequest = useAsyncData(
+    () => (allowsLosses ? getLatestLossRun() : null),
+    [allowsLosses],
+  );
   const salesRequest = useAsyncData(async () => {
+    if (!allowsSales) return null;
     const [monthly, daily, events] = await Promise.all([
       getLatestMonthlySnapshot(),
       getLatestSnapshot({ type: "DAILY", slug: "daily" }),
       getLatestEvents(),
     ]);
     return { monthly, daily, events };
-  }, []);
+  }, [allowsSales]);
   const [selectedStore, setSelectedStore] = useState("307");
   const [activeAnalysis, setActiveAnalysis] = useState("losses");
   const [lossAnalysis, setLossAnalysis] = useState(null);
@@ -485,6 +503,11 @@ export default function AiAnalysisPage() {
   const [question, setQuestion] = useState("");
   const [conversations, setConversations] = useState({ losses: [], sales: [] });
   const [asking, setAsking] = useState(false);
+
+  useEffect(() => {
+    if (allowsSales && !allowsLosses) setActiveAnalysis("sales");
+    if (allowsLosses && !allowsSales) setActiveAnalysis("losses");
+  }, [allowsLosses, allowsSales]);
   const rows = useMemo(() => {
     const source = lossRequest.data?.rows || [];
     return [...source].sort((a, b) => {
@@ -513,13 +536,14 @@ export default function AiAnalysisPage() {
         : null,
     [salesRequest.data, selectedStore],
   );
+  const storeOptions = rows.length ? rows : SALES_STORES;
   const analysis = activeAnalysis === "losses" ? lossAnalysis : salesAnalysis;
   const activeContext =
     activeAnalysis === "losses" ? lossContext : salesContext;
   const activeError = activeAnalysis === "losses" ? errorLosses : errorSales;
   const activeLoading =
     activeAnalysis === "losses" ? loadingLosses : loadingSales;
-  const displayContext = activeContext || lossContext;
+  const displayContext = activeContext || (allowsLosses ? lossContext : salesContext);
 
   function refreshAll() {
     lossRequest.refresh();
@@ -527,6 +551,7 @@ export default function AiAnalysisPage() {
   }
 
   async function analyze(type) {
+    if (!canUseAnalysis(role, type)) return;
     const context = type === "losses" ? lossContext : salesContext;
     if (!context) return;
     setActiveAnalysis(type);
@@ -576,8 +601,9 @@ export default function AiAnalysisPage() {
     }
   }
 
-  const loading = lossRequest.loading && !lossRequest.data;
-  const hasData = selectedRow && lossContext;
+  const activeRequest = activeAnalysis === "losses" ? lossRequest : salesRequest;
+  const loading = activeRequest.loading && !activeRequest.data;
+  const hasData = Boolean(activeAnalysis === "losses" ? lossContext : salesContext);
   return (
     <div className="page ai-analysis-page page-view-enter">
       <header className="ai-compact-header">
@@ -590,11 +616,11 @@ export default function AiAnalysisPage() {
         </div>
       </header>
       {loading ? <LoadingState /> : null}
-      {!loading && lossRequest.error && !lossRequest.data ? (
-        <ErrorState error={lossRequest.error} onRetry={refreshAll} />
+      {!loading && activeRequest.error && !activeRequest.data ? (
+        <ErrorState error={activeRequest.error} onRetry={refreshAll} />
       ) : null}
-      {!loading && !lossRequest.error && !hasData ? (
-        <EmptyState message="Ainda não existe um período de perdas sincronizado para analisar." />
+      {!loading && !activeRequest.error && !hasData ? (
+        <EmptyState message={activeAnalysis === "losses" ? "Ainda não existe um período de perdas sincronizado para analisar." : "Ainda não existe um período de vendas sincronizado para analisar."} />
       ) : null}
       {hasData ? (
         <>
@@ -603,7 +629,7 @@ export default function AiAnalysisPage() {
             <label className="ai-store-field">
               <span>LOJA</span>
               <select
-                value={String(selectedRow.store_code).padStart(3, "0")}
+                value={selectedStore}
                 onChange={(event) => {
                   setSelectedStore(event.target.value);
                   setLossAnalysis(null);
@@ -611,7 +637,7 @@ export default function AiAnalysisPage() {
                   setConversations({ losses: [], sales: [] });
                 }}
               >
-                {rows.map((row) => (
+                {storeOptions.map((row) => (
                   <option
                     key={row.store_code}
                     value={String(row.store_code).padStart(3, "0")}
@@ -636,29 +662,29 @@ export default function AiAnalysisPage() {
             <div className="ai-mode-block">
               <span>MODO</span>
               <div className="ai-mode-switch" role="tablist" aria-label="Tipo de análise">
-                <button
+                {allowsSales ? <button
                   type="button"
                   className={activeAnalysis === "sales" ? "active sales" : ""}
                   aria-selected={activeAnalysis === "sales"}
                   onClick={() => setActiveAnalysis("sales")}
                 >
                   <TrendingUp size={14} /> Vendas
-                </button>
-                <button
+                </button> : null}
+                {allowsLosses ? <button
                   type="button"
                   className={activeAnalysis === "losses" ? "active losses" : ""}
                   aria-selected={activeAnalysis === "losses"}
                   onClick={() => setActiveAnalysis("losses")}
                 >
                   <TrendingDown size={14} /> Perdas
-                </button>
+                </button> : null}
               </div>
             </div>
             <button
               type="button"
               className={`ai-run-button ${activeAnalysis}`}
               onClick={() => analyze(activeAnalysis)}
-              disabled={activeLoading || (activeAnalysis === "sales" && (!salesContext || salesRequest.loading))}
+              disabled={activeLoading || !activeContext}
             >
               {activeLoading ? <LoaderCircle className="spin" size={16} /> : <Sparkles size={16} />}
               {activeLoading ? "Analisando..." : "Atualizar análise"}
@@ -739,7 +765,7 @@ export default function AiAnalysisPage() {
               <span className="ai-ready-icon"><Sparkles size={18} /></span>
               <div>
                 <strong>{activeAnalysis === "losses" ? "Análise de perdas pronta para iniciar" : "Análise de vendas pronta para iniciar"}</strong>
-                <p>Loja {String(selectedRow.store_code).padStart(3, "0")} selecionada. Confira os indicadores acima e clique em <b>Atualizar análise</b>.</p>
+                <p>Loja {displayContext?.loja?.codigo || selectedStore} selecionada. Confira os indicadores acima e clique em <b>Atualizar análise</b>.</p>
               </div>
             </section>
           ) : null}

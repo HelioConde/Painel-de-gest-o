@@ -139,3 +139,51 @@ export function errorCode(error: unknown) {
     ? code
     : 'GEMINI_UNAVAILABLE'
 }
+
+type AnalysisType = 'sales' | 'losses'
+type AiAuthorization =
+  | { allowed: true; userId: string; role: string }
+  | { allowed: false; status: number; body: Record<string, unknown> }
+
+export async function authorizeAiRequest(request: Request, analysisType: AnalysisType): Promise<AiAuthorization> {
+  const authorization = request.headers.get('authorization') || ''
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')
+  const publishableKey = Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
+
+  if (!authorization.startsWith('Bearer ') || !supabaseUrl || !publishableKey) {
+    return { allowed: false, status: 401, body: { success: false, error: 'UNAUTHORIZED', message: 'Autenticação necessária.' } }
+  }
+
+  const client = createClient(supabaseUrl, publishableKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: authorization } },
+  })
+  const { data: userData, error: userError } = await client.auth.getUser()
+  if (userError || !userData.user) {
+    return { allowed: false, status: 401, body: { success: false, error: 'UNAUTHORIZED', message: 'Autenticação necessária.' } }
+  }
+
+  const { data: profile, error: profileError } = await client
+    .from('profiles')
+    .select('role,active')
+    .eq('user_id', userData.user.id)
+    .maybeSingle()
+
+  const role = profile?.role
+  const allowed = Boolean(
+    !profileError &&
+    profile?.active &&
+    (role === 'admin' || (role === 'gerencia' && analysisType === 'sales') || (role === 'prevencao' && analysisType === 'losses')),
+  )
+
+  if (!allowed) {
+    return {
+      allowed: false,
+      status: 403,
+      body: { success: false, error: 'FORBIDDEN', message: 'Seu perfil não possui acesso a esta análise.' },
+    }
+  }
+
+  return { allowed: true, userId: userData.user.id, role }
+}
+import { createClient } from 'npm:@supabase/supabase-js@2'

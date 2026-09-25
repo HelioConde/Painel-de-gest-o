@@ -1,22 +1,31 @@
-import { BarChart3, Bot, CalendarDays, ChevronLeft, FileText, Menu, TrendingDown, TrendingUp, X } from 'lucide-react'
+import { BarChart3, Bot, CalendarDays, ChevronLeft, FileText, LogOut, Menu, TrendingDown, TrendingUp, UserRound, X } from 'lucide-react'
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import primorLogoWide from '../assets/primor-logo-wide.png'
 import primorLogoSquare from '../assets/primor-logo-square.png'
+import { useAuth } from '../auth/AuthProvider'
 
 const NAV = [
-  { to: '/eventos', label: 'Eventos', initial: 'E', tone: 'events', icon: CalendarDays },
-  { to: '/diaria', label: 'Venda Diária', initial: 'D', tone: 'daily', icon: TrendingUp },
-  { to: '/mensal', label: 'Venda Mensal', initial: 'M', tone: 'monthly', icon: BarChart3 },
-  { to: '/perdas', label: 'Perdas', initial: 'P', tone: 'losses', icon: TrendingDown },
-  { to: '/analise-ia', label: 'Análise com IA', initial: 'IA', tone: 'ai', icon: Bot, isNew: true },
-  { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText, isNew: true },
+  { to: '/eventos', label: 'Eventos', initial: 'E', tone: 'events', icon: CalendarDays, permission: 'eventos' },
+  { to: '/diaria', label: 'Venda Diária', initial: 'D', tone: 'daily', icon: TrendingUp, permission: 'vendaDiaria' },
+  { to: '/mensal', label: 'Venda Mensal', initial: 'M', tone: 'monthly', icon: BarChart3, permission: 'vendaMensal' },
+  { to: '/perdas', label: 'Perdas', initial: 'P', tone: 'losses', icon: TrendingDown, permission: 'perdas' },
+  { to: '/analise-ia', label: 'Análise com IA', initial: 'IA', tone: 'ai', icon: Bot, isNew: true, permission: 'aiAccess' },
+  { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText, isNew: true, permission: 'cartazes' },
 ]
 
 
 export default function AppShell({ children }) {
   const [open, setOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const navigate = useNavigate()
+  const { profile, hasPermission, signOut } = useAuth()
+  const visibleNavigation = NAV.filter((item) => hasPermission(item.permission))
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className={`app-shell ${collapsed ? 'sidebar-is-collapsed' : ''}`}>
@@ -49,7 +58,7 @@ export default function AppShell({ children }) {
         </div>
 
         <nav className="nav-list" aria-label="Navegação principal">
-          {NAV.map(({ to, label, initial, tone, icon: Icon, isNew = false }) => (
+          {visibleNavigation.map(({ to, label, initial, tone, icon: Icon, isNew = false }) => (
             <NavLink
               key={to}
               to={to}
@@ -66,6 +75,11 @@ export default function AppShell({ children }) {
           ))}
         </nav>
 
+        <div className="sidebar-user-panel">
+          <UserRound size={16} aria-hidden="true" />
+          <span>{profile?.display_name || 'Usuário'}</span>
+          <button type="button" onClick={handleSignOut} aria-label="Sair do painel" title="Sair"><LogOut size={15} /></button>
+        </div>
         <div className="sidebar-footer">
           <span className="status-dot" />
           <span className="sidebar-status-text">Desenvolvido por Hélio Conde</span>

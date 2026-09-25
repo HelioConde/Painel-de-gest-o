@@ -5090,6 +5090,51 @@ input:focus-visible {
   justify-content: center;
 }
 
+/* Autenticação e perfil ativo ------------------------------------------------ */
+.auth-loading-screen,
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #edf3fb;
+  color: #183153;
+  font-weight: 800;
+}
+.login-page { background: linear-gradient(145deg, #eaf1fb 0%, #f6f9fd 58%, #e6f6ee 100%); }
+.login-card {
+  width: min(100%, 408px);
+  padding: 34px;
+  border: 1px solid #dfe7f0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(19, 42, 74, .12);
+}
+.login-logo { display: block; width: 148px; height: auto; margin: 0 auto 25px; }
+.login-heading { text-align: center; margin-bottom: 26px; }
+.login-heading h1 { margin: 0; color: #102b50; font-size: 25px; letter-spacing: 0; }
+.login-heading p { margin: 7px 0 0; color: #71809a; font-size: 13px; }
+.login-card form { display: grid; gap: 17px; }
+.login-card label > span { display: block; margin: 0 0 7px; color: #53657f; font-size: 10px; font-weight: 900; letter-spacing: .08em; }
+.login-input { height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid #d8e2ee; border-radius: 8px; color: #6b7d96; background: #fbfdff; }
+.login-input:focus-within { border-color: #258b61; box-shadow: 0 0 0 3px rgba(37,139,97,.12); }
+.login-input input { min-width: 0; flex: 1; border: 0; outline: 0; color: #1d3454; background: transparent; font: inherit; }
+.login-password-toggle { width: 28px; height: 28px; display: grid; place-items: center; padding: 0; border: 0; color: #60728d; background: transparent; cursor: pointer; }
+.login-error { margin: -3px 0 0; color: #c53243; font-size: 12px; line-height: 1.4; }
+.login-submit { min-height: 44px; border: 0; border-radius: 8px; color: #fff; background: #087b47; font-size: 13px; font-weight: 850; cursor: pointer; box-shadow: 0 7px 15px rgba(8,123,71,.2); }
+.login-submit:hover:not(:disabled) { background: #056b3d; }
+.login-submit:disabled { opacity: .7; cursor: wait; }
+.sidebar-user-panel { display: flex; align-items: center; gap: 8px; margin-top: auto; padding: 10px 12px; color: #d7e6fb; border-top: 1px solid rgba(255,255,255,.1); font-size: 11px; font-weight: 750; }
+.sidebar-user-panel span { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-user-panel button { width: 29px; height: 29px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(255,255,255,.18); border-radius: 7px; color: #e7f0ff; background: rgba(255,255,255,.07); cursor: pointer; }
+.sidebar-user-panel button:hover { background: rgba(255,255,255,.16); }
+.sidebar.sidebar-collapsed .sidebar-user-panel { justify-content: center; padding-inline: 6px; }
+.sidebar.sidebar-collapsed .sidebar-user-panel span { display: none; }
+@media (max-width: 820px) {
+  .login-page { padding: 20px; }
+  .login-card { padding: 28px 20px; }
+}
+
 /* Venda diária e mensal: Top 5 e rankings de uma série ficam realmente
    com uma única barra, mantendo o comparativo apenas onde existe. */
 .page-daily .sales-charts .simple-bar-tracks,
