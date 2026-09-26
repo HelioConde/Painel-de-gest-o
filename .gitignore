@@ -31,6 +31,7 @@ backend/data/diagnostics/
 backend/data/logs/
 backend/data/loss_runs/
 backend/data/runs/
+backend/tmp/
 backend/tmp_debug_executor/
 backend/Releases/
 backend/**/*.html

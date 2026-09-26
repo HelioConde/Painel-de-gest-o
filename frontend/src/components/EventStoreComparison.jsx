@@ -208,7 +208,10 @@ export default function EventStoreComparison({
                       <span className="event-store-sequence">
                         {row.sequence}
                       </span>
-                      <span className="event-store-copy">
+                      <span
+                        className="event-store-copy"
+                        data-mobile={row.storeName.replace(/^SUPERMERCADO\s+/i, "")}
+                      >
                         <strong>{row.storeName}</strong>
                       </span>
                     </td>

@@ -546,6 +546,8 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument('--plan', action='store_true')
     parser.add_argument('--today', type=parse_iso_date)
     parser.add_argument('--daily-auto', action='store_true')
+    parser.add_argument('--daily-sync', action='store_true', help='Sincroniza Vendas e Perdas do período mensal até ontem.')
+    parser.add_argument('--check-daily-sync', action='store_true', help='Confere Vendas e Perdas do período diário sem coletar.')
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--only-job', choices=('daily', 'monthly', 'event', 'monthly_close'))
     parser.add_argument('--losses-auto', action='store_true')
@@ -583,6 +585,14 @@ def run(argv: list[str] | None = None) -> int:
         return inspect_sales_report()
     if args.plan:
         return plan_daily(args.today)
+    if args.daily_sync:
+        from src.automation.daily_sync import run_daily_sync_command
+
+        return run_daily_sync_command(args.today)
+    if args.check_daily_sync:
+        from src.automation.daily_sync import check_daily_sync_command
+
+        return check_daily_sync_command(args.today)
     if args.daily_auto:
         return run_daily_auto(args.today, args.dry_run, args.only_job, sync=args.sync)
     if args.build_sales_payload:

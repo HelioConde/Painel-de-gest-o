@@ -48,7 +48,9 @@ def same_month_previous_year(period: ReportPeriod) -> ReportPeriod:
 
 def running_month_periods(reference_date: date) -> tuple[ReportPeriod, ReportPeriod]:
     yesterday = reference_date - timedelta(days=1)
-    current = ReportPeriod(month_start(reference_date), yesterday)
+    # At 00:00 on the first day, "ontem" belongs to the preceding month.
+    # The period must never start after its own end date.
+    current = ReportPeriod(month_start(yesterday), yesterday)
     return current, same_month_previous_year(current)
 
 
