@@ -3,7 +3,7 @@ import LossProductTable from './LossProductTable'
 import { SectorIcon } from './dashboard/DashboardPrimitives'
 import { money } from '../utils/formatters'
 
-export default function LossRankingCard({ id, title, subtitle = null, contextLabel = null, products, productCount = products.length, totalValue = null, ranking = 'value', onTitleClick = null, showValue = false }) {
+export default function LossRankingCard({ id, title, subtitle = null, contextLabel = null, printCenterLabel = 'TOP PERDAS', products, productCount = products.length, totalValue = null, ranking = 'value', onTitleClick = null, showValue = false }) {
   return (
     <article className={`loss-top-card loss-ranking-card ${subtitle ? 'has-subtitle' : ''}`} id={id}>
       <header>
@@ -16,7 +16,7 @@ export default function LossRankingCard({ id, title, subtitle = null, contextLab
           ) : <span className="loss-ranking-title"><SectorIcon name={title} size={17} />{title}{contextLabel ? <span className="loss-ranking-context"> - {contextLabel}</span> : null}</span>}
           {subtitle ? <span className="loss-ranking-subtitle">{subtitle}</span> : null}
         </div>
-        <span className="loss-ranking-print-center" aria-hidden="true">TOP PERDAS</span>
+        <span className="loss-ranking-print-center" aria-hidden="true">{printCenterLabel}</span>
         <div className="loss-ranking-card-stats" title="Resumo das perdas válidas do setor">
           <span>{productCount} {productCount === 1 ? 'produto' : 'produtos'}</span>
           {totalValue !== null ? <strong>{money(totalValue)}</strong> : null}

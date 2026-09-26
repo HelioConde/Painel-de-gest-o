@@ -1523,3 +1523,16 @@
     margin-left: .6mm !important;
   }
 }
+
+
+/* PRINT V3.8 — setor à esquerda e TOP PERDAS + loja no centro */
+@media print {
+  .losses-page .loss-top-card .loss-ranking-context {
+    display: none !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-print-center {
+    font-size: 7pt !important;
+    letter-spacing: .02em !important;
+  }
+}

@@ -64,6 +64,7 @@ export default function LossTop10BySector({ row, onSelectSector }) {
               id={`loss-sector-${normalize(sector.name).replace(/[^a-z0-9]+/g, '-')}`}
               title={sector.name}
               contextLabel={`Loja ${storeSequence} - ${storeCode}`}
+              printCenterLabel={`TOP PERDAS • Loja ${storeSequence} - ${storeCode}`}
               products={sector.products}
               productCount={sector.productCount}
               totalValue={sector.totalValue}
