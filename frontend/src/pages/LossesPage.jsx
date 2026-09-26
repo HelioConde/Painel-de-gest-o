@@ -7,10 +7,11 @@ import LossStoreCarousel from "../components/LossStoreCarousel";
 import LossTop10BySector from "../components/LossTop10BySector";
 import LossMetricCards from "../components/LossMetricCards";
 import CompactReportHeader from "../components/CompactReportHeader";
+import PrintReportHeader from "../components/PrintReportHeader";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
 import { getLatestLossRun } from "../services/losses";
-import { LOSS_STORE_ORDER } from "../utils/losses";
+import { LOSS_STORE_ORDER, LOSS_STORE_SEQUENCE } from "../utils/losses";
 import { groupLossProductsByStore } from "../utils/lossProducts";
 import { buildSectorSummary } from "../utils/lossDashboard";
 
@@ -50,6 +51,12 @@ export default function LossesPage() {
       ) || rows[0]
     );
   }, [rows, selectedStore]);
+
+  const selectedStoreCode = selectedRow
+    ? String(selectedRow.store_code).padStart(3, "0")
+    : "";
+  const selectedStoreSequence =
+    LOSS_STORE_SEQUENCE[selectedStoreCode] || selectedStoreCode;
 
   const lossSectorSummary = useMemo(
     () => (selectedRow ? buildSectorSummary(selectedRow) : { sectors: [] }),
@@ -170,6 +177,12 @@ export default function LossesPage() {
           >
             {view === "perdas" ? (
               <>
+                <PrintReportHeader
+                  title="Perdas"
+                  snapshot={selectedRow}
+                  storeLabel={`Loja ${selectedStoreSequence} - ${selectedStoreCode}`}
+                  storeDetail={selectedRow.store_name}
+                />
                 <LossMetricCards
                   totals={{
                     current_total_value: selectedRow.current_total_value,
@@ -184,7 +197,7 @@ export default function LossesPage() {
                   sectorsAboveTarget={sectorsAboveTarget}
                   sectorCount={lossSectorSummary.sectors.length}
                 />
-                <LossSectorSummary row={selectedRow} />
+                <LossSectorSummary row={selectedRow} showPrintHeader={false} />
               </>
             ) : null}
             {view === "top" && !selectedSector ? (

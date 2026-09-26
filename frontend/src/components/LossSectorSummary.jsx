@@ -27,7 +27,7 @@ function targetLabel(value) {
   return `${Number(value || 0).toLocaleString("pt-BR")}%`;
 }
 
-export default function LossSectorSummary({ row }) {
+export default function LossSectorSummary({ row, showPrintHeader = true }) {
   const { sectors } = buildSectorSummary(row);
   const currentYear = yearOf(row.current_start);
   const previousYear = yearOf(row.previous_start);
@@ -53,12 +53,14 @@ export default function LossSectorSummary({ row }) {
 
   return (
     <section className="loss-summary-panel compact-loss-panel">
-      <PrintReportHeader
-        title="Perdas"
-        snapshot={row}
-        storeLabel={`Loja ${storeSequence} - ${storeCode}`}
-        storeDetail={row.store_name}
-      />
+      {showPrintHeader ? (
+        <PrintReportHeader
+          title="Perdas"
+          snapshot={row}
+          storeLabel={`Loja ${storeSequence} - ${storeCode}`}
+          storeDetail={row.store_name}
+        />
+      ) : null}
       <div className="section-heading loss-summary-heading compact-section-heading">
         <div>
           <div className="section-kicker">

@@ -178,3 +178,592 @@
   .loss-grouped-table th:nth-child(2), .loss-grouped-table td:nth-child(2) { width: 10% !important; }
   .loss-grouped-table th:nth-child(3), .loss-grouped-table td:nth-child(3) { width: 32% !important; white-space: normal !important; }
 }
+
+
+@page events { size: A4 landscape; margin: 8mm; }
+@page ai-report { size: A4 landscape; margin: 8mm; }
+
+/* =========================================================
+   PRINT V3 — relatórios padronizados
+   Eventos, Venda Diária, Venda Mensal, Perdas, Top Perdas e IA
+   ========================================================= */
+@media print {
+  .page-events { page: events; }
+  .ai-analysis-page { page: ai-report; }
+
+  /* O cabeçalho de impressão substitui o cabeçalho interativo. */
+  .compact-report-header,
+  .ai-compact-header,
+  .ai-context-card,
+  .ai-ready-card,
+  .ai-loading-card,
+  .ai-error,
+  .ai-chat-panel,
+  .loss-header-toolbar,
+  .loss-subview-toolbar,
+  .loss-global-search {
+    display: none !important;
+  }
+
+  .print-report-header {
+    grid-template-columns: 34mm minmax(0, 1fr) 34mm !important;
+    min-height: 18mm !important;
+    padding-bottom: 2.6mm !important;
+    margin-bottom: 3mm !important;
+  }
+
+  .print-report-logo img { width: 31mm !important; }
+  .print-report-title { font-size: 14pt !important; }
+  .print-report-store { font-size: 9pt !important; }
+  .print-report-store-detail { font-size: 7.6pt !important; }
+  .print-report-period { font-size: 7.7pt !important; }
+  .print-report-comparison { font-size: 7pt !important; }
+
+  /* KPIs iguais em todos os relatórios. */
+  .kpi-grid {
+    display: grid !important;
+    gap: 2.2mm !important;
+    margin: 0 0 3mm !important;
+  }
+
+  .sales-kpi-grid,
+  .loss-kpi-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+
+  .event-kpi-grid,
+  .ai-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .kpi-card {
+    min-height: 17mm !important;
+    padding: 2.2mm 2.5mm !important;
+    border: .28mm solid #d9e1eb !important;
+    border-radius: 1.6mm !important;
+    background: #fff !important;
+    break-inside: avoid !important;
+  }
+
+  .kpi-card-top {
+    margin-bottom: 1mm !important;
+  }
+
+  .kpi-card-top > span {
+    color: #617086 !important;
+    font-size: 6.5pt !important;
+    font-weight: 900 !important;
+    letter-spacing: .025em !important;
+    text-transform: uppercase !important;
+  }
+
+  .kpi-card-top > i {
+    display: none !important;
+  }
+
+  .kpi-card > strong {
+    color: #162b49 !important;
+    font-size: 10.6pt !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  .kpi-card > small {
+    min-height: 0 !important;
+    margin-top: .8mm !important;
+    font-size: 6.5pt !important;
+  }
+
+  .status-badge {
+    padding: .6mm 1.2mm !important;
+    gap: .7mm !important;
+    font-size: 6.2pt !important;
+    line-height: 1 !important;
+  }
+
+  .status-badge svg { width: 7pt !important; height: 7pt !important; }
+
+  /* Tabelas de vendas: impressão limpa, sem aparência de botão. */
+  .page-daily .hierarchy-panel,
+  .page-monthly .hierarchy-panel {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .page-daily .hierarchy-row,
+  .page-monthly .hierarchy-row {
+    width: 100% !important;
+    appearance: none !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    cursor: default !important;
+  }
+
+  .page-daily .hierarchy-name > svg,
+  .page-monthly .hierarchy-name > svg {
+    display: none !important;
+  }
+
+  .page-daily .sector-icon,
+  .page-monthly .sector-icon {
+    width: 6mm !important;
+    height: 6mm !important;
+    border-radius: 1.4mm !important;
+  }
+
+  .page-daily .sector-icon svg,
+  .page-monthly .sector-icon svg {
+    width: 9pt !important;
+    height: 9pt !important;
+  }
+
+  /* Gráficos: mesma linguagem em Vendas, Perdas e IA. */
+  .dashboard-chart-grid,
+  .sales-charts,
+  .loss-chart-grid,
+  .ai-intelligence-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 4mm !important;
+    margin: 0 !important;
+  }
+
+  .page-daily .sales-charts,
+  .page-monthly .sales-charts,
+  .losses-page .loss-chart-grid {
+    break-before: page !important;
+  }
+
+  .chart-card,
+  .section-card {
+    min-height: 0 !important;
+    padding: 3mm !important;
+    border: .3mm solid var(--print-border-color) !important;
+    border-radius: 1.6mm !important;
+    background: #fff !important;
+    break-inside: avoid !important;
+  }
+
+  .section-card-header {
+    margin-bottom: 2.4mm !important;
+    padding-bottom: 1.8mm !important;
+    border-bottom: .25mm solid #e5ebf2 !important;
+  }
+
+  .section-card-header span {
+    color: #718096 !important;
+    font-size: 6.2pt !important;
+    letter-spacing: .07em !important;
+  }
+
+  .section-card-header h2 {
+    margin-top: .6mm !important;
+    color: #172d4b !important;
+    font-size: 9.4pt !important;
+  }
+
+  .simple-bar-chart {
+    gap: 2.1mm !important;
+  }
+
+  .simple-bar-row {
+    grid-template-columns: minmax(31mm, .95fr) minmax(28mm, 1.45fr) 25mm !important;
+    gap: 2mm !important;
+    min-height: 5.8mm !important;
+    font-size: 7pt !important;
+  }
+
+  .simple-bar-label {
+    gap: 1.4mm !important;
+    font-size: 7pt !important;
+  }
+
+  .simple-bar-label .sector-icon {
+    width: 5.4mm !important;
+    height: 5.4mm !important;
+    border-radius: 1.2mm !important;
+  }
+
+  .simple-bar-label .sector-icon svg {
+    width: 8pt !important;
+    height: 8pt !important;
+  }
+
+  .simple-bar-tracks {
+    gap: .8mm !important;
+  }
+
+  .simple-bar-tracks i {
+    height: 1.9mm !important;
+    border-radius: 999px !important;
+  }
+
+  .simple-bar-row strong {
+    font-size: 7pt !important;
+    text-align: right !important;
+  }
+
+  /* EVENTOS — cabe em uma única folha paisagem na maior parte dos casos. */
+  .page-events .event-store-panel {
+    width: 100% !important;
+  }
+
+  .page-events .performance-section {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, .88fr) !important;
+    align-items: start !important;
+    gap: 4mm !important;
+    margin: 0 !important;
+  }
+
+  .page-events .event-performance-card,
+  .page-events .event-chart-card {
+    min-height: 0 !important;
+    border: .3mm solid var(--print-border-color) !important;
+    border-radius: 1.6mm !important;
+    background: #fff !important;
+    break-inside: avoid !important;
+  }
+
+  .page-events .event-performance-heading {
+    padding: 2.4mm 2.8mm !important;
+    border-bottom: .25mm solid #e5ebf2 !important;
+  }
+
+  .page-events .event-performance-heading svg,
+  .page-events .event-performance-heading p {
+    display: none !important;
+  }
+
+  .page-events .event-performance-heading h2 {
+    margin: 0 !important;
+    font-size: 9.2pt !important;
+  }
+
+  .page-events .event-store-table {
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .page-events .event-store-table th,
+  .page-events .event-store-table td {
+    padding: 2mm 2.2mm !important;
+    font-size: 7.7pt !important;
+  }
+
+  .page-events .event-store-table th {
+    font-size: 6.8pt !important;
+  }
+
+  .page-events .event-store-table th:first-child,
+  .page-events .event-store-table td:first-child {
+    width: 38% !important;
+  }
+
+  .page-events .event-store-sequence {
+    width: 6.5mm !important;
+    height: 6.5mm !important;
+    margin-right: 1.5mm !important;
+    font-size: 6.5pt !important;
+  }
+
+  .page-events .event-store-name-desktop {
+    font-size: 7.4pt !important;
+  }
+
+  .page-events .event-chart-card {
+    padding: 3mm !important;
+  }
+
+  .page-events .event-vertical-chart {
+    height: 61mm !important;
+  }
+
+  .page-events .event-chart-legend {
+    margin-bottom: 1.6mm !important;
+    font-size: 6.6pt !important;
+  }
+
+  .page-events .event-bars {
+    gap: 1.8mm !important;
+    padding-top: 2mm !important;
+  }
+
+  .page-events .event-bars strong {
+    font-size: 6.7pt !important;
+  }
+
+  .page-events .event-chart-insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1.6mm !important;
+    margin-top: 2mm !important;
+  }
+
+  .page-events .event-chart-insights article {
+    padding: 1.6mm 1.8mm !important;
+    border-radius: 1.2mm !important;
+  }
+
+  .page-events .event-chart-insights article small {
+    font-size: 5.6pt !important;
+  }
+
+  .page-events .event-chart-insights article strong {
+    font-size: 7.2pt !important;
+  }
+
+  /* PERDAS — tabela principal em paisagem + gráficos em página própria. */
+  .losses-page .loss-kpi-grid {
+    margin-bottom: 3mm !important;
+  }
+
+  .losses-page .compact-loss-panel {
+    border-radius: 1.5mm !important;
+  }
+
+  .losses-page .compact-loss-table th:first-child,
+  .losses-page .compact-loss-table td:first-child {
+    width: 16% !important;
+  }
+
+  .losses-page .compact-loss-table th,
+  .losses-page .compact-loss-table td {
+    padding: 1.45mm 1.7mm !important;
+    font-size: 7.25pt !important;
+  }
+
+  .losses-page .compact-loss-table thead tr.loss-summary-years th {
+    padding: 1.7mm 1.6mm !important;
+    font-size: 7.6pt !important;
+  }
+
+  .losses-page .compact-loss-table thead tr:nth-child(2) th {
+    font-size: 6.6pt !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon {
+    width: 5mm !important;
+    height: 5mm !important;
+    margin-right: 1mm !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon svg {
+    width: 7.5pt !important;
+    height: 7.5pt !important;
+  }
+
+  /* TOP PERDAS — duas colunas, mais neutro e só anomalias recebem destaque. */
+  .loss-top-masonry {
+    column-gap: 4mm !important;
+  }
+
+  .loss-top-card {
+    margin-bottom: 2.2mm !important;
+  }
+
+  .loss-top-card > header {
+    min-height: 6.2mm !important;
+    padding: 1.35mm 1.8mm !important;
+  }
+
+  .loss-top-sector-button {
+    appearance: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: inherit !important;
+  }
+
+  .loss-top-sector-button > svg:last-child {
+    display: none !important;
+  }
+
+  .loss-top-card .sector-icon {
+    width: 4.8mm !important;
+    height: 4.8mm !important;
+  }
+
+  .loss-top-table th,
+  .loss-top-table td {
+    padding: .8mm 1.05mm !important;
+    font-size: 6.25pt !important;
+  }
+
+  .loss-top-table thead th {
+    font-size: 5.85pt !important;
+  }
+
+  .loss-top-table tbody tr:nth-child(even) td {
+    background: #f8fafc !important;
+  }
+
+  .loss-top-table tbody tr.loss-row-warning td {
+    background: #fff8e8 !important;
+  }
+
+  .loss-top-table tbody tr.loss-row-critical td {
+    background: #fff0f0 !important;
+  }
+
+  .loss-top-table tbody tr.loss-row-no-sales td {
+    background: #f5efff !important;
+  }
+
+  .loss-comparison {
+    white-space: nowrap !important;
+    font-size: 5.9pt !important;
+  }
+
+  /* IA — relatório gerencial, não a interface de chat. */
+  .ai-analysis-page .print-report-header {
+    margin-bottom: 3mm !important;
+  }
+
+  .ai-analysis-page .ai-results {
+    display: block !important;
+  }
+
+  .ai-analysis-page .ai-summary-card {
+    margin: 0 0 3mm !important;
+    padding: 3mm !important;
+    border: .3mm solid #dfe8ee !important;
+    border-left: 1.2mm solid #0f766e !important;
+    border-radius: 1.5mm !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
+  }
+
+  .ai-analysis-page .ai-summary-sales {
+    border-left-color: #0369a1 !important;
+  }
+
+  .ai-analysis-page .ai-section-title {
+    gap: 1.6mm !important;
+  }
+
+  .ai-analysis-page .ai-section-title > svg {
+    width: 10pt !important;
+    height: 10pt !important;
+  }
+
+  .ai-analysis-page .ai-section-title span {
+    font-size: 5.8pt !important;
+  }
+
+  .ai-analysis-page .ai-section-title h2 {
+    margin-top: .5mm !important;
+    font-size: 9pt !important;
+  }
+
+  .ai-analysis-page .ai-summary-card > p {
+    margin: 1.4mm 0 !important;
+    font-size: 7.2pt !important;
+    line-height: 1.35 !important;
+  }
+
+  .ai-analysis-page .ai-indicators {
+    gap: 1.4mm !important;
+  }
+
+  .ai-analysis-page .ai-indicators span {
+    padding: .8mm 1.4mm !important;
+    font-size: 6pt !important;
+  }
+
+  .ai-analysis-page .ai-intelligence-grid {
+    margin-bottom: 4mm !important;
+  }
+
+  .ai-analysis-page .ai-alert-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 2.2mm !important;
+    margin-top: 2mm !important;
+  }
+
+  .ai-analysis-page .ai-alert {
+    min-height: 0 !important;
+    padding: 2.4mm !important;
+    gap: 1.8mm !important;
+    border: .28mm solid #e0e6ed !important;
+    border-radius: 1.4mm !important;
+    break-inside: avoid !important;
+  }
+
+  .ai-analysis-page .ai-alert > svg {
+    width: 10pt !important;
+    height: 10pt !important;
+  }
+
+  .ai-analysis-page .ai-alert small {
+    font-size: 5.6pt !important;
+  }
+
+  .ai-analysis-page .ai-alert strong {
+    font-size: 7.4pt !important;
+  }
+
+  .ai-analysis-page .ai-alert p,
+  .ai-analysis-page .ai-alert span {
+    font-size: 6.4pt !important;
+    line-height: 1.3 !important;
+  }
+
+  .ai-analysis-page .ai-two-column {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 3mm !important;
+    margin-top: 3mm !important;
+  }
+
+  .ai-analysis-page .ai-panel {
+    padding: 3mm !important;
+    border: .3mm solid #dfe8ee !important;
+    border-radius: 1.5mm !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
+  }
+
+  .ai-analysis-page .ai-priority-row,
+  .ai-analysis-page .ai-product-row,
+  .ai-analysis-page .ai-action-row {
+    gap: 1.8mm !important;
+    padding: 1.8mm 0 !important;
+    break-inside: avoid !important;
+  }
+
+  .ai-analysis-page .ai-priority-row > b,
+  .ai-analysis-page .ai-action-row > b {
+    flex-basis: 5.5mm !important;
+    width: 5.5mm !important;
+    height: 5.5mm !important;
+    font-size: 6pt !important;
+  }
+
+  .ai-analysis-page .ai-priority-row strong,
+  .ai-analysis-page .ai-product-row strong,
+  .ai-analysis-page .ai-action-row strong {
+    font-size: 7pt !important;
+  }
+
+  .ai-analysis-page .ai-priority-row p,
+  .ai-analysis-page .ai-product-row p,
+  .ai-analysis-page .ai-action-row p,
+  .ai-analysis-page .ai-investigate-list li {
+    font-size: 6.3pt !important;
+    line-height: 1.28 !important;
+  }
+
+  .ai-analysis-page .ai-priority-row span,
+  .ai-analysis-page .ai-product-row span,
+  .ai-analysis-page .ai-action-row span {
+    font-size: 5.8pt !important;
+  }
+
+  .ai-analysis-page .ai-results > section,
+  .ai-analysis-page .ai-alert-grid,
+  .ai-analysis-page .ai-two-column {
+    break-inside: auto !important;
+  }
+}

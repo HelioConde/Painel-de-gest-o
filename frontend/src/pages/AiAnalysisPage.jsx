@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DataStatusBanner from "../components/DataStatusBanner";
+import PrintReportHeader from "../components/PrintReportHeader";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
 import { askAiQuestion, requestAiAnalysis } from "../services/aiAnalysis";
@@ -544,6 +545,16 @@ export default function AiAnalysisPage() {
   const activeLoading =
     activeAnalysis === "losses" ? loadingLosses : loadingSales;
   const displayContext = activeContext || (allowsLosses ? lossContext : salesContext);
+  const selectedStoreOption = storeOptions.find(
+    (row) => String(row.store_code).padStart(3, "0") === selectedStore,
+  );
+  const printStoreCode = String(selectedStore || "").padStart(3, "0");
+  const printStoreIndex = LOSS_STORE_ORDER.indexOf(printStoreCode);
+  const printStoreSequence = String(printStoreIndex >= 0 ? printStoreIndex + 1 : 1).padStart(2, "0");
+  const printStoreName =
+    displayContext?.loja?.nome ||
+    selectedStoreOption?.store_name ||
+    `SUPERMERCADO PRIMOR ${printStoreSequence} ${printStoreCode}`;
 
   function refreshAll() {
     lossRequest.refresh();
@@ -624,6 +635,19 @@ export default function AiAnalysisPage() {
       ) : null}
       {hasData ? (
         <>
+          <PrintReportHeader
+            title={`Análise com IA — ${activeAnalysis === "losses" ? "Perdas" : "Vendas"}`}
+            storeLabel={`Loja ${printStoreSequence} - ${printStoreCode}`}
+            storeDetail={printStoreName}
+            period={periodLabel(
+              displayContext?.periodoAtual?.inicio,
+              displayContext?.periodoAtual?.fim,
+            )}
+            comparison={`Comparativo: ${periodLabel(
+              displayContext?.periodoComparativo?.inicio,
+              displayContext?.periodoComparativo?.fim,
+            )}`}
+          />
           <DataStatusBanner error={lossRequest.error || salesRequest.error} />
           <section className="ai-context-card ai-context-compact" aria-label="Contexto da análise">
             <label className="ai-store-field">
