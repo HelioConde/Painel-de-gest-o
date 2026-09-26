@@ -32,11 +32,17 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Gerar identificador da versao
+        run: |
+          mkdir -p public
+          printf '{"version":"%s"}\n' "$GITHUB_SHA" > public/version.json
+
       - name: Build
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_APP_VERSION: ${{ github.sha }}
 
       - name: Publicar no branch gh-pages
         uses: peaceiris/actions-gh-pages@v4
