@@ -11,9 +11,9 @@ export default function LossRankingCard({ id, title, subtitle = null, contextLab
           {onTitleClick ? (
             <button type="button" className="loss-top-sector-button" onClick={onTitleClick}>
               <SectorIcon name={title} size={17} />
-              <span>{title}</span>{contextLabel ? <span className="loss-ranking-context">· {contextLabel}</span> : null}<ChevronRight size={15} />
+              <span>{title}</span>{contextLabel ? <span className="loss-ranking-context"> - {contextLabel}</span> : null}<ChevronRight size={15} />
             </button>
-          ) : <span className="loss-ranking-title"><SectorIcon name={title} size={17} />{title}{contextLabel ? <span className="loss-ranking-context">· {contextLabel}</span> : null}</span>}
+          ) : <span className="loss-ranking-title"><SectorIcon name={title} size={17} />{title}{contextLabel ? <span className="loss-ranking-context"> - {contextLabel}</span> : null}</span>}
           {subtitle ? <span className="loss-ranking-subtitle">{subtitle}</span> : null}
         </div>
         <span className="loss-ranking-print-center" aria-hidden="true">TOP PERDAS</span>

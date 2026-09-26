@@ -1459,3 +1459,67 @@
     z-index: 2 !important;
   }
 }
+
+
+/* PRINT V3.7 — cabeçalho Top Perdas em 3 colunas sem sobreposição */
+@media print {
+  .losses-page .loss-top-card > header {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    align-items: center !important;
+    column-gap: 3mm !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-copy {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    min-width: 0 !important;
+    position: static !important;
+    z-index: auto !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-print-center {
+    grid-column: 2 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-size: 7.1pt !important;
+    font-weight: 950 !important;
+    letter-spacing: .045em !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-stats {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    position: static !important;
+    z-index: auto !important;
+  }
+
+  .losses-page .loss-top-card .loss-top-sector-button {
+    min-width: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-top-card .loss-top-sector-button > svg:last-child {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 8pt !important;
+    height: 8pt !important;
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-context {
+    margin-left: .6mm !important;
+  }
+}
