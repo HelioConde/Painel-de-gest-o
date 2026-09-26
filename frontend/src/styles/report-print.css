@@ -1,5 +1,7 @@
 @page { size: A4 portrait; margin: 8mm; }
+@page losses { size: A4 landscape; margin: 8mm; }
 @media print {
+  .losses-page { page: losses; }
   :root {
     --print-title-size: 15pt;
     --print-subtitle-size: 9.5pt;
