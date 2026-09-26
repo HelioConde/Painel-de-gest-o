@@ -1071,3 +1071,312 @@
     letter-spacing: .02em;
   }
 }
+
+
+/* PRINT V3.3 — Top Perdas igual ao layout de tela */
+@media print {
+  /* Somente o Top Perdas: abandona o mosaico em 2 colunas. */
+  .losses-page .loss-top-panel {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-header {
+    min-height: 12mm !important;
+    height: auto !important;
+    grid-template-columns: 24mm minmax(0, 1fr) 24mm !important;
+    gap: 2.5mm !important;
+    padding: 0 0 1.5mm !important;
+    margin: 0 0 2mm !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-logo img {
+    width: 21mm !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-title {
+    font-size: 10pt !important;
+    margin-bottom: .35mm !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-store {
+    font-size: 6.8pt !important;
+    margin: 0 !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-store-detail {
+    display: none !important;
+  }
+
+  .losses-page .loss-top-panel .print-report-period,
+  .losses-page .loss-top-panel .print-report-comparison {
+    display: inline !important;
+    margin: 0 .6mm 0 0 !important;
+    font-size: 5.8pt !important;
+  }
+
+  .losses-page .loss-top-panel .section-heading {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 3mm !important;
+    padding: 0 0 2mm !important;
+    margin: 0 0 2mm !important;
+    border-bottom: .25mm solid #dfe6ef !important;
+    break-after: avoid !important;
+  }
+
+  .losses-page .loss-top-panel .section-kicker {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1mm !important;
+    font-size: 5.8pt !important;
+  }
+
+  .losses-page .loss-top-panel .section-heading h2 {
+    margin: .5mm 0 0 !important;
+    font-size: 9.4pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .losses-page .loss-top-panel .loss-top-heading-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.5mm !important;
+  }
+
+  .losses-page .loss-top-panel .loss-top-sector-count {
+    display: inline-flex !important;
+    padding: 1mm 1.8mm !important;
+    font-size: 5.6pt !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-top-masonry {
+    display: block !important;
+    column-count: 1 !important;
+    column-gap: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .losses-page .loss-top-column {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .losses-page .loss-top-card {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 3.2mm !important;
+    border: .28mm solid #d7e0eb !important;
+    border-radius: 1.8mm !important;
+    background: #fff !important;
+    overflow: visible !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .losses-page .loss-top-card > header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    min-height: 7.4mm !important;
+    padding: 1.45mm 2mm !important;
+    background: #173f66 !important;
+    color: #fff !important;
+    border-radius: 1.5mm 1.5mm 0 0 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-copy,
+  .losses-page .loss-top-card .loss-ranking-title,
+  .losses-page .loss-top-card .loss-top-sector-button {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.2mm !important;
+    min-width: 0 !important;
+  }
+
+  .losses-page .loss-top-card .loss-top-sector-button {
+    appearance: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #fff !important;
+  }
+
+  .losses-page .loss-top-card .loss-top-sector-button > svg:last-child {
+    display: none !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-title,
+  .losses-page .loss-top-card .loss-top-sector-button span {
+    color: #fff !important;
+    font-size: 7.4pt !important;
+    font-weight: 900 !important;
+  }
+
+  .losses-page .loss-top-card .sector-icon {
+    width: 5.2mm !important;
+    height: 5.2mm !important;
+    border-radius: 1.1mm !important;
+    background: #fff !important;
+  }
+
+  .losses-page .loss-top-card .sector-icon svg {
+    width: 8pt !important;
+    height: 8pt !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-stats {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.2mm !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-stats span,
+  .losses-page .loss-top-card .loss-ranking-card-stats strong {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 4.4mm !important;
+    padding: .55mm 1.35mm !important;
+    border-radius: 999px !important;
+    font-size: 5.7pt !important;
+    line-height: 1 !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-stats span {
+    background: rgba(255,255,255,.14) !important;
+    color: #e8f2ff !important;
+  }
+
+  .losses-page .loss-top-card .loss-ranking-card-stats strong {
+    background: #fff !important;
+    color: #173f66 !important;
+  }
+
+  .losses-page .loss-top-table-wrap {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .losses-page .loss-top-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .losses-page .loss-top-table thead {
+    display: table-header-group !important;
+  }
+
+  .losses-page .loss-top-table tbody {
+    display: table-row-group !important;
+  }
+
+  .losses-page .loss-top-table tr {
+    display: table-row !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .losses-page .loss-top-table th,
+  .losses-page .loss-top-table td {
+    display: table-cell !important;
+    height: 5.4mm !important;
+    padding: .75mm 1mm !important;
+    font-size: 6.15pt !important;
+    line-height: 1.08 !important;
+    vertical-align: middle !important;
+    border-bottom: .18mm solid #e5ebf2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .losses-page .loss-top-table thead th {
+    height: 5mm !important;
+    background: #edf3f9 !important;
+    color: #50647f !important;
+    font-size: 5.5pt !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .01em !important;
+  }
+
+  .losses-page .loss-top-table .loss-top-product-name,
+  .losses-page .loss-top-table th:nth-child(3) {
+    text-align: left !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 6.2pt !important;
+  }
+
+  .losses-page .loss-top-product-scroll {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    line-height: 1.12 !important;
+  }
+
+  /* Larguras próximas da versão de tela para não cortar métricas. */
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-pos { width: 4.2% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-code { width: 7.8% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-name { width: 30% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-loss { width: 9.5% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-sold { width: 9.5% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-percent { width: 8.2% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-value { width: 10.5% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-share { width: 8.5% !important; }
+  .losses-page .loss-top-table.has-ranking-metrics col.loss-col-comparison { width: 11.8% !important; }
+
+  .losses-page .loss-top-table tbody tr:nth-child(even) td {
+    background: #fff !important;
+  }
+
+  .losses-page .loss-top-table tbody tr:nth-child(odd) td {
+    background: #fbfcfe !important;
+  }
+
+  .losses-page .loss-top-table tbody tr.loss-row-warning td {
+    background: #fff8e8 !important;
+  }
+
+  .losses-page .loss-top-table tbody tr.loss-row-critical td {
+    background: #fff0f0 !important;
+  }
+
+  .losses-page .loss-top-table tbody tr.loss-row-no-sales td {
+    background: #f5efff !important;
+  }
+
+  .losses-page .loss-top-rank,
+  .losses-page .loss-top-code {
+    text-align: center !important;
+  }
+
+  .losses-page .loss-top-quantity {
+    color: #c1121f !important;
+    font-weight: 900 !important;
+  }
+
+  .losses-page .loss-comparison {
+    font-size: 5.7pt !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+  }
+}
