@@ -767,3 +767,229 @@
     break-inside: auto !important;
   }
 }
+
+
+/* PRINT V3.1 — Perdas compactas em uma página */
+@media print {
+  /* Garante que o cabeçalho interativo nunca consuma espaço no papel. */
+  .losses-page .compact-report-header,
+  .losses-page .loss-compact-header,
+  .losses-page .loss-header-toolbar,
+  .losses-page .split-view-tabs,
+  .losses-page .loss-search-scope {
+    display: none !important;
+  }
+
+  /* Cabeçalho do relatório: logo + identificação em uma faixa curta. */
+  .losses-page .print-report-header {
+    grid-template-columns: 27mm minmax(0, 1fr) 27mm !important;
+    min-height: 13mm !important;
+    height: 13mm !important;
+    gap: 3mm !important;
+    padding: 0 0 1.6mm !important;
+    margin: 0 0 2mm !important;
+    border-bottom-width: .3mm !important;
+  }
+
+  .losses-page .print-report-logo img {
+    width: 24mm !important;
+  }
+
+  .losses-page .print-report-copy {
+    line-height: 1.08 !important;
+  }
+
+  .losses-page .print-report-title {
+    margin: 0 0 .45mm !important;
+    font-size: 10.8pt !important;
+  }
+
+  .losses-page .print-report-store {
+    margin: 0 !important;
+    font-size: 7.2pt !important;
+  }
+
+  .losses-page .print-report-store-detail {
+    display: none !important;
+  }
+
+  .losses-page .print-report-period,
+  .losses-page .print-report-comparison {
+    display: inline !important;
+    margin: 0 .8mm 0 0 !important;
+    font-size: 6.2pt !important;
+    line-height: 1.05 !important;
+  }
+
+  /* Em vez de cinco cards altos, transforma os KPIs em uma faixa horizontal. */
+  .losses-page .loss-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    margin: 0 0 2mm !important;
+    border: .28mm solid var(--print-border-color) !important;
+    border-radius: 1.4mm !important;
+    overflow: hidden !important;
+    break-inside: avoid !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card {
+    min-width: 0 !important;
+    min-height: 10.5mm !important;
+    height: 10.5mm !important;
+    padding: 1.15mm 1.7mm !important;
+    border: 0 !important;
+    border-right: .22mm solid #e1e7ef !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card:last-child {
+    border-right: 0 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top {
+    margin: 0 0 .6mm !important;
+    line-height: 1 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top > span {
+    font-size: 5.3pt !important;
+    line-height: 1 !important;
+    letter-spacing: .015em !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top > i {
+    display: none !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card > strong {
+    display: block !important;
+    font-size: 8.4pt !important;
+    line-height: 1.02 !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card > small {
+    display: block !important;
+    min-height: 0 !important;
+    height: 2.8mm !important;
+    margin: .55mm 0 0 !important;
+    overflow: hidden !important;
+    font-size: 5.2pt !important;
+    line-height: 1 !important;
+  }
+
+  .losses-page .loss-kpi-grid .status-badge {
+    padding: .35mm .8mm !important;
+    gap: .35mm !important;
+    font-size: 5pt !important;
+  }
+
+  .losses-page .loss-kpi-grid .status-badge svg {
+    width: 5.5pt !important;
+    height: 5.5pt !important;
+  }
+
+  /* A tabela é a informação principal: ganha praticamente toda a primeira folha. */
+  .losses-page .loss-summary-panel {
+    margin: 0 !important;
+    border: .28mm solid var(--print-border-color) !important;
+    border-radius: 1mm !important;
+    overflow: visible !important;
+  }
+
+  .losses-page .loss-summary-heading {
+    display: none !important;
+  }
+
+  .losses-page .compact-loss-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .losses-page .compact-loss-table thead {
+    display: table-header-group !important;
+  }
+
+  .losses-page .compact-loss-table tfoot {
+    display: table-footer-group !important;
+  }
+
+  .losses-page .compact-loss-table tr {
+    height: 4.7mm !important;
+    min-height: 4.7mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .losses-page .compact-loss-table th,
+  .losses-page .compact-loss-table td {
+    height: 4.7mm !important;
+    padding: .55mm 1.05mm !important;
+    font-size: 6.25pt !important;
+    line-height: 1.05 !important;
+    vertical-align: middle !important;
+    border-bottom: .18mm solid #e2e8f0 !important;
+  }
+
+  .losses-page .compact-loss-table th:first-child,
+  .losses-page .compact-loss-table td:first-child {
+    width: 16.5% !important;
+  }
+
+  .losses-page .compact-loss-table thead tr.loss-summary-years,
+  .losses-page .compact-loss-table thead tr.loss-summary-years th {
+    height: 5.1mm !important;
+    min-height: 5.1mm !important;
+  }
+
+  .losses-page .compact-loss-table thead tr.loss-summary-years th {
+    padding: .65mm 1mm !important;
+    font-size: 6.6pt !important;
+  }
+
+  .losses-page .compact-loss-table thead tr:nth-child(2),
+  .losses-page .compact-loss-table thead tr:nth-child(2) th {
+    height: 4.6mm !important;
+    min-height: 4.6mm !important;
+  }
+
+  .losses-page .compact-loss-table thead tr:nth-child(2) th {
+    padding: .5mm .9mm !important;
+    font-size: 5.6pt !important;
+  }
+
+  .losses-page .compact-loss-table tfoot tr,
+  .losses-page .compact-loss-table tfoot td {
+    height: 5mm !important;
+    min-height: 5mm !important;
+    font-size: 6.5pt !important;
+  }
+
+  .losses-page .loss-summary-sector {
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon {
+    width: 4.1mm !important;
+    height: 4.1mm !important;
+    margin-right: .65mm !important;
+    border-radius: .9mm !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon svg {
+    width: 6.3pt !important;
+    height: 6.3pt !important;
+  }
+
+  /* Os gráficos nunca disputam espaço com a tabela principal. */
+  .losses-page .loss-chart-grid {
+    break-before: page !important;
+    page-break-before: always !important;
+    margin-top: 0 !important;
+  }
+}
