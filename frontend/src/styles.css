@@ -10992,3 +10992,7 @@ input:focus-visible {
     grid-template-columns: minmax(90px, .8fr) minmax(70px, 1.3fr) auto;
   }
 }
+
+.loss-ranking-print-center {
+  display: none;
+}
