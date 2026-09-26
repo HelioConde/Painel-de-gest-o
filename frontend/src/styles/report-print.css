@@ -1393,3 +1393,34 @@
     white-space: nowrap !important;
   }
 }
+
+
+/* PRINT V3.5 — garante ícones visíveis no Top Perdas */
+@media print {
+  .losses-page .loss-top-card .sector-icon {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 5.2mm !important;
+    height: 5.2mm !important;
+    min-width: 5.2mm !important;
+    min-height: 5.2mm !important;
+    color: #173f66 !important;
+    background: #ffffff !important;
+    border: .22mm solid rgba(255,255,255,.9) !important;
+    border-radius: 1.1mm !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  .losses-page .loss-top-card .sector-icon svg {
+    display: block !important;
+    width: 8.2pt !important;
+    height: 8.2pt !important;
+    color: #173f66 !important;
+    stroke: #173f66 !important;
+    stroke-width: 2.2 !important;
+    fill: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
