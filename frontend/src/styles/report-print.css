@@ -993,3 +993,81 @@
     margin-top: 0 !important;
   }
 }
+
+
+/* PRINT V3.2 — força 5 KPIs de perdas em uma linha */
+@media print {
+  .losses-page .loss-kpi-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+    margin: 0 0 2mm !important;
+    border: .28mm solid var(--print-border-color) !important;
+    border-radius: 1.2mm !important;
+    overflow: hidden !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card {
+    flex: 1 1 0 !important;
+    width: 20% !important;
+    max-width: 20% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 1mm 1.3mm !important;
+    min-height: 9.5mm !important;
+    height: 9.5mm !important;
+    border: 0 !important;
+    border-right: .22mm solid #e2e8f0 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card:last-child {
+    border-right: 0 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top {
+    margin: 0 0 .5mm !important;
+    line-height: 1 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top > span {
+    font-size: 5pt !important;
+    line-height: 1 !important;
+    white-space: normal !important;
+    letter-spacing: 0 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card > strong {
+    display: block !important;
+    font-size: 8pt !important;
+    line-height: 1.02 !important;
+    white-space: nowrap !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card > small {
+    display: none !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card-top > i {
+    display: none !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card:last-child .kpi-card-top > span {
+    font-size: 0 !important;
+  }
+
+  .losses-page .loss-kpi-grid .kpi-card:last-child .kpi-card-top > span::after {
+    content: "Acima meta";
+    font-size: 4.8pt;
+    line-height: 1;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+}
