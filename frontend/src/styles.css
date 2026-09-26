@@ -4412,6 +4412,15 @@ button {
   font-weight: 900;
 }
 
+.loss-ranking-context {
+  margin-left: 4px;
+  color: rgba(255, 255, 255, .78);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 .loss-ranking-subtitle {
   max-width: 100%;
   overflow: hidden;

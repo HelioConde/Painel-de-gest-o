@@ -1380,3 +1380,16 @@
     white-space: nowrap !important;
   }
 }
+
+
+/* PRINT V3.4 — loja em cada título de setor do Top Perdas */
+@media print {
+  .losses-page .loss-top-card .loss-ranking-context {
+    display: inline !important;
+    margin-left: 1mm !important;
+    color: #dbeafe !important;
+    font-size: 6pt !important;
+    font-weight: 750 !important;
+    white-space: nowrap !important;
+  }
+}

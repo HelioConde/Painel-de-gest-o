@@ -39,12 +39,14 @@ function startVersionWatcher() {
   }
 
   window.addEventListener('focus', checkVersion)
+  window.addEventListener('pageshow', checkVersion)
+  window.addEventListener('online', checkVersion)
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') checkVersion()
   })
 
-  window.setInterval(checkVersion, 60_000)
-  window.setTimeout(checkVersion, 3_000)
+  window.setInterval(checkVersion, 15_000)
+  window.setTimeout(checkVersion, 1_000)
 }
 
 startVersionWatcher()
