@@ -1,0 +1,156 @@
+--- a/frontend/src/poster-engine/parseProduct.js
++++ b/frontend/src/poster-engine/parseProduct.js
+@@ -10,6 +10,7 @@
+ const COMPOUND_DESCRIPTIONS = [
+   ['SUPLEMENTO', 'HIDROTONICO'],
+   ['KIT', 'ELSEVE'],
++  ['SUPLEMENTO', 'HIDROTONICO'],
+   ['KIT', 'SHAMPOO', '+', 'CONDICIONADOR'],
+   ['DESODORANTE', 'AEROSSOL'],
+   ['WHEY', 'PROTEIN'],
+@@ -41,6 +42,8 @@
+   ['CHIVAS', 'REGAL'],
+   ['MAX', 'TITANIUM'],
+   ['TIO', 'JOAO'],
++  ["BALLANTINE'S"],
++  ['EXPORT'],
+ ]
+ 
+ function upper(value) {
+@@ -95,49 +98,100 @@
+   return normalizePrice(raw)
+ }
+ 
++function cleanDelimitedPart(value) {
++  return String(value || '')
++    .trim()
++    .replace(/^[,\s]+|[,\s]+$/g, '')
++    .replace(/\s+/g, ' ')
++}
++
++function parseCommaColumns(value) {
++  return String(value || '')
++    .split(/\s*,\s*/)
++    .map(cleanDelimitedPart)
++    .filter(Boolean)
++}
++
++function buildDelimitedProduct(parts) {
++  const cleaned = parts.map(cleanDelimitedPart).filter((part) => part !== '')
++  if (cleaned.length < 3) return null
++
++  // Preço fica sempre no final. "—" é aceito como preço ausente.
++  const last = cleaned.at(-1) || ''
++  const hasPrice = PRICE_OR_EMPTY_PATTERN.test(last)
++  const price = hasPrice ? normalizeParsedPrice(last) : ''
++  const withoutPrice = hasPrice ? cleaned.slice(0, -1) : cleaned
++
++  if (withoutPrice.length < 2) return null
++
++  // Gramatura é procurada de trás para frente. Isso evita confundir
++  // números de complemento como "18 Anos" ou "Old No. 7".
++  let unitIndex = -1
++  for (let index = withoutPrice.length - 1; index >= 0; index -= 1) {
++    if (UNIT_PATTERN.test(withoutPrice[index])) {
++      unitIndex = index
++      break
++    }
++  }
++  if (unitIndex < 0) return null
++
++  const unit = withoutPrice[unitIndex]
++  const textParts = withoutPrice.slice(0, unitIndex)
++  if (!textParts.length) return null
++
++  // 3 campos textuais: descrição, subdescrição/marca e complemento.
++  // Com apenas 2 campos, o segundo é subdescrição.
++  // Campos extras no meio pertencem ao complemento e são reunidos.
++  const description = textParts[0] || ''
++  const subdescription = textParts[1] || ''
++  const complement = textParts.slice(2).join(' ').trim()
++
++  return {
++    description,
++    subdescription,
++    complement,
++    unit,
++    price,
++  }
++}
++
+ function parseDelimitedProduct(normalizedLine) {
+-  const delimiter = normalizedLine.includes('\t')
+-    ? /\t+/
+-    : normalizedLine.includes(';')
+-      ? /\s*;\s*/
+-      : normalizedLine.includes('|')
+-        ? /\s*\|\s*/
+-        : null
+-
+-  if (!delimiter) return null
+-
+-  const parts = normalizedLine.split(delimiter).map((part) => part.trim())
+-  if (parts.length < 4) return null
+-
+-  // Formato preferido:
+-  // descrição | subdescrição | complemento | gramatura | preço
+-  if (parts.length >= 5 && UNIT_PATTERN.test(parts[3])) {
+-    return {
+-      description: parts[0],
+-      subdescription: parts[1],
+-      complement: parts[2],
+-      unit: parts[3],
+-      price: normalizeParsedPrice(parts[4]),
+-    }
+-  }
+-
+-  // Também aceita linhas sem complemento:
+-  // descrição | subdescrição | gramatura | preço
+-  if (parts.length === 4 && UNIT_PATTERN.test(parts[2])) {
+-    return {
+-      description: parts[0],
+-      subdescription: parts[1],
+-      complement: '',
+-      unit: parts[2],
+-      price: normalizeParsedPrice(parts[3]),
+-    }
++  const line = String(normalizedLine || '').trim()
++  if (!line) return null
++
++  // TAB/planilha tem prioridade absoluta, pois preserva a intenção
++  // do usuário melhor do que tentar adivinhar somente pelo texto.
++  if (line.includes('\t')) {
++    const tabParts = line.split(/\t+/).map(cleanDelimitedPart).filter(Boolean)
++
++    // Caso comum ao copiar da planilha:
++    // "Descrição, Marca, Complemento, Gramatura<TAB>Preço"
++    if (tabParts.length === 2 && PRICE_OR_EMPTY_PATTERN.test(tabParts[1])) {
++      const commaParts = parseCommaColumns(tabParts[0])
++      const candidate = buildDelimitedProduct([...commaParts, tabParts[1]])
++      if (candidate) return candidate
++    }
++
++    // Linhas com 4 ou 5 colunas reais.
++    // Ex.: "Desodorante Aerossol<TAB>Rexona<TAB>150 ml<TAB>11,99"
++    if (tabParts.length >= 3) {
++      const candidate = buildDelimitedProduct(tabParts)
++      if (candidate) return candidate
++    }
++  }
++
++  // Separadores explícitos alternativos.
++  for (const delimiter of [';', '|']) {
++    if (!line.includes(delimiter)) continue
++    const candidate = buildDelimitedProduct(line.split(delimiter))
++    if (candidate) return candidate
+   }
+ 
+   return null
+ }
+ 
+ function parseStructuredProduct(normalizedLine) {
+-  const priceMatch = normalizedLine.match(PRICE_PATTERN)
++  const priceMatch = normalizedLine.replace(/,\s*$/, '').match(PRICE_PATTERN)
+   if (!priceMatch) return null
+ 
+   const beforePrice = normalizedLine.slice(0, priceMatch.index).replace(/,\s*$/, '').trim()

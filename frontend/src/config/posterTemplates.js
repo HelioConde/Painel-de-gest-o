@@ -5,7 +5,7 @@ import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
 import backgroundApp from '../../Fundo/app.png'
 
-export const LAYOUT_CONFIG_VERSION = 7
+export const LAYOUT_CONFIG_VERSION = 8
 
 const baseTextStyles = {
   description: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
@@ -41,11 +41,13 @@ export const DEFAULT_POSTER_LAYOUTS = {
 
 const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })
 const APP_LAYOUT = {
-  appTitleBox: appBox(8, 8, 84, 27),
-  appPriceBox: appBox(8, 36, 84, 25),
-  appValidityBox: appBox(8, 63, 84, 8),
-  appRegularLabelBox: appBox(8, 73, 84, 11),
-  appRegularPriceBox: appBox(8, 85, 84, 11),
+  // Calibrated to match the edited A4 2x1 App layout used in the admin layout tool.
+  // These coordinates preserve the manually approved positioning seen in the reference.
+  appTitleBox: appBox(8, 40, 84, 27),
+  appPriceBox: appBox(8.5, 67, 83, 9),
+  appValidityBox: appBox(17, 76, 62, 5),
+  appRegularLabelBox: appBox(12, 81, 44, 11),
+  appRegularPriceBox: appBox(56, 81, 28, 11),
 }
 
 function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0, specialLayout, backgroundVisible }) {

@@ -1,0 +1,18 @@
+--- a/frontend/src/poster-engine/parseProduct.js
++++ b/frontend/src/poster-engine/parseProduct.js
+@@ -3,11 +3,13 @@
+ const PRICE_PATTERN = /(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2}|\d+(?:[.,]\d{2}))\s*$/i
+ const PRICE_OR_EMPTY_PATTERN = /(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2}|\d+(?:[.,]\d{2})|—|-)\s*$/i
+ const UNIT_NAME_PATTERN = '(?:kg|g|mg|l|ml|cl|un|und|pct|pack|kit)'
+-const UNIT_PATTERN = new RegExp(`^(?:\\d+(?:[.,]\\d+)?\\s*)?${UNIT_NAME_PATTERN}(?:\\s*\\([^)]*\\))?$`, 'i')
+-const TRAILING_UNIT_PATTERN = new RegExp(`(?:^|\\s)((?:\\d+(?:[.,]\\d+)?\\s*)?${UNIT_NAME_PATTERN}(?:\\s*\\([^)]*\\))?)\\s*$`, 'i')
++const UNIT_CHUNK_PATTERN = `(?:\\d+(?:[.,]\\d+)?\\s*)?${UNIT_NAME_PATTERN}(?:\\s*\\([^)]*\\))?`
++const UNIT_PATTERN = new RegExp(`^(?:${UNIT_CHUNK_PATTERN})(?:\\s*\\+\\s*(?:${UNIT_CHUNK_PATTERN}))*$`, 'i')
++const TRAILING_UNIT_PATTERN = new RegExp(`(?:^|\\s)((?:${UNIT_CHUNK_PATTERN})(?:\\s*\\+\\s*(?:${UNIT_CHUNK_PATTERN}))*)\\s*$`, 'i')
+ 
+ const COMPOUND_DESCRIPTIONS = [
+   ['SUPLEMENTO', 'HIDROTONICO'],
++  ['KIT', 'ELSEVE'],
+   ['KIT', 'SHAMPOO', '+', 'CONDICIONADOR'],
+   ['DESODORANTE', 'AEROSSOL'],
+   ['WHEY', 'PROTEIN'],

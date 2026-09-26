@@ -1,0 +1,21 @@
+--- a/frontend/src/poster-engine/layoutPlan.js
++++ b/frontend/src/poster-engine/layoutPlan.js
+@@ -3,7 +3,7 @@
+ import { estimateTextMeasure } from './textMeasure.js'
+ 
+ const CONTENT_FIELDS = ['description', 'subdescription', 'complement', 'unit']
+-const GROWTH_FIELDS = ['description', 'subdescription', 'complement']
++const GROWTH_FIELDS = ['description', 'subdescription']
+ const EPSILON = 0.01
+ 
+ function percent(value, total) {
+@@ -199,7 +199,8 @@
+   // Se o conjunto ultrapassar a altura, reduz proporcionalmente.
+   fittedLines = shrinkStackToHeight(fittedLines, contentBox.height, gapMm, measure)
+ 
+-  // Se houver altura sobrando, distribui por prioridade apenas entre os textos variáveis.
++  // Se houver altura sobrando, distribui por prioridade apenas entre descrição e subdescrição.
++  // Complemento mantém o tamanho configurado (mas pode diminuir se precisar).
+   // A gramatura permanece sempre no tamanho configurado.
+   fittedLines = growStackByPriority(fittedLines, contentBox.height, gapMm, measure)
+ 

@@ -1,3 +1,15 @@
+const PRIMARY_POSTER_FONT = '"Burbank Big Cd Bk"'
+const ACCENT_POSTER_FONT = 'Impact, "Arial Black", sans-serif'
+const ACCENT_PATTERN = /[À-ÖØ-öø-ÿ]/
+
+function hasAccent(text) {
+  return ACCENT_PATTERN.test(String(text || ''))
+}
+
+function fontFamilyForText(text) {
+  return hasAccent(text) ? ACCENT_POSTER_FONT : PRIMARY_POSTER_FONT
+}
+
 
 function boxStyle(box) {
   return { left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%` }
@@ -5,10 +17,18 @@ function boxStyle(box) {
 
 function plannedFieldStyle(line, box) {
   return {
-    left: `${line.x}%`, top: `${line.y}%`, width: `${line.width}%`, height: `${line.height}%`,
-    fontSize: `${line.fontSizeMm}mm`, fontWeight: line.style.fontWeight,
-    lineHeight: line.style.lineHeight, letterSpacing: `${line.style.letterSpacing}mm`,
+    left: `${line.x}%`,
+    top: `${line.y}%`,
+    width: `${line.width}%`,
+    height: `${line.height}%`,
+    fontSize: `${line.fontSizeMm}mm`,
+    fontWeight: line.style.fontWeight,
+    fontFamily: fontFamilyForText(line.text),
+    lineHeight: line.style.lineHeight,
+    letterSpacing: `${line.style.letterSpacing}mm`,
     textAlign: box.alignX || 'center',
+    overflow: 'visible',
+    boxSizing: 'border-box',
   }
 }
 

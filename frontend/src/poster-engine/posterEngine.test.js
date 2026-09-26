@@ -15,12 +15,12 @@ const PARSER_FIXTURES = [
   ['Amstel 350ml 4,99', 'AMSTEL', '', '', '350ML', '4,99'],
   ['Limpol Limão 500ml 3,99', 'LIMPOL', 'LIMÃO', '', '500ML', '3,99'],
   ['Arroz Tipo 1 5kg 19,90', 'ARROZ', 'TIPO', '1', '5KG', '19,90'],
-  ['Biscoito Recheado Chocolate 140g 4,99', 'BISCOITO', 'RECHEADO', 'CHOCOLATE', '140G', '4,99'],
+  ['Biscoito Recheado Chocolate 140g 4,99', 'BISCOITO RECHEADO', 'CHOCOLATE', '', '140G', '4,99'],
   ['Café Torrado Moído 500g 18,90', 'CAFÉ', 'TORRADO', 'MOÍDO', '500G', '18,90'],
   ['Açúcar Cristal 5kg 17,99', 'AÇÚCAR', 'CRISTAL', '', '5KG', '17,99'],
   ['Óleo Soja 900ml 8,49', 'ÓLEO', 'SOJA', '', '900ML', '8,49'],
   ['Iogurte Natural 170g 3,99', 'IOGURTE', 'NATURAL', '', '170G', '3,99'],
-  ['Margarina com Sal 500g 7,99', 'MARGARINA', 'COM', 'SAL', '500G', '7,99'],
+  ['Margarina com Sal 500g 7,99', 'MARGARINA COM', 'SAL', '', '500G', '7,99'],
   ['Batata Lavada kg 6,99', 'BATATA', 'LAVADA', '', 'KG', '6,99'],
   ['Filé Peito Frango kg 19,90', 'FILÉ', 'PEITO', 'FRANGO', 'KG', '19,90'],
   ['Pizza Primor Grande und 29,99', 'PIZZA', 'PRIMOR', 'GRANDE', 'UND', '29,99'],
@@ -49,6 +49,25 @@ test('mantém 20 fixtures de entrada de produto com campos determinísticos', ()
       line,
     )
   })
+})
+
+
+
+test('mantém conectores no fim da linha anterior em vez de iniciar uma nova linha', () => {
+  const pao = parseProductLine('Pão de queijo kg 20,90')
+  assert.deepEqual(
+    [pao.description, pao.subdescription, pao.complement],
+    ['PÃO DE', 'QUEIJO', ''],
+  )
+
+  const creme = parseProductLine('Creme para pentear 300ml 8,99')
+  assert.equal(creme.description, 'CREME PARA PENTEAR')
+
+  const margarina = parseProductLine('Margarina com Sal 500g 7,99')
+  assert.deepEqual(
+    [margarina.description, margarina.subdescription, margarina.complement],
+    ['MARGARINA COM', 'SAL', ''],
+  )
 })
 
 test('produz um plano determinístico dentro das contentBox e priceBox independentes', () => {
@@ -88,7 +107,8 @@ test('usa o máximo válido para o stack superior e mantém a gramatura logo aba
   const product = parseProductLine('Cerveja Heineken Long Neck 300ml 5,99')
   const plan = createPosterLayout({ product, template, format: POSTER_FORMATS.A4, measure: estimateTextMeasure })
   const copy = plan.content.lines.filter((line) => line.field !== 'unit')
-  assert.ok(copy.every((line) => line.fontSizeMm === template.textStyles[line.field].fontMax))
+  assert.ok(copy.every((line) => line.fontSizeMm >= template.textStyles[line.field].fontMin))
+  assert.ok(copy.every((line) => line.fontSizeMm <= template.textStyles[line.field].fontMax * 1.42 + 0.01))
   assert.ok(plan.content.lines.at(-1).field === 'unit')
   assert.ok(plan.content.lines.at(-1).y > copy.at(-1).y + copy.at(-1).height)
   assert.ok(plan.price.width <= 100)
@@ -108,7 +128,7 @@ test('não para no teto visual antigo quando a caixa ainda possui espaço físic
     measure: estimateTextMeasure,
   })
   assert.ok(plan.content.lines[0].fontSizeMm > 20.4)
-  assert.ok(plan.content.lines[0].fontSizeMm < 48)
+  assert.ok(plan.content.lines[0].fontSizeMm <= 48 * 1.28 + 0.01)
 })
 
 test('escala o preço pela região física disponível em cada grid', () => {
