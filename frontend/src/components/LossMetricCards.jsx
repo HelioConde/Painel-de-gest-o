@@ -20,7 +20,6 @@ export default function LossMetricCards({ totals, sectorsAboveTarget = 0, sector
         label="Perda atual"
         value={money(totals?.current_total_value)}
         detail={null}
-        trend={variation}
         icon={CircleDollarSign}
         tone="red"
       />
@@ -34,8 +33,7 @@ export default function LossMetricCards({ totals, sectorsAboveTarget = 0, sector
       <KpiCard
         label="Diferença da perda"
         value={money(difference)}
-        detail={null}
-        trend={variation}
+        detail={variation ? `variação ${percent(variation)}` : null}
         icon={ArrowUpRight}
         tone={difference > 0 ? "orange" : "green"}
       />
