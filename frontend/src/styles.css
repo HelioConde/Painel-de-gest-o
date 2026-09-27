@@ -12056,3 +12056,442 @@ input:focus-visible {
     white-space: nowrap;
   }
 }
+
+
+/* Losses mobile management refinements — 2026-09-26 */
+.loss-summary-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-top: 1px solid #edf1f5;
+  border-bottom: 1px solid #edf1f5;
+  background: #fbfdff;
+}
+
+.loss-summary-filters,
+.loss-summary-sort {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.loss-summary-sort {
+  justify-content: flex-end;
+}
+
+.loss-summary-sort > span {
+  color: #7b8798;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.loss-summary-filters button,
+.loss-summary-sort button {
+  min-height: 27px;
+  border: 1px solid #dce5ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #52647a;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.loss-summary-filters button span {
+  opacity: .7;
+  margin-left: 2px;
+}
+
+.loss-summary-filters button.active,
+.loss-summary-sort button.active {
+  border-color: #8fb2df;
+  background: #edf5ff;
+  color: #173f70;
+}
+
+.loss-summary-filters button.danger.active {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #b42318;
+}
+
+.loss-summary-filters button.success.active {
+  border-color: #bbebcd;
+  background: #effaf3;
+  color: #087740;
+}
+
+.loss-mobile-sector-list {
+  display: none;
+}
+
+.loss-mobile-sector-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.loss-mobile-sector-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 11px;
+  border-bottom: 1px solid #edf1f5;
+  background: #f8fafc;
+}
+
+.loss-mobile-sector-card > header > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.loss-mobile-sector-card > header strong {
+  overflow: hidden;
+  color: #233a56;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loss-mobile-sector-card > header > span {
+  color: #213851;
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.loss-mobile-sector-card.bad {
+  border-color: #fecaca;
+}
+
+.loss-mobile-sector-card.bad > header {
+  background: #fff7f7;
+}
+
+.loss-mobile-sector-card.good {
+  border-color: #d7eadf;
+}
+
+.loss-mobile-sector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.loss-mobile-sector-grid > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 9px 10px;
+  border-right: 1px solid #edf1f5;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.loss-mobile-sector-grid > div:nth-child(2n) {
+  border-right: 0;
+}
+
+.loss-mobile-sector-grid > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.loss-mobile-sector-grid small {
+  color: #8490a2;
+  font-size: 7.5px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.loss-mobile-sector-grid strong {
+  color: #203750;
+  font-size: 11px;
+}
+
+.loss-mobile-sector-grid span {
+  overflow: hidden;
+  color: #718097;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.loss-mobile-sector-toggle {
+  display: none;
+}
+
+.loss-ranking-products {
+  min-width: 0;
+}
+
+@media screen and (max-width: 700px) {
+  .loss-header-tabs {
+    min-height: 38px;
+  }
+
+  .loss-header-tabs .split-view-tab {
+    min-height: 34px;
+    padding: 5px 8px;
+    font-size: 8.5px;
+  }
+
+  .loss-summary-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 9px;
+  }
+
+  .loss-summary-filters,
+  .loss-summary-sort {
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .loss-summary-filters::-webkit-scrollbar,
+  .loss-summary-sort::-webkit-scrollbar {
+    display: none;
+  }
+
+  .loss-summary-filters button,
+  .loss-summary-sort button {
+    flex: 0 0 auto;
+  }
+
+  .loss-summary-table-wrap {
+    display: none;
+  }
+
+  .loss-mobile-sector-list {
+    display: grid;
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .loss-chart-grid {
+    margin-top: 9px;
+  }
+
+  .loss-chart-grid .chart-card {
+    min-height: 0 !important;
+  }
+
+  .loss-top-panel .section-heading {
+    align-items: stretch;
+    gap: 9px;
+    padding: 12px 10px;
+  }
+
+  .loss-top-panel .section-heading h2 {
+    font-size: 17px;
+  }
+
+  .loss-top-heading-actions {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .loss-ranking-selector {
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .loss-ranking-selector::-webkit-scrollbar {
+    display: none;
+  }
+
+  .loss-ranking-selector > span,
+  .loss-ranking-selector button {
+    flex: 0 0 auto;
+  }
+
+  .loss-top-sector-count {
+    align-self: flex-start;
+  }
+
+  .loss-top-masonry {
+    gap: 9px;
+    padding: 9px;
+  }
+
+  .loss-top-card {
+    border-radius: 12px;
+  }
+
+  .loss-top-card header {
+    align-items: flex-start;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .loss-ranking-card-stats {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .loss-mobile-sector-toggle {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 8px;
+    background: rgba(255,255,255,.12);
+    color: inherit;
+    padding: 0 7px;
+    font: inherit;
+    font-size: 8px;
+    font-weight: 850;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .loss-mobile-sector-toggle svg {
+    transition: transform .16s ease;
+  }
+
+  .loss-mobile-sector-toggle svg.open {
+    transform: rotate(180deg);
+  }
+
+  .loss-ranking-products.collapsed {
+    display: none;
+  }
+
+  .loss-top-table-wrap {
+    overflow: visible;
+  }
+
+  .loss-top-table,
+  .loss-top-table tbody,
+  .loss-top-table tr,
+  .loss-top-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .loss-top-table colgroup,
+  .loss-top-table thead {
+    display: none;
+  }
+
+  .loss-top-table tbody {
+    display: grid;
+    gap: 8px;
+    padding: 8px;
+    background: #f6f9fc;
+  }
+
+  .loss-top-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #e1e8f0;
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .loss-top-table tbody td {
+    min-height: 42px;
+    display: grid;
+    align-content: center;
+    gap: 2px;
+    padding: 7px 9px;
+    border-right: 1px solid #edf1f5;
+    border-bottom: 1px solid #edf1f5;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .loss-top-table tbody td:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .loss-top-table tbody td::before {
+    content: attr(data-label);
+    color: #8a96a7;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .loss-top-table tbody td.loss-top-product-name {
+    grid-column: 1 / -1;
+    min-height: 50px;
+    border-right: 0;
+  }
+
+  .loss-top-table tbody td.loss-top-product-name .loss-top-product-scroll {
+    overflow: visible;
+    max-width: none;
+    color: #233a56;
+    font-size: 10.5px;
+    font-weight: 850;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .loss-top-table tbody td.loss-top-rank,
+  .loss-top-table tbody td.loss-top-code {
+    min-height: 38px;
+  }
+
+  .loss-top-table tbody td.loss-top-quantity {
+    color: #c1121f;
+    font-weight: 900;
+  }
+
+  .loss-top-table tbody tr.loss-row-warning,
+  .loss-top-table tbody tr.loss-row-critical {
+    border-color: #fed7aa;
+    background: #fffaf2;
+  }
+
+  .loss-top-table tbody tr.loss-row-no-sales {
+    border-color: #fecaca;
+    background: #fff6f6;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .loss-mobile-sector-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .loss-mobile-sector-grid > div,
+  .loss-mobile-sector-grid > div:nth-child(2n),
+  .loss-mobile-sector-grid > div:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid #edf1f5;
+  }
+
+  .loss-mobile-sector-grid > div:last-child {
+    border-bottom: 0;
+  }
+
+  .loss-top-table tbody tr {
+    grid-template-columns: 1fr 1fr;
+  }
+}
