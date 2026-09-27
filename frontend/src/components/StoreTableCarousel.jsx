@@ -170,7 +170,24 @@ export default function StoreTableCarousel({
         </div>
       </CompactReportHeader>
 
-      <SalesKpiGrid scope={activeScope} />
+      <SalesKpiGrid scope={activeScope} monthly={monthly} />
+
+      {!monthly && activeScope ? (
+        <section className="daily-quick-summary" aria-label="Leitura rápida da venda diária">
+          <div>
+            <small>Leitura rápida</small>
+            <strong>
+              {Number(activeScope.variation_percent || 0) >= 0 ? "Venda acima" : "Venda abaixo"} do período anterior
+            </strong>
+          </div>
+          <p>
+            A loja vendeu <b>{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(activeScope.current_value || 0))}</b>,
+            {" "}{Math.abs(Number(activeScope.variation_percent || 0)).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% 
+            {Number(activeScope.variation_percent || 0) >= 0 ? " acima" : " abaixo"} do período anterior,
+            diferença de <b>{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Math.abs(Number(activeScope.difference_value || 0)))}</b>.
+          </p>
+        </section>
+      ) : null}
 
       <div className="table-carousel-viewport sales-compact-table">
         <div
@@ -190,6 +207,7 @@ export default function StoreTableCarousel({
                   snapshot={snapshot}
                   scope={scope}
                   carouselMode
+                  enableManagementControls={!monthly}
                 />
               </div>
             );
