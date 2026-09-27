@@ -12,6 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import DataStatusBanner from "../components/DataStatusBanner";
 import PrintReportHeader from "../components/PrintReportHeader";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
@@ -418,7 +419,9 @@ function AiAssistant({
   onSuggestion,
   onSubmit,
 }) {
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <>
       <button
         type="button"
@@ -483,7 +486,8 @@ function AiAssistant({
           </form>
         </aside>
       ) : null}
-    </>
+    </>,
+    document.body,
   );
 }
 
