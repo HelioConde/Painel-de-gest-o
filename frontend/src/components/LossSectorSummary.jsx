@@ -1,4 +1,5 @@
 import { Layers3 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { buildSectorSummary, targetTone } from "../utils/lossDashboard";
 import { money } from "../utils/formatters";
 import { LOSS_STORE_SEQUENCE } from "../utils/losses";
@@ -29,10 +30,37 @@ function targetLabel(value) {
 
 export default function LossSectorSummary({ row, showPrintHeader = true }) {
   const { sectors } = buildSectorSummary(row);
+  const [filter, setFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("loss");
   const currentYear = yearOf(row.current_start);
   const previousYear = yearOf(row.previous_start);
   const storeCode = String(row.store_code).padStart(3, "0");
   const storeSequence = LOSS_STORE_SEQUENCE[storeCode] || storeCode;
+  const visibleSectors = useMemo(() => {
+    const filtered = sectors.filter((sector) => {
+      const loss = Number(sector.current.loss || 0);
+      const currentPercent = sector.current.percent === null ? null : Number(sector.current.percent);
+      const target = sector.target === null ? null : Number(sector.target);
+
+      if (filter === "above") return currentPercent !== null && target !== null && currentPercent > target;
+      if (filter === "within") return currentPercent !== null && target !== null && currentPercent <= target && loss > 0;
+      if (filter === "zero") return loss === 0;
+      return true;
+    });
+
+    return [...filtered].sort((left, right) => {
+      if (sortBy === "percent") {
+        return Number(right.current.percent || 0) - Number(left.current.percent || 0);
+      }
+      if (sortBy === "deviation") {
+        const leftDeviation = Number(left.current.percent || 0) - Number(left.target || 0);
+        const rightDeviation = Number(right.current.percent || 0) - Number(right.target || 0);
+        return rightDeviation - leftDeviation;
+      }
+      return Number(right.current.loss || 0) - Number(left.current.loss || 0);
+    });
+  }, [sectors, filter, sortBy]);
+
   const lossBars = [...sectors]
     .map((sector) => ({
       name: sector.name,
@@ -70,6 +98,21 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
         </div>
       </div>
 
+      <div className="loss-summary-controls no-print">
+        <div className="loss-summary-filters" aria-label="Filtrar setores por situação">
+          <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>Todos <span>{sectors.length}</span></button>
+          <button type="button" className={filter === "above" ? "active danger" : "danger"} onClick={() => setFilter("above")}>Acima da meta</button>
+          <button type="button" className={filter === "within" ? "active success" : "success"} onClick={() => setFilter("within")}>Dentro da meta</button>
+          <button type="button" className={filter === "zero" ? "active" : ""} onClick={() => setFilter("zero")}>Sem perda</button>
+        </div>
+        <div className="loss-summary-sort" aria-label="Ordenar setores">
+          <span>Ordenar por</span>
+          <button type="button" className={sortBy === "loss" ? "active" : ""} onClick={() => setSortBy("loss")}>Perda R$</button>
+          <button type="button" className={sortBy === "percent" ? "active" : ""} onClick={() => setSortBy("percent")}>% Perda</button>
+          <button type="button" className={sortBy === "deviation" ? "active" : ""} onClick={() => setSortBy("deviation")}>Desvio meta</button>
+        </div>
+      </div>
+
       <div className="loss-summary-table-wrap compact-loss-table-wrap">
         <table className="loss-summary-table compact-loss-table">
           <thead>
@@ -90,7 +133,7 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
             </tr>
           </thead>
           <tbody>
-            {sectors.map((sector) => (
+            {visibleSectors.map((sector) => (
               <tr key={sector.name}>
                 <td className="loss-summary-sector">
                   <SectorIcon name={sector.name} />
@@ -134,6 +177,29 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
           </tfoot>
         </table>
       </div>
+
+      <div className="loss-mobile-sector-list" aria-label="Perdas por setor">
+        {visibleSectors.map((sector) => {
+          const currentPercent = sector.current.percent === null ? null : Number(sector.current.percent);
+          const target = sector.target === null ? null : Number(sector.target);
+          const difference = Number(sector.current.loss || 0) - Number(sector.previous.loss || 0);
+          return (
+            <article className={`loss-mobile-sector-card ${targetTone(currentPercent, target)}`} key={sector.name}>
+              <header>
+                <div><SectorIcon name={sector.name} /><strong>{sector.name}</strong></div>
+                <span>{money(sector.current.loss)}</span>
+              </header>
+              <div className="loss-mobile-sector-grid">
+                <div><small>Atual</small><strong>{pct(currentPercent)}</strong><span>{moneyMaybe(sector.current.sales)} em vendas</span></div>
+                <div><small>Meta</small><strong>{targetLabel(target)}</strong><span>{currentPercent !== null && target !== null ? `${(currentPercent - target).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} p.p.` : "—"}</span></div>
+                <div><small>Anterior</small><strong>{pct(sector.previous.percent)}</strong><span>{money(sector.previous.loss)}</span></div>
+                <div><small>Dif. perda</small><strong className={difference > 0 ? "negative-text" : difference < 0 ? "positive-text" : ""}>{money(difference)}</strong><span>vs. período anterior</span></div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
       <section className="dashboard-chart-grid loss-chart-grid">
         <ChartCard eyebrow="IMPACTO FINANCEIRO" title="Perda por setor">
           <SimpleBarChart items={lossBars} valueKey="value" />
