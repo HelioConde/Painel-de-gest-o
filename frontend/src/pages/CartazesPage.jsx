@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, ClipboardPaste, History, LayoutGrid, Maximize2, Pencil, Printer, Settings, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import PosterInputActionsMenu from '../components/posters/PosterInputActionsMenu'
 import PosterPreview from '../components/posters/PosterPreview'
@@ -112,6 +113,20 @@ export default function CartazesPage() {
   const [importError, setImportError] = useState('')
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false)
   const [printOnlyCurrentPage, setPrintOnlyCurrentPage] = useState(false)
+
+  useEffect(() => {
+    const modalOpen = formatPickerOpen || previewDialogOpen || printDialogOpen
+    if (!modalOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.body.classList.add('poster-modal-scroll-lock')
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.body.classList.remove('poster-modal-scroll-lock')
+    }
+  }, [formatPickerOpen, previewDialogOpen, printDialogOpen])
 
   const hasFormat = Boolean(formatId)
   const formatConfig = getPosterFormat(formatId)
@@ -580,14 +595,17 @@ export default function CartazesPage() {
         onSelect={selectFormat}
         required={!hasFormat}
       />
-      {previewDialogOpen ? <div className="poster-modal-backdrop poster-preview-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPreviewDialogOpen(false)}>
-        <section className="poster-modal poster-preview-dialog" role="dialog" aria-modal="true" aria-label="Visualização ampliada da folha">
-          <header><div><span className="poster-modal-kicker">Visualização · {formatConfig.label}</span><h2>{productDisplayName(pageProducts[0])}</h2></div><button type="button" className="poster-icon-button" onClick={() => setPreviewDialogOpen(false)} aria-label="Fechar visualização"><X size={18} /></button></header>
-          <div className="poster-preview-dialog-canvas"><PosterPreview fitViewport format={formatConfig} products={pageProducts} template={templateConfig} layoutPlans={layoutPlans} showBackground startIndex={currentPage * formatConfig.postersPerSheet} selectedProductId={selectedProductId} onSelectProduct={selectProduct} /></div>
-          <div className="poster-preview-nav"><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} aria-label="Folha anterior"><ChevronLeft size={18} /></button><span><strong>{currentPage + 1}</strong> / {pageCount}</span><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1} aria-label="Próxima folha"><ChevronRight size={18} /></button></div>
-          <footer><button type="button" className="poster-button poster-button-secondary" onClick={editPreviewProduct}><Pencil size={16} /> Editar</button><button type="button" className="poster-button poster-button-secondary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir esta folha</button><button type="button" className="poster-button poster-button-primary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir / Salvar PDF</button></footer>
-        </section>
-      </div> : null}
+      {previewDialogOpen ? createPortal(
+        <div className="poster-modal-backdrop poster-preview-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPreviewDialogOpen(false)}>
+          <section className="poster-modal poster-preview-dialog" role="dialog" aria-modal="true" aria-label="Visualização ampliada da folha">
+            <header><div><span className="poster-modal-kicker">Visualização · {formatConfig.label}</span><h2>{productDisplayName(pageProducts[0])}</h2></div><button type="button" className="poster-icon-button" onClick={() => setPreviewDialogOpen(false)} aria-label="Fechar visualização"><X size={18} /></button></header>
+            <div className="poster-preview-dialog-canvas"><PosterPreview fitViewport format={formatConfig} products={pageProducts} template={templateConfig} layoutPlans={layoutPlans} showBackground startIndex={currentPage * formatConfig.postersPerSheet} selectedProductId={selectedProductId} onSelectProduct={selectProduct} /></div>
+            <div className="poster-preview-nav"><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} aria-label="Folha anterior"><ChevronLeft size={18} /></button><span><strong>{currentPage + 1}</strong> / {pageCount}</span><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1} aria-label="Próxima folha"><ChevronRight size={18} /></button></div>
+            <footer><button type="button" className="poster-button poster-button-secondary" onClick={editPreviewProduct}><Pencil size={16} /> Editar</button><button type="button" className="poster-button poster-button-secondary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir esta folha</button><button type="button" className="poster-button poster-button-primary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir / Salvar PDF</button></footer>
+          </section>
+        </div>,
+        document.body,
+      ) : null}
     </div>
   )
 }
