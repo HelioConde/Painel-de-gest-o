@@ -1,4 +1,5 @@
 import { Check, X } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { useEffect } from 'react'
 import { getDefaultTemplateForFormat } from '../../config/posterTemplates'
 
@@ -14,7 +15,7 @@ export default function PosterFormatPickerModal({ open, currentFormatId, formats
 
   if (!open) return null
 
-  return (
+  return createPortal(
     <div className="poster-modal-backdrop poster-format-picker-backdrop" role="presentation" onMouseDown={(event) => !required && event.target === event.currentTarget && onClose()}>
       <section className="poster-modal poster-format-picker" role="dialog" aria-modal="true" aria-labelledby="poster-format-picker-title">
         <header>
@@ -41,6 +42,7 @@ export default function PosterFormatPickerModal({ open, currentFormatId, formats
           })}
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
