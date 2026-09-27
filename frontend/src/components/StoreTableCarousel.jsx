@@ -172,8 +172,8 @@ export default function StoreTableCarousel({
 
       <SalesKpiGrid scope={activeScope} monthly={monthly} />
 
-      {!monthly && activeScope ? (
-        <section className="daily-quick-summary" aria-label="Leitura rápida da venda diária">
+      {activeScope ? (
+        <section className="daily-quick-summary" aria-label={monthly ? "Leitura rápida da venda mensal" : "Leitura rápida da venda diária"}>
           <div>
             <small>Leitura rápida</small>
             <strong>
@@ -207,7 +207,7 @@ export default function StoreTableCarousel({
                   snapshot={snapshot}
                   scope={scope}
                   carouselMode
-                  enableManagementControls={!monthly}
+                  enableManagementControls
                 />
               </div>
             );
