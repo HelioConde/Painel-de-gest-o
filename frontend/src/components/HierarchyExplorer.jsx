@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowDownUp, ChevronDown, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { percent } from "../utils/formatters";
 import ReportValue from "./ReportValue";
@@ -91,9 +91,12 @@ export default function HierarchyExplorer({
   snapshot,
   scope,
   carouselMode = false,
+  enableManagementControls = false,
 }) {
   const [openSector, setOpenSector] = useState(null);
   const [openGroup, setOpenGroup] = useState(null);
+  const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState({ key: "name", direction: "asc" });
   const metric =
     snapshot?.snapshot_type === "EVENT" ? snapshot.metric : "monetary";
   const unit = snapshot?.unit;
@@ -113,6 +116,57 @@ export default function HierarchyExplorer({
     [snapshot, scope],
   );
 
+  const rising = sectors.filter((sector) => Number(sector.variation_percent || 0) > 0).length;
+  const falling = sectors.filter((sector) => Number(sector.variation_percent || 0) < 0).length;
+  const stable = Math.max(0, sectors.length - rising - falling);
+
+  const visibleRows = useMemo(() => {
+    const filtered = sectors.filter((sector) => {
+      const variation = Number(sector.variation_percent || 0);
+      if (filter === "positive") return variation > 0;
+      if (filter === "negative") return variation < 0;
+      if (filter === "stable") return variation === 0;
+      return true;
+    });
+
+    return [...filtered].sort((left, right) => {
+      let leftValue;
+      let rightValue;
+
+      if (sort.key === "name") {
+        leftValue = String(left.name || "");
+        rightValue = String(right.name || "");
+        return sort.direction === "asc"
+          ? leftValue.localeCompare(rightValue, "pt-BR")
+          : rightValue.localeCompare(leftValue, "pt-BR");
+      }
+
+      const fieldMap = {
+        current: "current_value",
+        previous: "previous_value",
+        difference: "difference_value",
+        variation: "variation_percent",
+      };
+
+      leftValue = Number(left?.[fieldMap[sort.key]] || 0);
+      rightValue = Number(right?.[fieldMap[sort.key]] || 0);
+
+      return sort.direction === "asc"
+        ? leftValue - rightValue
+        : rightValue - leftValue;
+    });
+  }, [sectors, filter, sort]);
+
+  const changeSort = (key) => {
+    setSort((currentSort) => ({
+      key,
+      direction:
+        currentSort.key === key && currentSort.direction === "desc"
+          ? "asc"
+          : "desc",
+    }));
+  };
+
   const toggleSector = (key) => {
     setOpenSector((current) => (current === key ? null : key));
     setOpenGroup(null);
@@ -126,25 +180,68 @@ export default function HierarchyExplorer({
         <div>
           <h2>Setores</h2>
         </div>
+
+        {enableManagementControls ? (
+          <div className="daily-sector-filters no-print" aria-label="Filtrar setores">
+            <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>
+              Todos <span>{sectors.length}</span>
+            </button>
+            <button type="button" className={filter === "positive" ? "active positive" : "positive"} onClick={() => setFilter("positive")}>
+              Alta <span>{rising}</span>
+            </button>
+            <button type="button" className={filter === "negative" ? "active negative" : "negative"} onClick={() => setFilter("negative")}>
+              Queda <span>{falling}</span>
+            </button>
+            <button type="button" className={filter === "stable" ? "active" : ""} onClick={() => setFilter("stable")}>
+              Estáveis <span>{stable}</span>
+            </button>
+          </div>
+        ) : null}
+
         <div className="table-legend">
-          <span>Atual</span>
-          <span>
-            <span className="report-full-label">Anterior</span>
-            <span className="report-short-label">Ant.</span>
-          </span>
-          <span className="legend-difference">
-            <span className="report-full-label">Diferença</span>
-            <span className="report-short-label">Dif.</span>
-          </span>
-          <span>
-            <span className="report-full-label">Variação</span>
-            <span className="report-short-label">%</span>
-          </span>
+          {enableManagementControls ? (
+            <>
+              <button type="button" className={sort.key === "current" ? "active" : ""} onClick={() => changeSort("current")}>
+                Atual <ArrowDownUp size={10} />
+              </button>
+              <button type="button" className={sort.key === "previous" ? "active" : ""} onClick={() => changeSort("previous")}>
+                <span className="report-full-label">Anterior</span>
+                <span className="report-short-label">Ant.</span>
+                <ArrowDownUp size={10} />
+              </button>
+              <button type="button" className={`legend-difference ${sort.key === "difference" ? "active" : ""}`} onClick={() => changeSort("difference")}>
+                <span className="report-full-label">Diferença</span>
+                <span className="report-short-label">Dif.</span>
+                <ArrowDownUp size={10} />
+              </button>
+              <button type="button" className={sort.key === "variation" ? "active" : ""} onClick={() => changeSort("variation")}>
+                <span className="report-full-label">Variação</span>
+                <span className="report-short-label">%</span>
+                <ArrowDownUp size={10} />
+              </button>
+            </>
+          ) : (
+            <>
+              <span>Atual</span>
+              <span>
+                <span className="report-full-label">Anterior</span>
+                <span className="report-short-label">Ant.</span>
+              </span>
+              <span className="legend-difference">
+                <span className="report-full-label">Diferença</span>
+                <span className="report-short-label">Dif.</span>
+              </span>
+              <span>
+                <span className="report-full-label">Variação</span>
+                <span className="report-short-label">%</span>
+              </span>
+            </>
+          )}
         </div>
       </div>
 
       <div className="hierarchy-list">
-        {sectors.map((sector) => {
+        {visibleRows.map((sector) => {
           const sectorKey = sector.key || sector.name;
           const sectorOpen = openSector === sectorKey;
           return (
@@ -248,7 +345,7 @@ export default function HierarchyExplorer({
       {scope ? (
         <footer className="hierarchy-summary-footer">
           <div className="hierarchy-summary-label">
-            <strong>Resultado</strong>
+            <strong>Total da loja</strong>
             <span>Resumo final da loja selecionada</span>
           </div>
           <SummaryValues
