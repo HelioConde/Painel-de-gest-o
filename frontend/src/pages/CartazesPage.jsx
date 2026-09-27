@@ -381,11 +381,21 @@ export default function CartazesPage() {
         {activeSection === 'create' ? <div className="poster-workspace">
           <main className="poster-editor-column">
             <section className="poster-panel poster-input-panel">
-              <div className="poster-panel-heading">
+              <div className="poster-panel-heading poster-input-heading">
                 <div>
+                  <span className="poster-section-kicker">Entrada rápida</span>
                   <h2>Cole seus produtos</h2>
+                  <p>Uma linha por produto. Nós separamos descrição, complemento, gramatura e preço para você revisar.</p>
                 </div>
+                <span className="poster-current-format">{hasFormat ? `Formato: ${formatConfig.label}` : 'Escolha um formato'}</span>
               </div>
+
+              {formatId === 'A4X2_APP' ? (
+                <div className="poster-app-format-hint">
+                  <strong>Modelo App</strong>
+                  <span>Este formato adiciona preço App, validade e preço fora do App na revisão.</span>
+                </div>
+              ) : null}
 
               <label className="poster-textarea-field">
                 <span className="poster-input-subtitle">Uma linha por produto</span>
@@ -410,7 +420,7 @@ export default function CartazesPage() {
                   <span><strong>{inputCount}</strong> {inputCount === 1 ? 'produto identificado' : 'produtos identificados'} · Ctrl+Enter</span>
                 </div>
                 <button type="button" className="poster-button poster-button-primary" onClick={generatePosters} disabled={!inputCount || !hasFormat}>
-                  <LayoutGrid size={17} /> {productData.length ? 'Atualizar cartazes' : 'Gerar cartazes'}
+                  <LayoutGrid size={17} /> {productData.length ? 'Atualizar pré-visualização' : 'Gerar cartazes'}
                 </button>
               </div>
             </section>
@@ -420,6 +430,7 @@ export default function CartazesPage() {
                 <div>
                   <span className="poster-section-kicker">Conteúdo interpretado</span>
                   <h2>Lista de placas</h2>
+                  <p>Revise os campos antes de imprimir. Alterações são refletidas automaticamente na prévia.</p>
                 </div>
                 <div className="poster-table-actions">
                   {checkedProductIds.length ? <button type="button" className="poster-button poster-button-danger" onClick={deleteSelectedProducts}><Trash2 size={15} /> Excluir {checkedProductIds.length}</button> : null}
@@ -453,10 +464,14 @@ export default function CartazesPage() {
                   </table>
                 </div>
               ) : (
-                <div className="poster-empty-table">
-                  <ClipboardPaste size={22} />
-                  <strong>Nenhum produto gerado</strong>
-                  <span>Cole uma linha por produto e gere os cartazes.</span>
+                <div className="poster-empty-table poster-empty-table-guided">
+                  <span className="poster-empty-icon"><ClipboardPaste size={24} /></span>
+                  <strong>Comece colando seus produtos</strong>
+                  <span>Use uma linha por produto e clique em <b>Gerar cartazes</b> para revisar a interpretação e visualizar as placas.</span>
+                  <div>
+                    <button type="button" className="poster-button poster-button-secondary" onClick={() => handleInputAction('example')}>Usar exemplo</button>
+                    <button type="button" className="poster-button poster-button-secondary" onClick={() => handleInputAction('file')}>Importar arquivo</button>
+                  </div>
                 </div>
               )}
             </section>
@@ -468,6 +483,10 @@ export default function CartazesPage() {
                 <div>
                   <span className="poster-section-kicker">Pré-visualização</span>
                   <h2>Folha {currentPage + 1} de {pageCount}</h2>
+                  <div className="poster-preview-meta">
+                    <span>{formatConfig.label}</span>
+                    <span>{formatConfig.postersPerSheet} {formatConfig.postersPerSheet === 1 ? 'placa por folha' : 'placas por folha'}</span>
+                  </div>
                 </div>
                 <span>{firstPoster === lastPoster ? `${firstPoster} / ${productData.length}` : `${firstPoster}–${lastPoster} / ${productData.length}`}</span>
               </div>
@@ -483,6 +502,13 @@ export default function CartazesPage() {
                 onSelectProduct={selectProduct}
                 onOpen={() => productData.length && setPreviewDialogOpen(true)}
               />
+              {!productData.length ? (
+                <div className="poster-preview-empty">
+                  <LayoutGrid size={20} />
+                  <strong>Sua prévia aparecerá aqui</strong>
+                  <span>Gere os cartazes para conferir exatamente como cada folha será impressa.</span>
+                </div>
+              ) : null}
               {productData.length ? <button type="button" className="poster-preview-open" onClick={() => setPreviewDialogOpen(true)}><Maximize2 size={15} /> Ampliar placa</button> : null}
 
               <div className="poster-preview-nav">
@@ -494,7 +520,7 @@ export default function CartazesPage() {
               {formatConfig.invertedSlots.length ? <p className="poster-format-note">A placa superior já sai invertida neste formato.</p> : null}
 
               <button type="button" className="poster-button poster-button-primary poster-print-action" onClick={() => setPrintDialogOpen(true)} disabled={!productData.length || fontAvailable === false}>
-                <Printer size={17} /> Imprimir
+                <Printer size={17} /> Revisar e imprimir
               </button>
             </section>
           </aside>
