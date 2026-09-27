@@ -11607,3 +11607,199 @@ input:focus-visible {
     font-size: 7.2px;
   }
 }
+
+
+/* Monthly parity with daily improvements — 2026-09-26 */
+.page-monthly .daily-quick-summary {
+  display: grid;
+  grid-template-columns: minmax(190px, .34fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #dfe8f3;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #f8fbff 0%, #ffffff 70%);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, .03);
+}
+
+.page-monthly .daily-quick-summary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.page-monthly .daily-quick-summary small {
+  color: #75839a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.page-monthly .daily-quick-summary strong {
+  color: #142a4c;
+  font-size: 12px;
+}
+
+.page-monthly .daily-quick-summary p {
+  margin: 0;
+  color: #53647d;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.page-monthly .daily-quick-summary p b {
+  color: #172b4d;
+}
+
+.page-monthly .section-heading-compact {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.page-monthly .daily-sector-filters {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.page-monthly .daily-sector-filters button {
+  border: 1px solid #dfe6ef;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #53647d;
+  padding: 4px 7px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.page-monthly .daily-sector-filters button span {
+  margin-left: 2px;
+  opacity: .7;
+}
+
+.page-monthly .daily-sector-filters button:hover,
+.page-monthly .daily-sector-filters button.active {
+  border-color: #94a3b8;
+  background: #eef3f8;
+  color: #1e3658;
+}
+
+.page-monthly .daily-sector-filters button.positive.active {
+  border-color: #9bddb9;
+  background: #edf9f2;
+  color: #087740;
+}
+
+.page-monthly .daily-sector-filters button.negative.active {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #c32736;
+}
+
+.page-monthly .table-legend button {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.page-monthly .table-legend button svg {
+  opacity: .35;
+}
+
+.page-monthly .table-legend button:hover svg,
+.page-monthly .table-legend button.active svg {
+  opacity: 1;
+}
+
+@media (max-width: 700px) {
+  .page-monthly .daily-quick-summary {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .page-monthly .section-heading-compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px 10px;
+  }
+
+  .page-monthly .section-heading-compact > div:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .page-monthly .section-heading-compact .table-legend {
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: 0;
+  }
+
+  .page-monthly .daily-sector-filters {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-monthly .daily-sector-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-monthly .daily-sector-filters button {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 4px 8px;
+    font-size: 7.5px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-monthly .section-heading-compact {
+    padding: 8px 9px 7px;
+    gap: 6px 8px;
+  }
+
+  .page-monthly .section-heading-compact h2 {
+    font-size: 11px;
+  }
+
+  .page-monthly .daily-sector-filters {
+    padding-bottom: 1px;
+  }
+
+  .page-monthly .daily-sector-filters button {
+    width: auto;
+    min-height: 27px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 7px;
+  }
+
+  .page-monthly .table-legend button svg {
+    display: none;
+  }
+}
