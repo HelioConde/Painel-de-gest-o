@@ -10,7 +10,7 @@ import {
 
 const numeric = (value) => Number(value || 0);
 
-export function SalesKpiGrid({ scope }) {
+export function SalesKpiGrid({ scope, monthly = false }) {
   const sectors = scope?.sectors || [];
   const current = numeric(scope?.current_value);
   const previous = numeric(scope?.previous_value);
@@ -19,6 +19,10 @@ export function SalesKpiGrid({ scope }) {
   const rising = sectors.filter(
     (sector) => numeric(sector.variation_percent) > 0,
   ).length;
+  const falling = sectors.filter(
+    (sector) => numeric(sector.variation_percent) < 0,
+  ).length;
+  const stable = Math.max(0, sectors.length - rising - falling);
 
   return (
     <section className="kpi-grid sales-kpi-grid">
@@ -26,7 +30,6 @@ export function SalesKpiGrid({ scope }) {
         label="Venda atual"
         value={money(current)}
         detail={null}
-        trend={variation}
         icon={CircleDollarSign}
         tone="green"
       />
@@ -41,7 +44,6 @@ export function SalesKpiGrid({ scope }) {
         label="Diferença"
         value={money(difference)}
         detail={null}
-        trend={variation}
         icon={TrendingUp}
         tone="blue"
       />
@@ -56,7 +58,7 @@ export function SalesKpiGrid({ scope }) {
       <KpiCard
         label="Setores em alta"
         value={`${rising} de ${sectors.length}`}
-        detail={null}
+        detail={monthly ? null : `${falling} em queda · ${stable} estáveis`}
         icon={TrendingUp}
         tone="mint"
       />
@@ -114,9 +116,21 @@ export function SalesCharts({ snapshot, scope, monthly = false }) {
           compareKey="previous"
         />
       </ChartCard>
-      <ChartCard eyebrow="TOP 5" title="Maiores setores">
-        <SimpleBarChart items={bySales} valueKey="value" />
-      </ChartCard>
+      {monthly ? (
+        <ChartCard eyebrow="TOP 5" title="Maiores setores">
+          <SimpleBarChart items={bySales} valueKey="value" />
+        </ChartCard>
+      ) : (
+        <ChartCard eyebrow="IMPACTO" title="Maiores impactos no resultado">
+          <SimpleBarChart
+            items={[...sectors].sort(
+              (left, right) => Math.abs(right.difference) - Math.abs(left.difference),
+            )}
+            valueKey="difference"
+            toneBySign
+          />
+        </ChartCard>
+      )}
       {monthly ? (
         <>
           <ChartCard eyebrow="CRESCIMENTOS" title="Top avanços financeiros">
