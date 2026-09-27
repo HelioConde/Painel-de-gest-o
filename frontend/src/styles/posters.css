@@ -761,3 +761,243 @@
   src: url("../assets/fonts/primor-cartazes.otf") format("opentype"), local("Burbank Big Cd Bk");
   font-display: block;
 }
+
+
+/* Cartaz Rapido usability refinements — 2026-09-26 */
+.poster-input-panel {
+  border-color: #d6e3f3;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, .055);
+}
+
+.poster-input-heading {
+  align-items: flex-start;
+}
+
+.poster-input-heading > div {
+  min-width: 0;
+}
+
+.poster-input-heading p,
+.poster-table-heading p {
+  max-width: 680px;
+  margin: 5px 0 0;
+  color: #738197;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.poster-current-format {
+  flex: 0 0 auto;
+  min-height: 27px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border: 1px solid #d9e5f5;
+  border-radius: 999px;
+  background: #f6f9ff;
+  color: #315786;
+  font-size: 9px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.poster-textarea-field textarea {
+  min-height: 160px;
+  border-color: #cfdbeb;
+  background: linear-gradient(180deg, #fff 0%, #fcfdff 100%);
+  font-size: 12px;
+  line-height: 1.55;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.poster-textarea-field textarea:hover {
+  border-color: #b8c9df;
+}
+
+.poster-textarea-field textarea:focus {
+  background: #fff;
+}
+
+.poster-app-format-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  padding: 8px 10px;
+  border: 1px solid #f2d5df;
+  border-radius: 8px;
+  background: #fff8fa;
+}
+
+.poster-app-format-hint strong {
+  flex: 0 0 auto;
+  color: #b4235a;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.poster-app-format-hint span {
+  color: #7a5b69;
+  font-size: 9.5px;
+}
+
+.poster-input-footer .poster-button-primary {
+  min-width: 175px;
+}
+
+.poster-products-panel {
+  border-color: #dfe7f1;
+}
+
+.poster-table-heading {
+  align-items: flex-start;
+}
+
+.poster-table-heading > div:first-child {
+  min-width: 0;
+}
+
+.poster-product-table tbody tr {
+  transition: background .14s ease, box-shadow .14s ease, transform .14s ease;
+}
+
+.poster-product-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.poster-product-table tbody tr.selected {
+  background: #eef5ff;
+  box-shadow: inset 4px 0 #2563eb;
+}
+
+.poster-product-table tbody tr.selected input {
+  border-color: #c9d9f0;
+  background: #fff;
+}
+
+.poster-empty-table-guided {
+  min-height: 250px;
+  padding: 24px;
+}
+
+.poster-empty-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #eef5ff;
+  color: #2563eb;
+}
+
+.poster-empty-table-guided strong {
+  margin-top: 2px;
+  color: #293b55;
+  font-size: 13px;
+}
+
+.poster-empty-table-guided > span:not(.poster-empty-icon) {
+  max-width: 430px;
+  color: #78869a;
+  line-height: 1.45;
+}
+
+.poster-empty-table-guided > div {
+  display: flex;
+  gap: 7px;
+  margin-top: 5px;
+}
+
+.poster-preview-heading {
+  align-items: flex-start;
+}
+
+.poster-preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.poster-preview-meta span {
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  border: 1px solid #dce5ef;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #63718a;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.poster-preview-empty {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  margin: -88px 18px 35px;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  color: #8794a7;
+  text-align: center;
+}
+
+.poster-preview-empty svg {
+  color: #6f8fbd;
+}
+
+.poster-preview-empty strong {
+  color: #52647d;
+  font-size: 10.5px;
+}
+
+.poster-preview-empty span {
+  max-width: 240px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.poster-preview-open {
+  transition: border-color .14s ease, background .14s ease, color .14s ease;
+}
+
+.poster-print-action {
+  min-height: 38px;
+  font-size: 11px;
+}
+
+@media screen and (max-width: 620px) {
+  .poster-input-heading {
+    gap: 8px;
+  }
+
+  .poster-current-format {
+    align-self: flex-start;
+  }
+
+  .poster-textarea-field textarea {
+    min-height: 145px;
+  }
+
+  .poster-app-format-hint {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .poster-empty-table-guided > div {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .poster-empty-table-guided > div .poster-button {
+    width: 100%;
+  }
+
+  .poster-preview-meta {
+    margin-top: 4px;
+  }
+}
