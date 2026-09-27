@@ -11353,3 +11353,176 @@ input:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Daily sales management improvements — 2026-09-26 */
+.page-daily .daily-quick-summary {
+  display: grid;
+  grid-template-columns: minmax(190px, .34fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #dfe8f3;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #f8fbff 0%, #ffffff 70%);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, .03);
+}
+
+.page-daily .daily-quick-summary > div {
+  display: grid;
+  gap: 2px;
+}
+
+.page-daily .daily-quick-summary small {
+  color: #75839a;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.page-daily .daily-quick-summary strong {
+  color: #142a4c;
+  font-size: 12px;
+}
+
+.page-daily .daily-quick-summary p {
+  margin: 0;
+  color: #53647d;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.page-daily .daily-quick-summary p b {
+  color: #172b4d;
+}
+
+.page-daily .section-heading-compact {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.page-daily .daily-sector-filters {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.page-daily .daily-sector-filters button {
+  border: 1px solid #dfe6ef;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #53647d;
+  padding: 4px 7px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.page-daily .daily-sector-filters button span {
+  margin-left: 2px;
+  opacity: .7;
+}
+
+.page-daily .daily-sector-filters button:hover,
+.page-daily .daily-sector-filters button.active {
+  border-color: #94a3b8;
+  background: #eef3f8;
+  color: #1e3658;
+}
+
+.page-daily .daily-sector-filters button.positive.active {
+  border-color: #9bddb9;
+  background: #edf9f2;
+  color: #087740;
+}
+
+.page-daily .daily-sector-filters button.negative.active {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #c32736;
+}
+
+.page-daily .table-legend button {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.page-daily .table-legend button svg {
+  opacity: .35;
+}
+
+.page-daily .table-legend button:hover svg,
+.page-daily .table-legend button.active svg {
+  opacity: 1;
+}
+
+.page-daily .kpi-card small em {
+  max-width: 100%;
+}
+
+.page-daily .simple-bar-row .bar-positive {
+  background: #16a34a;
+}
+
+.page-daily .simple-bar-row .bar-negative {
+  background: #ef4444;
+}
+
+.page-daily .simple-bar-row .bar-neutral {
+  background: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .page-daily .daily-sector-filters {
+    width: 100%;
+    margin-left: 0;
+    order: 3;
+  }
+
+  .page-daily .daily-sector-filters button {
+    flex: 1 1 auto;
+  }
+
+  .page-daily .table-legend {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-daily .daily-quick-summary {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-daily .daily-sector-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-daily .daily-sector-filters button {
+    width: 100%;
+  }
+
+  .page-daily .table-legend button svg {
+    display: none;
+  }
+}
