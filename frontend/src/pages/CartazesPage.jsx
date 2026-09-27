@@ -541,6 +541,19 @@ export default function CartazesPage() {
           </aside>
         </div> : null}
 
+        {activeSection === 'create' && productData.length ? (
+          <button
+            type="button"
+            className="poster-mobile-preview-fab"
+            onClick={() => setPreviewDialogOpen(true)}
+            aria-label={`Ver pré-visualização dos ${productData.length} cartazes`}
+          >
+            <Maximize2 size={18} />
+            <span>Ver prévia</span>
+            <b>{productData.length}</b>
+          </button>
+        ) : null}
+
         {activeSection === 'history' ? (
           <section className="poster-panel poster-history-panel">
             <div className="poster-panel-heading">
