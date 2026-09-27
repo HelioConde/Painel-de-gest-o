@@ -6,6 +6,7 @@ import {
   MessageSquare,
   Send,
   ShieldAlert,
+  X,
   Sparkles,
   TrendingDown,
   TrendingUp,
@@ -219,17 +220,13 @@ function LossResults({ analysis, context }) {
 
 function SalesResults({ analysis, context }) {
   const sectors = context?.setores || [];
-  const prioritySectors = [...sectors]
-    .filter((sector) => Number(sector.diferenca || 0) !== 0)
-    .sort(
-      (a, b) =>
-        Math.abs(Number(b.diferenca || 0)) -
-        Math.abs(Number(a.diferenca || 0)),
-    )
-    .slice(0, 5);
   const sectorLookup = new Map(
     sectors.map((sector) => [String(sector.setor || "").toLocaleUpperCase("pt-BR"), sector]),
   );
+  const rising = sectors.filter((sector) => Number(sector.variacaoPercentual || 0) > 0).length;
+  const falling = sectors.filter((sector) => Number(sector.variacaoPercentual || 0) < 0).length;
+  const stable = Math.max(0, sectors.length - rising - falling);
+
   return (
     <>
       <section className="ai-summary-card ai-summary-sales">
@@ -244,15 +241,13 @@ function SalesResults({ analysis, context }) {
         <div className="ai-indicators">
           <span>{analysis.indicadores?.situacaoVendas}</span>
           <span>{analysis.indicadores?.variacaoVsAnterior}</span>
-          <span>
-            {analysis.indicadores?.setoresEmAlta ?? 0} setores em alta
-          </span>
-          <span>
-            {analysis.indicadores?.setoresEmQueda ?? 0} setores em queda
-          </span>
-          <span>{analysis.indicadores?.setoresEstaveis ?? 0} estáveis</span>
+          <span>{rising} setores em alta</span>
+          <span>{falling} setores em queda</span>
+          <span>{stable} estáveis</span>
+          <span>{sectors.length} setores analisados</span>
         </div>
       </section>
+
       <section className="ai-intelligence-grid">
         <ChartCard eyebrow="IMPACTO FINANCEIRO" title="Vendas por setor" className="ai-standard-chart">
           <SimpleBarChart
@@ -268,7 +263,7 @@ function SalesResults({ analysis, context }) {
             compareKey="previous"
           />
         </ChartCard>
-        <ChartCard eyebrow="VARIAÇÃO FINANCEIRA" title="Impacto por setor" className="ai-standard-chart">
+        <ChartCard eyebrow="IMPACTO NO RESULTADO" title="Contribuição por setor" className="ai-standard-chart">
           <SimpleBarChart
             items={sectors
               .map((sector) => ({
@@ -282,6 +277,7 @@ function SalesResults({ analysis, context }) {
           />
         </ChartCard>
       </section>
+
       {analysis.destaquesPositivos?.length ? (
         <section>
           <div className="ai-section-title">
@@ -292,7 +288,7 @@ function SalesResults({ analysis, context }) {
             </div>
           </div>
           <div className="ai-alert-grid">
-            {analysis.destaquesPositivos.slice(0, 6).map((item, index) => (
+            {analysis.destaquesPositivos.slice(0, 3).map((item, index) => (
               <article
                 key={`${item.setor}-${index}`}
                 className="ai-alert ai-positive-card"
@@ -318,62 +314,8 @@ function SalesResults({ analysis, context }) {
           </div>
         </section>
       ) : null}
-      <AlertCards items={analysis.alertas} sales />
-      <section className="ai-two-column">
-        <div className="ai-panel">
-          <div className="ai-section-title">
-            <TrendingUp size={18} />
-            <div>
-              <span>IMPACTO POR SETOR</span>
-              <h2>Setores prioritários</h2>
-            </div>
-          </div>
-          {prioritySectors.map((item, index) => {
-            const difference = Number(item.diferenca || 0);
-            return (
-              <article
-                className={`ai-priority-row ${difference < 0 ? "is-negative" : "is-positive"}`}
-                key={`${item.setor}-${index}`}
-              >
-                <b>{index + 1}</b>
-                <div>
-                  <strong>
-                    <SectorIcon name={item.setor} />
-                    {item.setor}
-                  </strong>
-                  <p>
-                    {difference < 0
-                      ? "Impacto negativo relevante no resultado consolidado."
-                      : "Contribuição positiva relevante para o resultado consolidado."}
-                  </p>
-                  <span>
-                    Venda {money(item.vendaAtual)} · impacto {money(difference)} · {percent(item.variacaoPercentual)}
-                  </span>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-        <div className="ai-panel">
-          <div className="ai-section-title">
-            <Sparkles size={18} />
-            <div>
-              <span>OPORTUNIDADES</span>
-              <h2>Onde avançar</h2>
-            </div>
-          </div>
-          {analysis.oportunidades?.slice(0, 5).map((item, index) => (
-            <article className="ai-action-row" key={`${item.titulo}-${index}`}>
-              <b>{index + 1}</b>
-              <div>
-                <strong>{item.titulo}</strong>
-                <p>{item.descricao}</p>
-                <span>{item.impacto || "médio"} impacto</span>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+
+      <AlertCards items={analysis.alertas?.slice(0, 3)} sales />
     </>
   );
 }
@@ -382,13 +324,42 @@ function SharedResults({
   analysis,
   activeAnalysis,
   context,
-  conversation,
-  question,
-  asking,
-  onQuestionChange,
-  onSuggestion,
-  onSubmit,
 }) {
+  const salesSectors = activeAnalysis === "sales" ? context?.setores || [] : [];
+  const biggestPositive = [...salesSectors]
+    .filter((item) => Number(item.diferenca || 0) > 0)
+    .sort((a, b) => Number(b.diferenca || 0) - Number(a.diferenca || 0))[0];
+  const biggestNegative = [...salesSectors]
+    .filter((item) => Number(item.diferenca || 0) < 0)
+    .sort((a, b) => Number(a.diferenca || 0) - Number(b.diferenca || 0))[0];
+
+  const salesActions = [
+    biggestNegative
+      ? {
+          acao: `Investigar ${biggestNegative.setor}`,
+          justificativa: `Queda de ${money(Math.abs(Number(biggestNegative.diferenca || 0)))} (${percent(biggestNegative.variacaoPercentual)}). Verifique disponibilidade, preço, abastecimento e execução comercial.`,
+          setor: biggestNegative.setor,
+        }
+      : null,
+    biggestPositive
+      ? {
+          acao: `Monitorar ${biggestPositive.setor}`,
+          justificativa: `Maior contribuição positiva do período: ${money(Number(biggestPositive.diferenca || 0))} (${percent(biggestPositive.variacaoPercentual)}). Identifique os itens e condições que sustentaram o avanço.`,
+          setor: biggestPositive.setor,
+        }
+      : null,
+    {
+      acao: "Comparar a evolução nas próximas coletas",
+      justificativa: "Confirme se os movimentos positivos e negativos se repetem antes de tratá-los como tendência comercial.",
+      setor: null,
+    },
+  ].filter(Boolean);
+
+  const actions =
+    activeAnalysis === "sales"
+      ? salesActions
+      : analysis.acoesRecomendadas?.slice(0, 5) || [];
+
   return (
     <div className="ai-results">
       {activeAnalysis === "sales" ? (
@@ -396,7 +367,8 @@ function SharedResults({
       ) : (
         <LossResults analysis={analysis} context={context} />
       )}
-      <section className="ai-two-column">
+
+      <section className="ai-two-column ai-final-guidance">
         <div className="ai-panel">
           <div className="ai-section-title">
             <CheckCircle2 size={18} />
@@ -405,7 +377,7 @@ function SharedResults({
               <h2>Ações recomendadas</h2>
             </div>
           </div>
-          {analysis.acoesRecomendadas?.slice(0, 5).map((item, index) => (
+          {actions.map((item, index) => (
             <article className="ai-action-row" key={`${item.acao}-${index}`}>
               <b>{item.prioridade || index + 1}</b>
               <div>
@@ -416,11 +388,12 @@ function SharedResults({
             </article>
           ))}
         </div>
+
         <div className="ai-panel">
           <div className="ai-section-title">
             <MessageSquare size={18} />
             <div>
-              <span>PONTOS EM ABERTO</span>
+              <span>PRÓXIMAS VERIFICAÇÕES</span>
               <h2>O que investigar</h2>
             </div>
           </div>
@@ -431,48 +404,86 @@ function SharedResults({
           </ul>
         </div>
       </section>
-      <section className="ai-chat-panel">
-        <div className="ai-section-title">
-          <MessageSquare size={18} />
-          <div>
-            <span>CONVERSA CONTEXTUAL</span>
-            <h2>Pergunte sobre os resultados</h2>
-          </div>
-        </div>
-        <div className="ai-suggestions">
-          {SUGGESTIONS.map((item) => (
-            <button type="button" key={item} onClick={() => onSuggestion(item)}>
-              {item}
-            </button>
-          ))}
-        </div>
-        {conversation.map((item, index) => (
-          <div className="ai-message" key={index}>
-            <strong>{item.question}</strong>
-            <p>{item.answer}</p>
-          </div>
-        ))}
-        <form onSubmit={onSubmit}>
-          <input
-            value={question}
-            onChange={(event) => onQuestionChange(event.target.value)}
-            placeholder="Pergunte sobre os resultados"
-            aria-label="Pergunte sobre os resultados"
-          />
-          <button
-            type="submit"
-            disabled={!question.trim() || asking}
-            aria-label="Enviar pergunta"
-          >
-            {asking ? (
-              <LoaderCircle className="spin" size={17} />
-            ) : (
-              <Send size={17} />
-            )}
-          </button>
-        </form>
-      </section>
     </div>
+  );
+}
+
+function AiAssistant({
+  open,
+  onToggle,
+  conversation,
+  question,
+  asking,
+  onQuestionChange,
+  onSuggestion,
+  onSubmit,
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        className={`ai-assistant-fab ${open ? "open" : ""}`}
+        onClick={onToggle}
+        aria-label={open ? "Fechar assistente de IA" : "Perguntar à IA"}
+        title="Perguntar à IA"
+      >
+        {open ? <X size={21} /> : <Sparkles size={22} />}
+        {!open ? <span>Perguntar à IA</span> : null}
+      </button>
+
+      {open ? (
+        <aside className="ai-assistant-panel" aria-label="Assistente de análise">
+          <header>
+            <div>
+              <span><Sparkles size={14} /> ASSISTENTE</span>
+              <h2>Pergunte sobre os resultados</h2>
+            </div>
+            <button type="button" onClick={onToggle} aria-label="Fechar assistente">
+              <X size={18} />
+            </button>
+          </header>
+
+          <div className="ai-assistant-body">
+            <div className="ai-suggestions">
+              {SUGGESTIONS.map((item) => (
+                <button type="button" key={item} onClick={() => onSuggestion(item)}>
+                  {item}
+                </button>
+              ))}
+            </div>
+
+            <div className="ai-assistant-messages">
+              {conversation.length ? conversation.map((item, index) => (
+                <div className="ai-message" key={index}>
+                  <strong>{item.question}</strong>
+                  <p>{item.answer}</p>
+                </div>
+              )) : (
+                <p className="ai-assistant-empty">
+                  Posso explicar os indicadores, comparar setores e ajudar a priorizar o que investigar.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <form onSubmit={onSubmit}>
+            <input
+              value={question}
+              onChange={(event) => onQuestionChange(event.target.value)}
+              placeholder="Pergunte sobre os resultados"
+              aria-label="Pergunte sobre os resultados"
+            />
+            <button
+              type="submit"
+              disabled={!question.trim() || asking}
+              aria-label="Enviar pergunta"
+            >
+              {asking ? <LoaderCircle className="spin" size={17} /> : <Send size={17} />}
+            </button>
+          </form>
+        </aside>
+      ) : null}
+    </>
   );
 }
 
@@ -504,6 +515,8 @@ export default function AiAnalysisPage() {
   const [question, setQuestion] = useState("");
   const [conversations, setConversations] = useState({ losses: [], sales: [] });
   const [asking, setAsking] = useState(false);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [analysisUpdatedAt, setAnalysisUpdatedAt] = useState({ losses: null, sales: null });
 
   useEffect(() => {
     if (allowsSales && !allowsLosses) setActiveAnalysis("sales");
@@ -577,6 +590,7 @@ export default function AiAnalysisPage() {
       const result = await requestAiAnalysis(context, { analysisType: type });
       if (type === "losses") setLossAnalysis(result.analysis);
       else setSalesAnalysis(result.analysis);
+      setAnalysisUpdatedAt((current) => ({ ...current, [type]: new Date() }));
       setConversations((current) => ({ ...current, [type]: [] }));
     } catch (requestError) {
       if (type === "losses") setErrorLosses(requestError.message);
@@ -659,6 +673,7 @@ export default function AiAnalysisPage() {
                   setLossAnalysis(null);
                   setSalesAnalysis(null);
                   setConversations({ losses: [], sales: [] });
+                  setAssistantOpen(false);
                 }}
               >
                 {storeOptions.map((row) => (
@@ -713,6 +728,11 @@ export default function AiAnalysisPage() {
               {activeLoading ? <LoaderCircle className="spin" size={16} /> : <Sparkles size={16} />}
               {activeLoading ? "Analisando..." : "Atualizar análise"}
             </button>
+            {analysisUpdatedAt[activeAnalysis] ? (
+              <small className="ai-last-updated">
+                Última análise: {analysisUpdatedAt[activeAnalysis].toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+              </small>
+            ) : null}
           </section>
           <section
             className="kpi-grid ai-kpi-grid"
@@ -816,17 +836,26 @@ export default function AiAnalysisPage() {
             </div>
           ) : null}
           {analysis ? (
-            <SharedResults
-              analysis={analysis}
-              activeAnalysis={activeAnalysis}
-              context={activeContext}
-              conversation={conversations[activeAnalysis]}
-              question={question}
-              asking={asking}
-              onQuestionChange={setQuestion}
-              onSuggestion={setQuestion}
-              onSubmit={submitQuestion}
-            />
+            <>
+              <SharedResults
+                analysis={analysis}
+                activeAnalysis={activeAnalysis}
+                context={activeContext}
+              />
+              <AiAssistant
+                open={assistantOpen}
+                onToggle={() => setAssistantOpen((current) => !current)}
+                conversation={conversations[activeAnalysis]}
+                question={question}
+                asking={asking}
+                onQuestionChange={setQuestion}
+                onSuggestion={(value) => {
+                  setQuestion(value);
+                  setAssistantOpen(true);
+                }}
+                onSubmit={submitQuestion}
+              />
+            </>
           ) : null}
         </>
       ) : null}
