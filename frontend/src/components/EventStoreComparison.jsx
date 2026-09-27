@@ -460,42 +460,6 @@ export default function EventStoreComparison({
         </ChartCard>
       </section>
 
-      <section className="event-manager-insights" aria-label="Diagnóstico gerencial do evento">
-        <header>
-          <small>DIAGNÓSTICO DO EVENTO</small>
-          <h2>O que merece atenção</h2>
-        </header>
-        <div className="event-manager-insight-grid">
-          <article className="positive">
-            <small>Lojas em crescimento</small>
-            <strong>{positiveRows.length} de {rows.length}</strong>
-            <span>Impacto positivo de {metricValue(positiveImpact, metric, unit)}</span>
-          </article>
-          <article className="negative">
-            <small>Lojas em queda</small>
-            <strong>{negativeRows.length} de {rows.length}</strong>
-            <span>Impacto negativo de {metricValue(Math.abs(negativeImpact), metric, unit)}</span>
-          </article>
-          <article>
-            <small>Maior impacto negativo</small>
-            <strong>{worstImpact ? `Loja ${worstImpact.storeCode}` : "—"}</strong>
-            <span>
-              {worstImpact
-                ? metricValue(numberOrZero(worstImpact.item?.[fields.difference]), metric, unit)
-                : "Sem dados"}
-            </span>
-          </article>
-          <article>
-            <small>Principal destaque</small>
-            <strong>{best ? `Loja ${best.storeCode}` : "—"}</strong>
-            <span>
-              {best
-                ? `${percent(best.item?.[fields.variation])} · ${metricValue(numberOrZero(best.item?.[fields.difference]), metric, unit)}`
-                : "Sem dados"}
-            </span>
-          </article>
-        </div>
-      </section>
     </section>
   );
 }
