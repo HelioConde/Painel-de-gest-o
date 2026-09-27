@@ -106,7 +106,7 @@ export default function EventsPage() {
                   {periodLabel(selected.current_start, selected.current_end)}
                 </span>
                 <small className="dashboard-compare-label">
-                  Comp. {periodLabel(selected.previous_start, selected.previous_end)}
+                  Comparado com {periodLabel(selected.previous_start, selected.previous_end)}
                 </small>
               </>
             ) : (
