@@ -11526,3 +11526,84 @@ input:focus-visible {
     display: none;
   }
 }
+
+
+/* Daily mobile sector filter refinement — 2026-09-26 */
+@media (max-width: 700px) {
+  .page-daily .section-heading-compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 7px 10px;
+  }
+
+  .page-daily .section-heading-compact > div:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .page-daily .section-heading-compact .table-legend {
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: 0;
+  }
+
+  .page-daily .daily-sector-filters {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-daily .daily-sector-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-daily .daily-sector-filters button {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 4px 8px;
+    font-size: 7.5px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-daily .section-heading-compact {
+    padding: 8px 9px 7px;
+    gap: 6px 8px;
+  }
+
+  .page-daily .section-heading-compact h2 {
+    font-size: 11px;
+  }
+
+  .page-daily .daily-sector-filters {
+    display: flex;
+    grid-template-columns: none;
+    padding-bottom: 1px;
+  }
+
+  .page-daily .daily-sector-filters button {
+    width: auto;
+    min-height: 27px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 7px;
+  }
+
+  .page-daily .daily-sector-filters button span {
+    margin-left: 1px;
+  }
+
+  .page-daily .table-legend {
+    gap: 3px;
+    font-size: 7.2px;
+  }
+}
