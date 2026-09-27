@@ -58,14 +58,14 @@ export default function LossProductTable({ products, label, ranking = 'value', s
                   : ''
             return (
             <tr className={anomalyClass} key={`${product.store_code}-${product.product_code || product.product_name}-${product.rank}`}>
-              <td className="loss-top-rank">{product.rank}</td>
-              <td className="loss-top-code">{product.product_code || '—'}</td>
-              <td className="loss-top-product-name"><div className="loss-top-product-scroll" title={product.product_name || 'Produto'}>{product.product_name || 'Produto'}</div></td>
-              <td className="loss-top-quantity">{quantity(product.loss_quantity, product.unit || 'QTD')}</td>
-              <td>{sold(product.quantity_sold)}</td>
-              <td>{percent(product.loss_quantity_sales_percent)}</td>
-              {hasValue ? <td>{money(product.total_value)}</td> : null}
-              {hasRankingMetrics ? <><td>{percent(product.sector_share_percent)}</td><td>{comparison(product.comparison)}</td></> : null}
+              <td className="loss-top-rank" data-label="Posição">{product.rank}</td>
+              <td className="loss-top-code" data-label="Código">{product.product_code || '—'}</td>
+              <td className="loss-top-product-name" data-label="Produto"><div className="loss-top-product-scroll" title={product.product_name || 'Produto'}>{product.product_name || 'Produto'}</div></td>
+              <td className="loss-top-quantity" data-label="Qtd. perda">{quantity(product.loss_quantity, product.unit || 'QTD')}</td>
+              <td data-label="Qtd. vendida">{sold(product.quantity_sold)}</td>
+              <td data-label="% perda">{percent(product.loss_quantity_sales_percent)}</td>
+              {hasValue ? <td data-label="Valor perdido">{money(product.total_value)}</td> : null}
+              {hasRankingMetrics ? <><td data-label="% setor">{percent(product.sector_share_percent)}</td><td data-label="Vs. anterior">{comparison(product.comparison)}</td></> : null}
             </tr>
             )
           })}
