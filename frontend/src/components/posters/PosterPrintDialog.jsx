@@ -1,4 +1,5 @@
 import { Minus, Plus, Printer, X } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 
 export default function PosterPrintDialog({ open, format, productCount, pageCount, printConfig, onClose, onPrint }) {
@@ -21,7 +22,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
 
   const totalSheets = pageCount * copies
 
-  return (
+  return createPortal(
     <div className="poster-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="poster-modal" role="dialog" aria-modal="true" aria-labelledby="poster-print-title">
         <header>
@@ -59,6 +60,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
           </button>
         </footer>
       </section>
-    </div>
+    </div>,
+    document.body,
   )
 }
