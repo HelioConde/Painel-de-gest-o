@@ -58,7 +58,7 @@ export function SalesKpiGrid({ scope, monthly = false }) {
       <KpiCard
         label="Setores em alta"
         value={`${rising} de ${sectors.length}`}
-        detail={monthly ? null : `${falling} em queda · ${stable} estáveis`}
+        detail={`${falling} em queda · ${stable} estáveis`}
         icon={TrendingUp}
         tone="mint"
       />
