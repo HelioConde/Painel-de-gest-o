@@ -32,6 +32,12 @@ LOSS_PRODUCT_EXCLUSIONS = (
     ),
 )
 
+# Termos gerenciais: qualquer variação do nome contendo estes termos é excluída.
+# A normalização remove acentos, então "BRÓCOLIS", "BROCOLIS KG" etc. são cobertos.
+LOSS_PRODUCT_EXCLUSION_TERMS = (
+    'BROCOLIS',
+)
+
 
 def normalize_loss_text(value: object) -> str:
     text = unicodedata.normalize('NFD', unescape(str(value or '')).strip())
