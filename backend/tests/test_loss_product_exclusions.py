@@ -49,3 +49,10 @@ def test_filter_removes_muchiba_before_totals_and_ranking():
     assert filtered['grand_totals']['loss_quantity'] == 24.98
     assert filtered['grand_totals']['total_value'] == 80
     assert filtered['quality']['excluded_product_count'] == 1
+
+
+def test_excludes_broccoli_name_variants():
+    assert is_excluded_loss_product({'product_code': '1', 'product_name': 'BRÓCOLIS'})
+    assert is_excluded_loss_product({'product_code': '2', 'product_name': 'BROCOLIS KG'})
+    assert is_excluded_loss_product({'product_code': '3', 'product_name': 'BROCOLIS NINJA UN'})
+    assert not is_excluded_loss_product({'product_code': '4', 'product_name': 'COUVE FLOR'})
