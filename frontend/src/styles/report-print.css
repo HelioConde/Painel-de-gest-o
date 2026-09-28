@@ -1536,3 +1536,40 @@
     letter-spacing: .02em !important;
   }
 }
+
+
+/* PRINT V3.9 — mantém os 5 KPIs de vendas em uma única linha */
+@media print {
+  .page-daily .sales-kpi-grid,
+  .page-monthly .sales-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 1.8mm !important;
+    align-items: stretch !important;
+  }
+
+  .page-daily .sales-kpi-grid .kpi-card,
+  .page-monthly .sales-kpi-grid .kpi-card {
+    grid-column: auto !important;
+    min-width: 0 !important;
+    min-height: 15.5mm !important;
+    padding: 1.8mm 2.1mm !important;
+  }
+
+  .page-daily .sales-kpi-grid .kpi-card:last-child,
+  .page-monthly .sales-kpi-grid .kpi-card:last-child {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .page-daily .sales-kpi-grid .kpi-card > strong,
+  .page-monthly .sales-kpi-grid .kpi-card > strong {
+    font-size: 9.8pt !important;
+  }
+
+  .page-daily .sales-kpi-grid .kpi-card > small,
+  .page-monthly .sales-kpi-grid .kpi-card > small {
+    margin-top: .45mm !important;
+    font-size: 5.9pt !important;
+  }
+}
