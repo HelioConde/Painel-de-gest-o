@@ -2,6 +2,7 @@ import { LOSS_STORE_ORDER } from './losses.js'
 
 const EXCLUDED_CODES = new Set(['410364'])
 const EXCLUDED_NAMES = new Set(['MUCHIBA OSSO'])
+const EXCLUDED_NAME_TERMS = ['BROCOLIS']
 
 function number(value) {
   const numeric = Number(value)
