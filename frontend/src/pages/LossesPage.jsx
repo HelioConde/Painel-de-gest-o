@@ -102,7 +102,7 @@ export default function LossesPage() {
   };
 
   return (
-    <div className="page losses-page page-tight page-view-enter">
+    <div className={`page losses-page losses-view-${view} page-tight page-view-enter`}>
       {loading && !data && <LoadingState />}
       {!loading && error && !data && (
         <ErrorState error={error} onRetry={refresh} />
