@@ -99,3 +99,11 @@ test('sector view groups stores and keeps the top-loss ordering', () => {
   assert.deepEqual(green.groups[0].products.map((item) => item.product_code), ['46', '41'])
   assert.deepEqual(meat.groups.map((group) => group.store_code), ['212'])
 })
+
+
+test('excludes broccoli variants by normalized product name', () => {
+  assert.equal(isExcludedLossProduct(product('501', 'BRÓCOLIS', 2)), true)
+  assert.equal(isExcludedLossProduct(product('502', 'BROCOLIS KG', 2)), true)
+  assert.equal(isExcludedLossProduct(product('503', 'Brocolis Ninja Unidade', 2)), true)
+  assert.equal(isExcludedLossProduct(product('504', 'COUVE FLOR', 2)), false)
+})
