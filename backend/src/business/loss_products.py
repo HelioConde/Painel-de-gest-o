@@ -6,6 +6,7 @@ from typing import Any
 
 from src.config.loss_rules import (
     LOSS_PRODUCT_EXCLUSIONS,
+    LOSS_PRODUCT_EXCLUSION_TERMS,
     classify_loss_mip,
     normalize_loss_text,
 )
@@ -21,6 +22,12 @@ def is_excluded_loss_product(product: dict[str, Any] | None) -> bool:
     product = product or {}
     code = _product_code(product.get('product_code'))
     name = normalize_loss_text(product.get('product_name'))
+    if any(
+        term and term in name
+        for term in (normalize_loss_text(item) for item in LOSS_PRODUCT_EXCLUSION_TERMS)
+    ):
+        return True
+
     return any(
         exclusion.active
         and (
