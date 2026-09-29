@@ -430,6 +430,86 @@ export default function EventStoreComparison({
               )}
             </table>
           </div>
+
+          <div className="event-mobile-store-list" aria-label="Desempenho por loja">
+            {visibleRows.map((row) => {
+              const rowCurrent = numberOrZero(row.item?.[fields.current]);
+              const rowPrevious = numberOrZero(row.item?.[fields.previous]);
+              const rowDifference = numberOrZero(row.item?.[fields.difference]);
+              const rowVariation = numberOrZero(row.item?.[fields.variation]);
+              return (
+                <article
+                  key={`mobile-${row.storeCode}`}
+                  className={`event-mobile-store-card store-${row.storeCode} ${performanceClass(rowVariation)}`}
+                >
+                  <header>
+                    <span className="event-store-sequence">{row.sequence}</span>
+                    <div>
+                      <strong>{row.storeName.replace(/^SUPERMERCADO\s+/i, "")}</strong>
+                      <small>Loja {row.storeCode}</small>
+                    </div>
+                    <StatusBadge value={rowVariation} />
+                  </header>
+                  <div className="event-mobile-store-metrics">
+                    <div>
+                      <small>{currentYear}</small>
+                      <strong>{metricValue(rowCurrent, metric, unit)}</strong>
+                    </div>
+                    <div>
+                      <small>{previousYear}</small>
+                      <strong>{metricValue(rowPrevious, metric, unit)}</strong>
+                    </div>
+                    <div>
+                      <small>Diferença</small>
+                      <strong className={valueClass(rowDifference)}>
+                        {metricValue(rowDifference, metric, unit)}
+                      </strong>
+                    </div>
+                    <div>
+                      <small>Variação</small>
+                      <strong className={valueClass(rowVariation)}>
+                        {percent(rowVariation)}
+                      </strong>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+
+            {total && filter === "all" ? (
+              <article className="event-mobile-store-card event-mobile-store-total">
+                <header>
+                  <div>
+                    <strong>Todas as lojas</strong>
+                    <small>Resultado consolidado</small>
+                  </div>
+                  <StatusBadge value={variation} />
+                </header>
+                <div className="event-mobile-store-metrics">
+                  <div>
+                    <small>{currentYear}</small>
+                    <strong>{metricValue(current, metric, unit)}</strong>
+                  </div>
+                  <div>
+                    <small>{previousYear}</small>
+                    <strong>{metricValue(previous, metric, unit)}</strong>
+                  </div>
+                  <div>
+                    <small>Diferença</small>
+                    <strong className={valueClass(difference)}>
+                      {metricValue(difference, metric, unit)}
+                    </strong>
+                  </div>
+                  <div>
+                    <small>Variação</small>
+                    <strong className={valueClass(variation)}>
+                      {percent(variation)}
+                    </strong>
+                  </div>
+                </div>
+              </article>
+            ) : null}
+          </div>
         </section>
 
         <ChartCard eyebrow="POR LOJA" title="Comparativo de vendas" className="event-chart-card">
