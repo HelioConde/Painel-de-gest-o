@@ -1,4 +1,4 @@
-import { BarChart3, Bot, CalendarDays, ChevronLeft, FileText, LogOut, Menu, TrendingDown, TrendingUp, UserRound, X } from 'lucide-react'
+import { BarChart3, Bot, CalendarDays, ChevronLeft, FileText, LogOut, Menu, Star, TrendingDown, TrendingUp, UserRound, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import primorLogoWide from '../assets/primor-logo-wide.png'
@@ -26,7 +26,7 @@ export default function AppShell({ children }) {
   const visibleNavigation = NAV.filter((item) => hasPermission(item.permission))
   const navigation = isMonthlyCloseDay()
     ? [...visibleNavigation.slice(0, 3), {
-      to: '/fechamento-mensal', label: 'Fechamento Mensal', initial: 'F', tone: 'monthly', icon: BarChart3, permission: 'vendaMensal',
+      to: '/fechamento-mensal', label: 'Fechamento Mensal', initial: 'F', tone: 'monthly', icon: Star, isNew: true, permission: 'vendaMensal',
     }, ...visibleNavigation.slice(3)]
     : visibleNavigation
 
