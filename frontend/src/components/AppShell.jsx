@@ -24,9 +24,9 @@ export default function AppShell({ children }) {
   const navigate = useNavigate()
   const { profile, hasPermission, signOut } = useAuth()
   const visibleNavigation = NAV.filter((item) => hasPermission(item.permission))
-  const navigation = isMonthlyCloseDay()
+  const navigation = isMonthlyCloseDay() && hasPermission('fechamentoMensal')
     ? [...visibleNavigation.slice(0, 3), {
-      to: '/fechamento-mensal', label: 'Fechamento Mensal', initial: 'F', tone: 'monthly', icon: Star, isNew: true, permission: 'vendaMensal',
+      to: '/fechamento-mensal', label: 'Fechamento Mensal', initial: 'F', tone: 'monthly', icon: Star, isNew: true, permission: 'fechamentoMensal',
     }, ...visibleNavigation.slice(3)]
     : visibleNavigation
 

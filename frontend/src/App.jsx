@@ -34,7 +34,7 @@ export default function App() {
           <Route path="/" element={<RoleHome />} />
           <Route path="/diaria" element={<ProtectedRoute permission="vendaDiaria"><DailyPage /></ProtectedRoute>} />
           <Route path="/mensal" element={<ProtectedRoute permission="vendaMensal"><MonthlyPage /></ProtectedRoute>} />
-          <Route path="/fechamento-mensal" element={<ProtectedRoute permission="vendaMensal"><MonthlyPage monthlyClose /></ProtectedRoute>} />
+          <Route path="/fechamento-mensal" element={<ProtectedRoute permission="fechamentoMensal"><MonthlyPage monthlyClose /></ProtectedRoute>} />
           <Route path="/eventos" element={<ProtectedRoute permission="eventos"><EventsPage /></ProtectedRoute>} />
           <Route path="/perdas" element={<ProtectedRoute permission="perdas"><LossesPage /></ProtectedRoute>} />
           <Route path="/analise-ia" element={<ProtectedRoute permission="aiAccess"><AiAnalysisPage /></ProtectedRoute>} />
