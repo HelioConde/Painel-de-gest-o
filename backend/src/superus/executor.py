@@ -138,8 +138,6 @@ def job_matches(job: ReportJob, only_job: str | None) -> bool:
 def planned_filename(job: ReportJob, side: str) -> str:
     if job.kind == ReportKind.EVENT:
         return f'event_{job.slug}_{side}.htm'
-    if job.kind == ReportKind.MONTHLY_CLOSE:
-        return f'monthly_close_{side}.htm'
     if job.kind == ReportKind.MONTHLY:
         return f'monthly_{side}.htm'
     return f'daily_{side}.htm'

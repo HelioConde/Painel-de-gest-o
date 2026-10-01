@@ -103,6 +103,6 @@ export function buildSalesAnalysisContext({ monthly, daily, events }, storeCode)
     subgrupos: sectorData.subgrupos,
     eventos: buildEvents(events, storeCode),
     contagemSetores,
-    fonte: snapshot.snapshot_type === 'MONTHLY' || snapshot.snapshot_type === 'MONTHLY_CLOSE' ? 'Venda Mensal' : 'Venda Diária',
+    fonte: snapshot.snapshot_type === 'MONTHLY' ? 'Venda Mensal' : 'Venda Diária',
   }
 }

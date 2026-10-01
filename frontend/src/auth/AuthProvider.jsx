@@ -8,6 +8,7 @@ const LOGIN_EMAILS = {
   gerencia: 'gerencia@primor.local',
   prevencao: 'prevencao@primor.local',
   admin: 'admin@primor.local',
+  atendimento: 'atendimento@primor.local',
 }
 
 function normalizeUsername(value = '') {

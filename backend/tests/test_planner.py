@@ -92,33 +92,26 @@ def test_sunday_has_no_event_job() -> None:
     assert event_mode_for_no_event() == EventMode.NO_EVENT
 
 
-def test_day_one_creates_monthly_and_monthly_close_for_previous_month() -> None:
+def test_day_one_uses_single_monthly_job_for_previous_month() -> None:
     plan = build_daily_plan(date(2026, 9, 1), DateSource.CLI_OVERRIDE)
 
     assert [job.kind for job in plan.jobs] == [
         ReportKind.DAILY,
         ReportKind.MONTHLY,
         ReportKind.EVENT,
-        ReportKind.MONTHLY_CLOSE,
     ]
     monthly = _job(plan, ReportKind.MONTHLY)
-    close = _job(plan, ReportKind.MONTHLY_CLOSE)
     assert monthly.metadata['mode'] == MonthlyMode.PREVIOUS_MONTH_CLOSE
-    assert close.metadata['mode'] == MonthlyMode.PREVIOUS_MONTH_CLOSE
     assert _period(monthly) == (date(2026, 8, 1), date(2026, 8, 31))
     assert _previous(monthly) == (date(2025, 8, 1), date(2025, 8, 31))
-    assert _period(close) == _period(monthly)
-    assert close is not monthly
 
 
 def test_day_one_handles_year_change() -> None:
     plan = build_daily_plan(date(2027, 1, 1), DateSource.CLI_OVERRIDE)
 
     monthly = _job(plan, ReportKind.MONTHLY)
-    close = _job(plan, ReportKind.MONTHLY_CLOSE)
     assert _period(monthly) == (date(2026, 12, 1), date(2026, 12, 31))
     assert _previous(monthly) == (date(2025, 12, 1), date(2025, 12, 31))
-    assert _period(close) == _period(monthly)
 
 
 def test_day_two_uses_running_month() -> None:
@@ -134,10 +127,8 @@ def test_leap_year_monthly_periods_use_calendar_months() -> None:
     plan = build_daily_plan(date(2024, 3, 1), DateSource.CLI_OVERRIDE)
 
     monthly = _job(plan, ReportKind.MONTHLY)
-    close = _job(plan, ReportKind.MONTHLY_CLOSE)
     assert _period(monthly) == (date(2024, 2, 1), date(2024, 2, 29))
     assert _previous(monthly) == (date(2023, 2, 1), date(2023, 2, 28))
-    assert _period(close) == _period(monthly)
 
 
 def test_plan_serializes_to_json() -> None:

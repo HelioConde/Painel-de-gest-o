@@ -18,9 +18,7 @@ O planner define os jobs. A automação Win32 apenas executa os períodos recebi
 - `DAILY`: sempre.
 - `MONTHLY`: sempre.
 - `EVENT`: conforme o calendário do planner.
-- `MONTHLY_CLOSE`: adicionalmente no dia 1.
-
-Cada job gera **CURRENT** e **PREVIOUS** de forma independente. Inclusive `MONTHLY` e `MONTHLY_CLOSE` são coletados novamente quando coincidem no dia 1.
+No dia 1, `MONTHLY` fecha o mês anterior em uma única coleta. Cada job gera **CURRENT** e **PREVIOUS** de forma independente.
 
 Fluxo Win32 de vendas:
 

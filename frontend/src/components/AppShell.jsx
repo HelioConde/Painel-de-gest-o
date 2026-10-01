@@ -14,6 +14,9 @@ const NAV = [
   { to: '/cartazes', label: 'Cartazes', initial: 'C', tone: 'posters', icon: FileText, isNew: true, permission: 'cartazes' },
 ]
 
+function isMonthlyCloseDay(today = new Date()) {
+  return today.getDate() === 1
+}
 
 export default function AppShell({ children }) {
   const [open, setOpen] = useState(false)
@@ -21,6 +24,11 @@ export default function AppShell({ children }) {
   const navigate = useNavigate()
   const { profile, hasPermission, signOut } = useAuth()
   const visibleNavigation = NAV.filter((item) => hasPermission(item.permission))
+  const navigation = isMonthlyCloseDay()
+    ? [...visibleNavigation.slice(0, 3), {
+      to: '/fechamento-mensal', label: 'Fechamento Mensal', initial: 'F', tone: 'monthly', icon: BarChart3, permission: 'vendaMensal',
+    }, ...visibleNavigation.slice(3)]
+    : visibleNavigation
 
   async function handleSignOut() {
     await signOut()
@@ -58,7 +66,7 @@ export default function AppShell({ children }) {
         </div>
 
         <nav className="nav-list" aria-label="Navegação principal">
-          {visibleNavigation.map(({ to, label, initial, tone, icon: Icon, isNew = false }) => (
+          {navigation.map(({ to, label, initial, tone, icon: Icon, isNew = false }) => (
             <NavLink
               key={to}
               to={to}

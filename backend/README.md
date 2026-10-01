@@ -71,7 +71,7 @@ A rotina diária planeja:
 1. Venda Diária — sempre;
 2. Venda Mensal — sempre;
 3. Evento — conforme o calendário;
-4. Fechamento Mensal — adicionalmente no dia 1.
+4. Fechamento Mensal — no dia 1, o mesmo job mensal fecha o mês anterior.
 
 Cada execução cria `data/runs/<run_id>/` e **sempre gera relatórios novos no SUPERUS**. Arquivos de execuções anteriores nunca substituem uma nova coleta.
 

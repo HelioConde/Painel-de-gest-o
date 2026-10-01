@@ -18,6 +18,7 @@ import { deletePosterJob, listPosterJobs, savePosterJob } from '../utils/posterH
 import { loadPosterTemplate } from '../utils/posterTemplateStorage'
 import { createPosterLayouts } from '../poster-engine/layoutPlan'
 import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
+import { useAuth } from '../auth/AuthProvider'
 
 const PRINT_STYLE_ID = 'poster-dynamic-page'
 const FIELD_COLUMNS = [
@@ -90,6 +91,7 @@ function clearPosterPrintPage() {
 }
 
 export default function CartazesPage() {
+  const { hasPermission } = useAuth()
   const navigate = useNavigate()
   const [sourceText, setSourceText] = useState('')
   const sourceTextareaRef = useRef(null)
@@ -387,7 +389,7 @@ export default function CartazesPage() {
         <nav className="poster-module-nav" aria-label="Cartaz Rápido">
           <button type="button" className={activeSection === 'create' ? 'active' : ''} onClick={startNewPosterJob}><LayoutGrid size={16} /> Novo cartaz</button>
           <button type="button" className={activeSection === 'history' ? 'active' : ''} onClick={() => { setHistoryItems(listPosterJobs()); setActiveSection('history') }}><History size={16} /> Histórico</button>
-          <button type="button" onClick={() => navigate('/cartazes/admin-layout')}><Settings size={16} /> Configurações</button>
+          {hasPermission('cartazesAdmin') ? <button type="button" onClick={() => navigate('/cartazes/admin-layout')}><Settings size={16} /> Configurações</button> : null}
           <button type="button" className="poster-format-chip" onClick={() => setFormatPickerOpen(true)}>{hasFormat ? formatConfig.label : 'Escolher formato'} <span>· Alterar formato</span></button>
         </nav>
 

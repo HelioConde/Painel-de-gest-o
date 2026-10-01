@@ -62,7 +62,7 @@ def test_executor_respects_daily_order_and_independent_sides(tmp_path: Path) -> 
     assert client.calls[0][3] != client.calls[1][3]
 
 
-def test_monthly_and_monthly_close_never_share_artifacts_on_day_one(tmp_path: Path) -> None:
+def test_day_one_collects_the_closed_month_once(tmp_path: Path) -> None:
     client = FakeClient([], {'physical_mouse_moves': 0, 'global_keyboard_uses': 0, 'foreground_calls': 0})
 
     result = execute_daily_auto(
@@ -79,38 +79,8 @@ def test_monthly_and_monthly_close_never_share_artifacts_on_day_one(tmp_path: Pa
         ('daily', 'previous', ReportPeriod(date(2025, 11, 1), date(2025, 11, 1)), 'daily_previous.htm'),
         ('monthly', 'current', ReportPeriod(date(2026, 10, 1), date(2026, 10, 31)), 'monthly_current.htm'),
         ('monthly', 'previous', ReportPeriod(date(2025, 10, 1), date(2025, 10, 31)), 'monthly_previous.htm'),
-        (
-            'monthly_close',
-            'current',
-            ReportPeriod(date(2026, 10, 1), date(2026, 10, 31)),
-            'monthly_close_current.htm',
-        ),
-        (
-            'monthly_close',
-            'previous',
-            ReportPeriod(date(2025, 10, 1), date(2025, 10, 31)),
-            'monthly_close_previous.htm',
-        ),
     ]
     assert len({call[3] for call in client.calls}) == len(client.calls)
-
-
-def test_monthly_close_only_generates_two_independent_files(tmp_path: Path) -> None:
-    client = FakeClient([], {'physical_mouse_moves': 0, 'global_keyboard_uses': 0, 'foreground_calls': 0})
-
-    result = execute_daily_auto(
-        reference_date=date(2026, 9, 1),
-        date_source=DateSource.CLI_OVERRIDE,
-        data_root=tmp_path,
-        client=client,
-        only_job='monthly_close',
-    )
-
-    assert result.status == 'PASS'
-    assert [(call[0], call[1], call[3].name) for call in client.calls] == [
-        ('monthly_close', 'current', 'monthly_close_current.htm'),
-        ('monthly_close', 'previous', 'monthly_close_previous.htm'),
-    ]
 
 
 def test_existing_file_in_current_run_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -23,8 +23,6 @@ def snapshot_name(job: ReportJob) -> str:
         return 'Venda Diária'
     if job.kind == ReportKind.MONTHLY:
         return 'Venda Mensal'
-    if job.kind == ReportKind.MONTHLY_CLOSE:
-        return 'Fechamento Mensal'
     return job.metadata.get('name') or job.slug
 
 

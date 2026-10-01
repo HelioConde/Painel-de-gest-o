@@ -56,20 +56,18 @@ export async function getLatestSnapshot({ type, slug }) {
 export async function getLatestMonthlySnapshot() {
   ensureConfigured()
 
-  // Em dias normais o backend grava MONTHLY/monthly; o tipo MONTHLY_CLOSE
-  // fica disponível para evoluções futuras sem quebrar a página.
   const { data, error } = await supabase
     .from(TABLE)
     .select(COLUMNS)
-    .in('snapshot_type', ['MONTHLY', 'MONTHLY_CLOSE'])
+    .eq('snapshot_type', 'MONTHLY')
+    .eq('slug', 'monthly')
     .order('reference_date', { ascending: false })
     .order('updated_at', { ascending: false })
-    .limit(10)
+    .limit(1)
+    .maybeSingle()
 
   if (error) throw error
-  if (!data?.length) return null
-
-  return data.find((row) => row.slug === 'monthly') ?? data[0]
+  return data ?? null
 }
 
 export async function getLatestEvents() {

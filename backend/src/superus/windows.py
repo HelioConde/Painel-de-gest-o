@@ -392,12 +392,16 @@ class Win32:
         actual = self.send(control.hwnd, BM_GETCHECK) == BST_CHECKED
         if actual != desired:
             self.post(control.hwnd, BM_CLICK)
-            actual = self.wait(
-                lambda: self.send(control.hwnd, BM_GETCHECK) == (BST_CHECKED if desired else BST_UNCHECKED),
-                1.5,
-                f'estado de {control.class_name} {control.instance}',
-            )
-            del actual
+            try:
+                self.wait(
+                    lambda: self.send(control.hwnd, BM_GETCHECK) == (BST_CHECKED if desired else BST_UNCHECKED),
+                    1.5,
+                    f'estado de {control.class_name} {control.instance}',
+                )
+            except ControlStateError:
+                # Alguns controles Delphi ignoram BM_CLICK. O clique local
+                # abaixo é a segunda estratégia, não uma falha definitiva.
+                pass
         confirmed = self.send(control.hwnd, BM_GETCHECK) == BST_CHECKED
         if confirmed != desired:
             # Alguns VCL precisam da sequência local de mouse para disparar o handler.

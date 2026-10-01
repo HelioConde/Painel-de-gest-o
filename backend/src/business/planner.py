@@ -19,7 +19,6 @@ class ReportKind(StrEnum):
     DAILY = 'DAILY'
     MONTHLY = 'MONTHLY'
     EVENT = 'EVENT'
-    MONTHLY_CLOSE = 'MONTHLY_CLOSE'
 
 
 class MonthlyMode(StrEnum):
@@ -140,19 +139,6 @@ def build_daily_plan(reference_date: date, date_source: DateSource) -> DailyPlan
                 metric=event.metric,
                 unit=event.unit,
                 metadata={'mode': event.mode.value, 'name': event.name},
-            )
-        )
-
-    if reference_date.day == 1:
-        close_current, close_previous = previous_month_close_periods(reference_date)
-        jobs.append(
-            ReportJob(
-                kind=ReportKind.MONTHLY_CLOSE,
-                slug='monthly_close',
-                current_period=close_current,
-                previous_period=close_previous,
-                metric='monetary',
-                metadata={'mode': MonthlyMode.PREVIOUS_MONTH_CLOSE.value},
             )
         )
 

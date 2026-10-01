@@ -184,12 +184,12 @@ def test_terca_carne_snapshot_uses_acougue_money_only():
     assert row['details']['event_filter_sector'] == 'ACOUGUE'
 
 
-def test_monthly_close_snapshot_contract():
+def test_closed_month_uses_the_monthly_snapshot_contract():
     current = _parsed(acougue=100, pizza=50, pizza_qty=5)
     previous = _parsed(acougue=90, pizza=40, pizza_qty=4)
     job = ReportJob(
-        ReportKind.MONTHLY_CLOSE,
-        'monthly_close',
+        ReportKind.MONTHLY,
+        'monthly',
         ReportPeriod(date(2026, 8, 1), date(2026, 8, 31)),
         ReportPeriod(date(2025, 8, 1), date(2025, 8, 31)),
         'monetary',
@@ -199,8 +199,8 @@ def test_monthly_close_snapshot_contract():
         run_id='run', reference_date='2026-09-01', job=job,
         current=current, previous=previous,
     )
-    assert row['snapshot_type'] == 'MONTHLY_CLOSE'
-    assert row['name'] == 'Fechamento Mensal'
+    assert row['snapshot_type'] == 'MONTHLY'
+    assert row['name'] == 'Venda Mensal'
     assert row['current_start'] == '2026-08-01'
     assert row['current_end'] == '2026-08-31'
 

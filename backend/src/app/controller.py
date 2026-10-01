@@ -549,7 +549,7 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument('--daily-sync', action='store_true', help='Sincroniza Vendas e Perdas do período mensal até ontem.')
     parser.add_argument('--check-daily-sync', action='store_true', help='Confere Vendas e Perdas do período diário sem coletar.')
     parser.add_argument('--dry-run', action='store_true')
-    parser.add_argument('--only-job', choices=('daily', 'monthly', 'event', 'monthly_close'))
+    parser.add_argument('--only-job', choices=('daily', 'monthly', 'event'))
     parser.add_argument('--losses-auto', action='store_true')
     parser.add_argument('--losses-gui', action='store_true')
     parser.add_argument('--sync', action='store_true', help='Sincroniza no Supabase após coleta/payload PASS.')

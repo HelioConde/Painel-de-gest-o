@@ -7,6 +7,7 @@ export const PERMISSIONS = {
     aiSales: true,
     aiLosses: false,
     cartazes: true,
+    cartazesAdmin: true,
   },
   prevencao: {
     eventos: false,
@@ -16,6 +17,7 @@ export const PERMISSIONS = {
     aiSales: false,
     aiLosses: true,
     cartazes: false,
+    cartazesAdmin: false,
   },
   admin: {
     eventos: true,
@@ -25,11 +27,22 @@ export const PERMISSIONS = {
     aiSales: true,
     aiLosses: true,
     cartazes: true,
+    cartazesAdmin: true,
+  },
+  atendimento: {
+    eventos: false,
+    vendaDiaria: false,
+    vendaMensal: false,
+    perdas: false,
+    aiSales: false,
+    aiLosses: false,
+    cartazes: true,
+    cartazesAdmin: false,
   },
 }
 
 const ROUTE_PERMISSIONS = [
-  { path: '/cartazes/admin-layout', permission: 'cartazes' },
+  { path: '/cartazes/admin-layout', permission: 'cartazesAdmin' },
   { path: '/cartazes', permission: 'cartazes' },
   { path: '/analise-ia', permission: 'aiAccess' },
   { path: '/perdas', permission: 'perdas' },
@@ -51,6 +64,7 @@ export function canUseAnalysis(role, analysisType) {
 
 export function defaultRouteForRole(role) {
   if (role === 'prevencao') return '/perdas'
+  if (role === 'atendimento') return '/cartazes'
   return '/eventos'
 }
 

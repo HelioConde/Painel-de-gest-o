@@ -103,9 +103,7 @@ export default function StoreTableCarousel({
 
   if (!active) return null;
 
-  const monthly =
-    snapshot?.snapshot_type === "MONTHLY" ||
-    snapshot?.snapshot_type === "MONTHLY_CLOSE";
+  const monthly = snapshot?.snapshot_type === "MONTHLY";
 
   return (
     <section
