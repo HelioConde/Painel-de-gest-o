@@ -9,6 +9,8 @@ export const PERMISSIONS = {
     aiLosses: false,
     cartazes: true,
     cartazesAdmin: true,
+    tabloide: true,
+    configuracoes: false,
   },
   prevencao: {
     eventos: false,
@@ -20,6 +22,8 @@ export const PERMISSIONS = {
     aiLosses: true,
     cartazes: false,
     cartazesAdmin: false,
+    tabloide: false,
+    configuracoes: false,
   },
   admin: {
     eventos: true,
@@ -31,6 +35,8 @@ export const PERMISSIONS = {
     aiLosses: true,
     cartazes: true,
     cartazesAdmin: true,
+    tabloide: true,
+    configuracoes: true,
   },
   atendimento: {
     eventos: false,
@@ -42,11 +48,15 @@ export const PERMISSIONS = {
     aiLosses: false,
     cartazes: true,
     cartazesAdmin: false,
+    tabloide: false,
+    configuracoes: false,
   },
 }
 
 const ROUTE_PERMISSIONS = [
   { path: '/cartazes/admin-layout', permission: 'cartazesAdmin' },
+  { path: '/configuracoes', permission: 'configuracoes' },
+  { path: '/tabloide', permission: 'tabloide' },
   { path: '/cartazes', permission: 'cartazes' },
   { path: '/analise-ia', permission: 'aiAccess' },
   { path: '/perdas', permission: 'perdas' },

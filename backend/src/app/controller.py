@@ -25,7 +25,12 @@ from src.supabase.loss_sync import sync_loss_run
 from src.supabase.payload import write_sales_payload_preview
 from src.supabase.sales_sync import sync_sales_run
 from src.supabase.client import SupabaseRestClient, classify_supabase_key
+from src.supabase.tabloid_import import get_active_tabloid_campaign, import_tabloid
+from src.parsers.tabloid_html import parse_tabloid_html
 from src.superus.sales_report import inspect_sales_report as dump_sales_report
+from src.superus.sales_report import open_sales_report
+from src.superus.session import prepare_superus
+from src.superus.tabloid_report import collect_tabloid_htm
 from src.superus.windows import Win32
 
 
@@ -538,6 +543,48 @@ def check_supabase_command() -> int:
         return 3
 
 
+@managed_superus_processes
+def collect_tabloid_command(today: date | None, *, dry_run: bool = False) -> int:
+    settings = Settings.from_environment()
+    try:
+        campaign = get_active_tabloid_campaign(settings)
+        start = date.fromisoformat(str(campaign['start_date']))
+        end = min(today or datetime.now(UTC).astimezone().date(), date.fromisoformat(str(campaign['end_date'])))
+        if end < start:
+            raise RuntimeError('A campanha ativa ainda não iniciou.')
+        if dry_run:
+            print(json.dumps({'campaign': campaign, 'start': start.isoformat(), 'end': end.isoformat(), 'dry_run': True}, ensure_ascii=False, indent=2))
+            return 0
+
+        run_id = f'{datetime.now(UTC):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}'
+        run_dir = Path(__file__).resolve().parents[2] / 'data' / 'tabloid_runs' / run_id
+        destination = run_dir / 'raw' / 'tabloide.htm'
+        win32 = Win32()
+        ready = prepare_superus(win32, settings)
+        report = open_sales_report(win32, ready.menu_hwnd)
+        try:
+            collected = collect_tabloid_htm(
+                win32,
+                report,
+                start=start,
+                end=end,
+                promotion_type=int(campaign['promotion_type']),
+                promotion_name=str(campaign['promotion_name']),
+                destination=destination,
+                settings=settings,
+            )
+        finally:
+            win32.post_if_present(report, 0x0010, 0, 0)
+        parsed = parse_tabloid_html(collected, expected_start=start, expected_end=end)
+        imported = import_tabloid(collected, reference_date=end, campaign_id=str(campaign['id']))
+        print('TABLOIDE COLETA: PASS')
+        print(json.dumps({'run_id': run_id, 'file': str(collected), 'summary': parsed['summary'], 'import': imported, 'background': win32.audit.as_dict()}, ensure_ascii=False, indent=2))
+        return 0
+    except Exception as error:
+        print(f'TABLOIDE COLETA: FAIL\nerror: {type(error).__name__}: {error}')
+        return 2
+
+
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description='Painel de Gestão — automação background do SUPERUS.')
     parser.add_argument('--inspect-superus', action='store_true')
@@ -569,6 +616,9 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument('--fim', type=parse_date)
     parser.add_argument('--stop-before-generate', action='store_true')
     parser.add_argument('--ai-api', action='store_true', help='Inicia a API local segura da Análise com IA.')
+    parser.add_argument('--import-tabloide', metavar='ARQUIVO', help='Importa um HTM Vendas Promoção/TABLOIDE.')
+    parser.add_argument('--collect-tabloide', action='store_true', help='Coleta Vendas Promoção da campanha ativa no SUPERUS e importa no Supabase.')
+    parser.add_argument('--tabloide-campaign-id', metavar='UUID', help='Campanha de tabloide para a importação.')
     args = parser.parse_args(argv)
 
     if args.ai_api:
@@ -576,6 +626,23 @@ def run(argv: list[str] | None = None) -> int:
 
         run_ai_server()
         return 0
+
+    if args.import_tabloide:
+        reference_date = args.today or datetime.now(UTC).astimezone().date()
+        try:
+            result = import_tabloid(
+                Path(args.import_tabloide), reference_date=reference_date,
+                campaign_id=args.tabloide_campaign_id, dry_run=args.dry_run,
+            )
+        except Exception as error:
+            print(f'TABLOIDE IMPORT: FAIL\nerror: {type(error).__name__}: {error}')
+            return 2
+        print('TABLOIDE IMPORT: PASS')
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.collect_tabloide:
+        return collect_tabloid_command(args.today, dry_run=args.dry_run)
 
     if args.inspect_superus:
         return inspect_superus()

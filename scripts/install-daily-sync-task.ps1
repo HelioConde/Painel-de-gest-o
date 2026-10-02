@@ -1,9 +1,9 @@
 [CmdletBinding()]
 param(
     [ValidateRange(0, 23)]
-    [int]$Hour = 6,
+    [int]$Hour = 5,
     [ValidateRange(0, 59)]
-    [int]$Minute = 30
+    [int]$Minute = 0
 )
 
 $ErrorActionPreference = 'Stop'

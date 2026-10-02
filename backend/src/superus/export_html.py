@@ -124,20 +124,26 @@ def export_preview_as_htm(
     preview: int,
     destination: Path,
     settings: Settings | None = None,
+    *,
+    html_x: int | None = None,
+    html_y: int | None = None,
 ) -> Path:
     if destination.exists():
         raise ExportError(f'Arquivo alvo já existe; fresh collection exige caminho novo: {destination}')
     destination.parent.mkdir(parents=True, exist_ok=True)
 
-    x = settings.superus_export_html_x if settings else DEFAULT_HTML_X
-    y = settings.superus_export_html_y if settings else DEFAULT_HTML_Y
+    x = html_x if html_x is not None else (settings.superus_export_html_x if settings else DEFAULT_HTML_X)
+    y = html_y if html_y is not None else (settings.superus_export_html_y if settings else DEFAULT_HTML_Y)
     panel = wait_export_panel(win32, preview, x, y)
 
     # Confirmado no teste real: o HTM não possui HWND/menu/command_id próprio.
     # Clique local no TPanel não movimenta o cursor físico.
     for _attempt in range(2):
+        if settings:
+            time.sleep(settings.superus_export_click_delay)
         win32.virtual_click(panel, x, y)
-        deadline = time.monotonic() + 2.5
+        dialog_delay = settings.superus_export_dialog_delay if settings else 2.5
+        deadline = time.monotonic() + dialog_delay
         while time.monotonic() < deadline:
             if _find_save_dialog(win32):
                 break

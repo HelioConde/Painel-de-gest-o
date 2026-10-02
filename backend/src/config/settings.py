@@ -39,6 +39,10 @@ class Settings:
     superus_executable_path: Path | None = None
     superus_export_html_x: int = 437
     superus_export_html_y: int = 16
+    superus_tabloid_export_html_x: int = 389
+    superus_tabloid_export_html_y: int = 16
+    superus_export_click_delay: float = 3.5
+    superus_export_dialog_delay: float = 4.0
     superus_preview_timeout: float = 90.0
     superus_save_timeout: float = 20.0
     superus_file_timeout: float = 60.0
@@ -61,6 +65,10 @@ class Settings:
             superus_executable_path=_optional_path(os.getenv('SUPERUS_EXECUTABLE_PATH')),
             superus_export_html_x=_int_env('SUPERUS_EXPORT_HTML_X', 437),
             superus_export_html_y=_int_env('SUPERUS_EXPORT_HTML_Y', 16),
+            superus_tabloid_export_html_x=_int_env('SUPERUS_TABLOID_EXPORT_HTML_X', 389),
+            superus_tabloid_export_html_y=_int_env('SUPERUS_TABLOID_EXPORT_HTML_Y', 16),
+            superus_export_click_delay=_float_env('SUPERUS_EXPORT_CLICK_DELAY', 3.5),
+            superus_export_dialog_delay=_float_env('SUPERUS_EXPORT_DIALOG_DELAY', 4.0),
             superus_preview_timeout=_float_env('SUPERUS_PREVIEW_TIMEOUT', 90.0),
             superus_save_timeout=_float_env('SUPERUS_SAVE_TIMEOUT', 20.0),
             superus_file_timeout=_float_env('SUPERUS_FILE_TIMEOUT', 60.0),

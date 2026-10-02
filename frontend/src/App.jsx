@@ -7,6 +7,8 @@ import LossesPage from './pages/LossesPage'
 import CartazesPage from './pages/CartazesPage'
 import CartazesLayoutAdminPage from './pages/CartazesLayoutAdminPage'
 import AiAnalysisPage from './pages/AiAnalysisPage'
+import SettingsPage from './pages/SettingsPage'
+import TabloidPage from './pages/TabloidPage'
 import LoginPage from './pages/LoginPage'
 import { AuthProvider, useAuth } from './auth/AuthProvider'
 import ProtectedRoute from './auth/ProtectedRoute'
@@ -40,6 +42,8 @@ export default function App() {
           <Route path="/analise-ia" element={<ProtectedRoute permission="aiAccess"><AiAnalysisPage /></ProtectedRoute>} />
           <Route path="/cartazes" element={<ProtectedRoute permission="cartazes"><CartazesPage /></ProtectedRoute>} />
           <Route path="/cartazes/admin-layout" element={<ProtectedRoute permission="cartazesAdmin"><CartazesLayoutAdminPage /></ProtectedRoute>} />
+          <Route path="/configuracoes" element={<ProtectedRoute permission="configuracoes"><SettingsPage /></ProtectedRoute>} />
+          <Route path="/tabloide" element={<ProtectedRoute permission="tabloide"><TabloidPage /></ProtectedRoute>} />
           <Route path="*" element={<RoleHome />} />
         </Route>
       </Routes>
