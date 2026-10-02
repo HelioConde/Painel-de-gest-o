@@ -39,7 +39,7 @@ EVENT_CONFIGS: dict[str, EventConfig] = {
     ),
     'quarta_quinta_verde': EventConfig(
         'quarta_quinta_verde', 'ALL_SALES', 'ALL', 'monetary', None,
-        EvidenceStatus.CONFIRMED, 'base_sales_report', None,
+        EvidenceStatus.CONFIRMED, 'base_sales_report_post_filter', 'HORTIFRUTI',
     ),
     'sexta_pao': EventConfig(
         'sexta_pao', 'ALL_SALES', 'ALL', 'monetary', None,
