@@ -6,6 +6,13 @@ export const EVENT_META = {
   fim_semana: { label: 'Fim de semana', className: 'event-weekend' },
 }
 
+const LEGACY_EVENT_FILTER_SECTORS = {
+  segunda_pizza: 'PIZZARIA',
+  terca_carne: 'ACOUGUE',
+  quarta_quinta_verde: 'HORTIFRUTI',
+  sexta_pao: 'PADARIA',
+}
+
 export function getDetails(snapshot) {
   return snapshot?.details && typeof snapshot.details === 'object' ? snapshot.details : null
 }
@@ -45,8 +52,9 @@ function hasQuantityEventData(details, filterSector) {
 
 export function getEventMetricFields(snapshot) {
   const details = getDetails(snapshot)
-  const filterSector = details?.event_filter_sector || null
   const slug = snapshot?.event_slug || snapshot?.slug
+  const filterSector =
+    details?.event_filter_sector || LEGACY_EVENT_FILTER_SECTORS[slug] || null
   const quantityAvailable = hasQuantityEventData(details, filterSector)
 
   // Regra operacional: Segunda da Pizza é leitura em unidades.
