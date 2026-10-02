@@ -9,7 +9,7 @@ import {
 import { useMemo, useState } from "react";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
-import { getActiveTabloid } from "../services/tabloid";
+import { getActiveTabloid, tabloidCampaignName } from "../services/tabloid";
 
 const money = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -372,7 +372,7 @@ export default function TabloidPage() {
       <header className="page-header dashboard-hero page-header-compact tabloid-hero">
         <div className="page-header-copy dashboard-hero-copy">
           <span className="section-kicker">TABLOIDE</span>
-          <h1>{data.campaign.name}</h1>
+          <h1>{tabloidCampaignName(data.campaign.start_date, data.campaign.end_date)}</h1>
           <p>
             {date(data.campaign.start_date)} → {date(data.campaign.end_date)}{" "}
             <span className="tabloid-status">{status}</span>
