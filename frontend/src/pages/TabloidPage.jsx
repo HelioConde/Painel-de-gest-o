@@ -159,11 +159,11 @@ function Matrix({ groups, mode, expanded, setExpanded, sort, setSort }) {
     setSort((current) =>
       current.key === key
         ? { key, direction: current.direction * -1 }
-        : { key, direction: -1 },
+        : { key, direction: 1 },
     );
   const arrow = (key) =>
     sort.key === key ? (
-      sort.direction === -1 ? (
+      sort.direction === 1 ? (
         <ChevronDown size={14} />
       ) : (
         <ChevronUp size={14} />
@@ -322,7 +322,7 @@ export default function TabloidPage() {
   const [mode, setMode] = useState("quantity");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(null);
-  const [sort, setSort] = useState({ key: "total", direction: -1 });
+  const [sort, setSort] = useState({ key: "total", direction: 1 });
   const groups = useMemo(() => aggregate(data?.products || []), [data]);
   const filtered = useMemo(() => {
     const term = query.trim().toLocaleLowerCase("pt-BR");
