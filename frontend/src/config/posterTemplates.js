@@ -12,7 +12,7 @@ const baseTextStyles = {
   subdescription: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
   complement: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
   unit: { fontMin: 2.8, fontMax: 14, fontWeight: 900, lineHeight: 0.96, letterSpacing: 0, scale: 0.72 },
-  price: { fontMin: 7, fontMax: 34, fontWeight: 900, lineHeight: 0.88, letterSpacing: 0, scale: 1 },
+  price: { fontMin: 7, fontMax: 34, fontWeight: 900, lineHeight: 0.88, letterSpacing: 0, scale: 1, fontFamily: '"ComicNeueSansID", "Comic Neue", "Comic Sans MS", cursive' },
 }
 
 function textStyles(textScale = 1, scales = {}) {

@@ -26,7 +26,7 @@ export function createBrowserTextMeasure() {
 
   return createTextMeasurer((text, style) => {
     const sizePx = Number(style.fontSizeMm || 1) * PX_PER_MM
-    const fontFamily = fontFamilyForText(text)
+    const fontFamily = style.fontFamily || fontFamilyForText(text)
     context.font = `${style.fontWeight || 900} ${sizePx}px ${fontFamily}`
 
     const metrics = context.measureText(text)

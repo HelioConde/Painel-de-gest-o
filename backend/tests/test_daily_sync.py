@@ -51,6 +51,9 @@ def test_syncs_only_the_missing_source(tmp_path: Path, sales_present, losses_pre
     def losses_check(_settings, period):
         return _check('PERDAS', period, state['losses'])
 
+    def tabloid_check(_settings, reference):
+        return _check('TABLOIDE', SyncPeriod.for_reference_date(reference), True)
+
     def sync_sales(_reference):
         state['sales_calls'] += 1
         state['sales'] = True
@@ -60,8 +63,8 @@ def test_syncs_only_the_missing_source(tmp_path: Path, sales_present, losses_pre
         state['losses'] = True
 
     result = DailySynchronizer(
-        Settings(), logger, sales_check=sales_check, losses_check=losses_check,
-        sales_sync=sync_sales, losses_sync=sync_losses, sleep=lambda _: None,
+        Settings(), logger, sales_check=sales_check, tabloid_check=tabloid_check, losses_check=losses_check,
+        sales_sync=sync_sales, tabloid_sync=lambda _: None, losses_sync=sync_losses, sleep=lambda _: None,
     ).execute(date(2026, 9, 24))
 
     assert result.success
@@ -79,19 +82,63 @@ def test_retries_then_validates_upload(tmp_path: Path):
     def losses_check(_settings, period):
         return _check('PERDAS', period, True)
 
+    def tabloid_check(_settings, reference):
+        return _check('TABLOIDE', SyncPeriod.for_reference_date(reference), True)
+
     def sync_sales(_reference):
         state['calls'] += 1
         if state['calls'] == 2:
             state['sales'] = True
 
     result = DailySynchronizer(
-        Settings(), logger, sales_check=sales_check, losses_check=losses_check,
-        sales_sync=sync_sales, losses_sync=lambda _: None, sleep=lambda _: None,
+        Settings(), logger, sales_check=sales_check, tabloid_check=tabloid_check, losses_check=losses_check,
+        sales_sync=sync_sales, tabloid_sync=lambda _: None, losses_sync=lambda _: None, sleep=lambda _: None,
     ).execute(date(2026, 9, 24))
 
     assert result.sales_action == 'SYNCED'
     assert state['calls'] == 2
     assert 'tentativa 2/3' in logger.path.read_text(encoding='utf-8')
+
+
+def test_runs_sales_tabloid_and_losses_in_that_order(tmp_path: Path):
+    state = {'sales': False, 'tabloid': False, 'losses': False}
+    execution_order: list[str] = []
+    logger = DailySyncLogger(tmp_path, date(2026, 9, 24))
+
+    def sales_check(_settings, period):
+        return _check('VENDAS', period, state['sales'])
+
+    def tabloid_check(_settings, reference):
+        return _check('TABLOIDE', SyncPeriod.for_reference_date(reference), state['tabloid'])
+
+    def losses_check(_settings, period):
+        return _check('PERDAS', period, state['losses'])
+
+    def sync_sales(_reference):
+        execution_order.append('VENDAS')
+        state['sales'] = True
+
+    def sync_tabloid(_reference):
+        execution_order.append('TABLOIDE')
+        state['tabloid'] = True
+
+    def sync_losses(_period):
+        execution_order.append('PERDAS')
+        state['losses'] = True
+
+    result = DailySynchronizer(
+        Settings(), logger,
+        sales_check=sales_check,
+        tabloid_check=tabloid_check,
+        losses_check=losses_check,
+        sales_sync=sync_sales,
+        tabloid_sync=sync_tabloid,
+        losses_sync=sync_losses,
+        sleep=lambda _: None,
+    ).execute(date(2026, 9, 24))
+
+    assert result.success
+    assert execution_order == ['VENDAS', 'TABLOIDE', 'PERDAS']
 
 
 def test_lock_rejects_concurrent_execution_and_recovers_stale_file(tmp_path: Path):

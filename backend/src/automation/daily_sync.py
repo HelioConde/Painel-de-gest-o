@@ -46,19 +46,22 @@ class SyncCheck:
     record_count: int
     stores: tuple[str, ...]
     reason: str
+    should_sync: bool = True
 
 
 @dataclass(frozen=True)
 class DailySyncResult:
     period: SyncPeriod
     sales: SyncCheck
+    tabloid: SyncCheck
     losses: SyncCheck
     sales_action: str
+    tabloid_action: str
     losses_action: str
 
     @property
     def success(self) -> bool:
-        return self.sales.exists and self.losses.exists
+        return self.sales.exists and self.tabloid.exists and self.losses.exists
 
 
 class DailySyncLogger:
@@ -139,8 +142,19 @@ class SyncRunAudit:
         url, key = settings.require_supabase()
         self.client = SupabaseRestClient(url=url, key=key, timeout=settings.supabase_timeout)
         self.logger = logger
+        self.available = True
+
+    def _disable_if_unavailable(self, error: Exception) -> bool:
+        # sync_runs é opcional; a ausência da tabela não pode contaminar o log da coleta.
+        if 'PGRST205' in str(error):
+            self.available = False
+            self.logger.write('auditoria opcional: tabela sync_runs ausente; auditoria desativada nesta execução')
+            return True
+        return False
 
     def start(self, sync_type: str, period: SyncPeriod) -> str | None:
+        if not self.available:
+            return None
         run_id = str(uuid4())
         try:
             self.client.request(
@@ -158,11 +172,13 @@ class SyncRunAudit:
             )
             return run_id
         except Exception as error:
+            if self._disable_if_unavailable(error):
+                return None
             self.logger.write(f'auditoria {sync_type}: indisponível ({type(error).__name__}: {error})')
             return None
 
     def finish(self, run_id: str | None, *, status: str, message: str) -> None:
-        if not run_id:
+        if not self.available or not run_id:
             return
         try:
             self.client.request(
@@ -176,6 +192,8 @@ class SyncRunAudit:
                 prefer='return=minimal',
             )
         except Exception as error:
+            if self._disable_if_unavailable(error):
+                return
             self.logger.write(f'auditoria: não foi possível finalizar ({type(error).__name__}: {error})')
 
 
@@ -239,6 +257,51 @@ def check_losses_sync(settings: Settings, period: SyncPeriod) -> SyncCheck:
     return SyncCheck('PERDAS', period, True, len(rows), stores, 'seis snapshots de perdas válidos')
 
 
+def check_tabloid_sync(settings: Settings, reference_date: date) -> SyncCheck:
+    """Confirma o snapshot da campanha ativa para o período que pode ser coletado hoje."""
+    from src.supabase.tabloid_import import get_active_tabloid_campaign
+
+    fallback_period = SyncPeriod.for_reference_date(reference_date)
+    try:
+        campaign = get_active_tabloid_campaign(settings)
+    except RuntimeError as error:
+        return SyncCheck('TABLOIDE', fallback_period, True, 0, (), str(error), should_sync=False)
+
+    start = date.fromisoformat(str(campaign['start_date']))
+    end = min(reference_date, date.fromisoformat(str(campaign['end_date'])))
+    period = SyncPeriod(start, end)
+    if end < start:
+        return SyncCheck(
+            'TABLOIDE',
+            period,
+            True,
+            0,
+            (),
+            'campanha ativa ainda não iniciou',
+            should_sync=False,
+        )
+
+    url, key = settings.require_supabase()
+    client = SupabaseRestClient(url=url, key=key, timeout=settings.supabase_timeout)
+    rows = client.select(
+        'tabloid_snapshots',
+        select='id,period_start,period_end,imported_at,metadata',
+        filters={
+            'campaign_id': f"eq.{campaign['id']}",
+            'reference_date': f'eq.{end.isoformat()}',
+        },
+        limit=2,
+    )
+    if len(rows) != 1:
+        return SyncCheck('TABLOIDE', period, False, len(rows), (), f'esperado 1 snapshot da campanha, recebido {len(rows)}')
+    row = rows[0]
+    if row.get('period_start') != start.isoformat() or row.get('period_end') != end.isoformat():
+        return SyncCheck('TABLOIDE', period, False, 1, (), 'snapshot possui período diferente do esperado')
+    if not row.get('imported_at'):
+        return SyncCheck('TABLOIDE', period, False, 1, (), 'snapshot sem data de importação')
+    return SyncCheck('TABLOIDE', period, True, 1, (), 'snapshot da campanha confirmado no Supabase')
+
+
 def sync_sales_from_superus(reference_date: date) -> None:
     from src.app.controller import run_daily_auto
 
@@ -260,6 +323,14 @@ def sync_losses_from_superus(period: SyncPeriod) -> None:
         raise DailySyncError(f'coleta/sincronização de perdas retornou código {exit_code}')
 
 
+def sync_tabloid_from_superus(reference_date: date) -> None:
+    from src.app.controller import collect_tabloid_command
+
+    exit_code = collect_tabloid_command(reference_date, dry_run=False)
+    if exit_code != 0:
+        raise DailySyncError(f'coleta/sincronização de tabloide retornou código {exit_code}')
+
+
 class DailySynchronizer:
     def __init__(
         self,
@@ -267,8 +338,10 @@ class DailySynchronizer:
         logger: DailySyncLogger,
         *,
         sales_check: Callable[[Settings, SyncPeriod], SyncCheck] = check_sales_sync,
+        tabloid_check: Callable[[Settings, date], SyncCheck] = check_tabloid_sync,
         losses_check: Callable[[Settings, SyncPeriod], SyncCheck] = check_losses_sync,
         sales_sync: Callable[[date], None] = sync_sales_from_superus,
+        tabloid_sync: Callable[[date], None] = sync_tabloid_from_superus,
         losses_sync: Callable[[SyncPeriod], None] = sync_losses_from_superus,
         sleep: Callable[[float], None] = time.sleep,
         audit: SyncRunAudit | None = None,
@@ -276,8 +349,10 @@ class DailySynchronizer:
         self.settings = settings
         self.logger = logger
         self.sales_check = sales_check
+        self.tabloid_check = tabloid_check
         self.losses_check = losses_check
         self.sales_sync = sales_sync
+        self.tabloid_sync = tabloid_sync
         self.losses_sync = losses_sync
         self.sleep = sleep
         self.audit = audit
@@ -317,20 +392,62 @@ class DailySynchronizer:
     def execute(self, reference_date: date) -> DailySyncResult:
         period = SyncPeriod.for_reference_date(reference_date)
         self.logger.write(f'período calculado: {period.start} a {period.end}')
-        sales = self.sales_check(self.settings, period)
-        losses = self.losses_check(self.settings, period)
-        self.logger.write(f'VENDAS antes: {"OK" if sales.exists else "PENDENTE"} ({sales.reason})')
-        self.logger.write(f'PERDAS antes: {"OK" if losses.exists else "PENDENTE"} ({losses.reason})')
 
+        # A ordem é deliberada: o SUPERUS é usado por uma única automação por vez.
+        sales = self.sales_check(self.settings, period)
+        self.logger.write(f'VENDAS antes: {"OK" if sales.exists else "PENDENTE"} ({sales.reason})')
         sales_action = 'SKIPPED'
-        losses_action = 'SKIPPED'
         if not sales.exists:
             sales = self._sync_missing('VENDAS', period, lambda: self.sales_sync(reference_date), self.sales_check)
             sales_action = 'SYNCED'
+
+        tabloid = self.tabloid_check(self.settings, reference_date)
+        self.logger.write(f'TABLOIDE antes: {"OK" if tabloid.exists else "PENDENTE"} ({tabloid.reason})')
+        tabloid_action = 'SKIPPED'
+        if tabloid.should_sync and not tabloid.exists:
+            tabloid = self._sync_missing(
+                'TABLOIDE',
+                tabloid.period,
+                lambda: self.tabloid_sync(reference_date),
+                lambda settings, _period: self.tabloid_check(settings, reference_date),
+            )
+            tabloid_action = 'SYNCED'
+
+        losses = self.losses_check(self.settings, period)
+        self.logger.write(f'PERDAS antes: {"OK" if losses.exists else "PENDENTE"} ({losses.reason})')
+        losses_action = 'SKIPPED'
         if not losses.exists:
             losses = self._sync_missing('PERDAS', period, lambda: self.losses_sync(period), self.losses_check)
             losses_action = 'SYNCED'
-        return DailySyncResult(period, sales, losses, sales_action, losses_action)
+
+        self.logger.write('SUPABASE: verificação final de Vendas, Tabloide e Perdas')
+        sales = self.sales_check(self.settings, period)
+        if not sales.exists:
+            sales = self._sync_missing('VENDAS', period, lambda: self.sales_sync(reference_date), self.sales_check)
+            sales_action = 'SYNCED'
+
+        tabloid = self.tabloid_check(self.settings, reference_date)
+        if tabloid.should_sync and not tabloid.exists:
+            tabloid = self._sync_missing(
+                'TABLOIDE',
+                tabloid.period,
+                lambda: self.tabloid_sync(reference_date),
+                lambda settings, _period: self.tabloid_check(settings, reference_date),
+            )
+            tabloid_action = 'SYNCED'
+
+        losses = self.losses_check(self.settings, period)
+        if not losses.exists:
+            losses = self._sync_missing('PERDAS', period, lambda: self.losses_sync(period), self.losses_check)
+            losses_action = 'SYNCED'
+
+        self.logger.write(
+            'SUPABASE final: '
+            f'VENDAS={"OK" if sales.exists else "PENDENTE"}; '
+            f'TABLOIDE={"OK" if tabloid.exists else "PENDENTE"}; '
+            f'PERDAS={"OK" if losses.exists else "PENDENTE"}'
+        )
+        return DailySyncResult(period, sales, tabloid, losses, sales_action, tabloid_action, losses_action)
 
 
 def _reference_date(value: date | None) -> date:
@@ -353,7 +470,7 @@ def run_daily_sync_command(reference_date: date | None = None) -> int:
         logger.write(f'FAIL: {type(error).__name__}: {error}')
         return 2
     logger.write(
-        f'PASS: VENDAS={result.sales_action}, PERDAS={result.losses_action}; '
+        f'PASS: VENDAS={result.sales_action}, TABLOIDE={result.tabloid_action}, PERDAS={result.losses_action}; '
         f'período={result.period.start}->{result.period.end}'
     )
     return 0
@@ -365,11 +482,13 @@ def check_daily_sync_command(reference_date: date | None = None) -> int:
     try:
         settings = Settings.from_environment()
         sales = check_sales_sync(settings, period)
+        tabloid = check_tabloid_sync(settings, reference_date)
         losses = check_losses_sync(settings, period)
     except Exception as error:
         print(f'DAILY SYNC CHECK: FAIL\nerror: {type(error).__name__}: {error}')
         return 2
     print(f'Período esperado: {period.start} a {period.end}')
     print(f'VENDAS: {"OK" if sales.exists else "PENDENTE"} - {sales.reason}')
+    print(f'TABLOIDE: {"OK" if tabloid.exists else "PENDENTE"} - {tabloid.reason}')
     print(f'PERDAS: {"OK" if losses.exists else "PENDENTE"} - {losses.reason}')
-    return 0 if sales.exists and losses.exists else 2
+    return 0 if sales.exists and tabloid.exists and losses.exists else 2

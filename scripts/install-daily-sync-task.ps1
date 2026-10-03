@@ -8,19 +8,19 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$backendRoot = Join-Path $projectRoot 'backend'
-$pythonPath = Join-Path $backendRoot '.venv\Scripts\python.exe'
-$taskName = 'Primor - Sincronizacao Diaria'
+$runnerPath = Join-Path $PSScriptRoot 'run-daily-sync.bat'
+$taskName = 'Painel de Gestao - Vendas 05h'
+$legacyTaskName = 'Primor - Sincronizacao Diaria'
 
-if (-not (Test-Path -LiteralPath $pythonPath)) {
-    throw "Python do projeto não encontrado: $pythonPath"
+if (-not (Test-Path -LiteralPath $runnerPath)) {
+    throw "Executor diário não encontrado: $runnerPath"
 }
 
 $userId = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $at = [datetime]::Today.AddHours($Hour).AddMinutes($Minute)
-$action = New-ScheduledTaskAction -Execute $pythonPath -Argument 'main.py --daily-sync' -WorkingDirectory $backendRoot
+$arguments = '/d /c ""{0}""' -f $runnerPath
+$action = New-ScheduledTaskAction -Execute $env:ComSpec -Argument $arguments -WorkingDirectory $projectRoot
 $dailyTrigger = New-ScheduledTaskTrigger -Daily -At $at
-$startupTrigger = New-ScheduledTaskTrigger -AtStartup
 $principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Limited
 $settings = New-ScheduledTaskSettingsSet `
     -StartWhenAvailable `
@@ -28,20 +28,22 @@ $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
     -MultipleInstances IgnoreNew `
-    -RestartCount 3 `
-    -RestartInterval (New-TimeSpan -Minutes 15) `
     -ExecutionTimeLimit (New-TimeSpan -Hours 4)
+
+if ($legacyTaskName -ne $taskName -and (Get-ScheduledTask -TaskName $legacyTaskName -ErrorAction SilentlyContinue)) {
+    Unregister-ScheduledTask -TaskName $legacyTaskName -Confirm:$false
+}
 
 Register-ScheduledTask `
     -TaskName $taskName `
     -Action $action `
-    -Trigger @($dailyTrigger, $startupTrigger) `
+    -Trigger $dailyTrigger `
     -Principal $principal `
     -Settings $settings `
-    -Description 'Sincroniza Vendas e Perdas do SUPERUS ao Supabase. Requer sessão Windows conectada para a automação do SUPERUS.' `
+    -Description 'Sincronização diária única: Vendas, Tabloide e Perdas do SUPERUS; valida o Supabase e repete apenas a etapa que falhar.' `
     -Force | Select-Object TaskName, State
 
 Get-ScheduledTaskInfo -TaskName $taskName | Select-Object LastRunTime, LastTaskResult, NextRunTime
 
-Write-Host "Tarefa instalada para $($at.ToString('HH:mm')) e no início do Windows."
-Write-Host 'Para evitar duas automações simultâneas, desative a tarefa legada "Painel de Gestao - Vendas 05h" após validar esta nova rotina.'
+Write-Host "Tarefa única instalada para todos os dias às $($at.ToString('HH:mm'))."
+Write-Host 'Ordem: Vendas, Tabloide, Perdas e verificação final no Supabase.'

@@ -23,7 +23,7 @@ function plannedFieldStyle(line, box) {
     height: `${line.height}%`,
     fontSize: `${line.fontSizeMm}mm`,
     fontWeight: line.style.fontWeight,
-    fontFamily: fontFamilyForText(line.text),
+    fontFamily: line.style.fontFamily || fontFamilyForText(line.text),
     lineHeight: line.style.lineHeight,
     letterSpacing: `${line.style.letterSpacing}mm`,
     textAlign: box.alignX || 'center',
