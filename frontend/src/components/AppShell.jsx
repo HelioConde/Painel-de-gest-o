@@ -3,6 +3,7 @@ import {
   Bot,
   CalendarDays,
   ChevronLeft,
+  Download,
   FileText,
   LogOut,
   Menu,
@@ -14,7 +15,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import primorLogoWide from "../assets/primor-logo-wide.png";
 import primorLogoSquare from "../assets/primor-logo-square.png";
@@ -95,9 +96,36 @@ export function isMonthlyCloseWindow(today = new Date()) {
   return day >= 1 && day <= 7;
 }
 
+const INSTALL_DISMISS_KEY = "primor-pwa-install-dismissed-at";
+const INSTALL_DISMISS_DAYS = 7;
+
+function isStandaloneMode() {
+  return (
+    window.matchMedia?.("(display-mode: standalone)")?.matches ||
+    window.navigator.standalone === true
+  );
+}
+
+function isIosDevice() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function installDismissedRecently() {
+  const raw = window.localStorage.getItem(INSTALL_DISMISS_KEY);
+  if (!raw) return false;
+  const dismissedAt = Number(raw);
+  if (!Number.isFinite(dismissedAt)) return false;
+  const age = Date.now() - dismissedAt;
+  return age < INSTALL_DISMISS_DAYS * 24 * 60 * 60 * 1000;
+}
+
 export default function AppShell({ children }) {
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [installAvailable, setInstallAvailable] = useState(false);
+  const [installBannerOpen, setInstallBannerOpen] = useState(false);
+  const [iosInstallHelp, setIosInstallHelp] = useState(false);
+  const installPromptRef = useRef(null);
   const navigate = useNavigate();
   const { profile, hasPermission, signOut } = useAuth();
   const visibleNavigation = NAV.filter((item) =>
@@ -123,6 +151,81 @@ export default function AppShell({ children }) {
   async function handleSignOut() {
     await signOut();
     navigate("/login", { replace: true });
+  }
+
+  useEffect(() => {
+    if (isStandaloneMode()) return undefined;
+
+    const ios = isIosDevice();
+    let showTimer;
+
+    const maybeShowBanner = () => {
+      if (installDismissedRecently()) return;
+      window.clearTimeout(showTimer);
+      showTimer = window.setTimeout(() => setInstallBannerOpen(true), 1400);
+    };
+
+    function handleBeforeInstallPrompt(event) {
+      event.preventDefault();
+      installPromptRef.current = event;
+      setInstallAvailable(true);
+      setIosInstallHelp(false);
+      maybeShowBanner();
+    }
+
+    function handleInstalled() {
+      installPromptRef.current = null;
+      setInstallAvailable(false);
+      setInstallBannerOpen(false);
+      setIosInstallHelp(false);
+      window.localStorage.removeItem(INSTALL_DISMISS_KEY);
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleInstalled);
+
+    if (ios && !installDismissedRecently()) {
+      setIosInstallHelp(true);
+      maybeShowBanner();
+    }
+
+    return () => {
+      window.clearTimeout(showTimer);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleInstalled);
+    };
+  }, []);
+
+  async function handleInstallApp() {
+    const promptEvent = installPromptRef.current;
+
+    if (promptEvent) {
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        if (choice?.outcome === "accepted") {
+          setInstallBannerOpen(false);
+          setInstallAvailable(false);
+          installPromptRef.current = null;
+          return;
+        }
+      } catch {
+        // Mantém a aplicação funcional se o navegador recusar o prompt.
+      }
+
+      window.localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now()));
+      setInstallBannerOpen(false);
+      return;
+    }
+
+    if (iosInstallHelp) {
+      setInstallBannerOpen(true);
+    }
+  }
+
+  function dismissInstallBanner() {
+    window.localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now()));
+    setInstallBannerOpen(false);
   }
 
   return (
@@ -221,6 +324,18 @@ export default function AppShell({ children }) {
             <LogOut size={15} />
           </button>
         </div>
+        {(installAvailable || iosInstallHelp) && !isStandaloneMode() ? (
+          <button
+            type="button"
+            className="sidebar-install-app"
+            onClick={handleInstallApp}
+            title={collapsed ? "Instalar aplicativo" : undefined}
+          >
+            <Download size={16} aria-hidden="true" />
+            <span>Instalar aplicativo</span>
+          </button>
+        ) : null}
+
         <div className="sidebar-footer">
           <span className="status-dot" />
           <span className="sidebar-status-text">
@@ -256,6 +371,36 @@ export default function AppShell({ children }) {
         </div>
         {children}
       </main>
+
+      {installBannerOpen && !isStandaloneMode() ? (
+        <section className="pwa-install-banner" aria-live="polite" aria-label="Instalar Painel de Gestão">
+          <div className="pwa-install-icon" aria-hidden="true">
+            <Download size={22} />
+          </div>
+          <div className="pwa-install-copy">
+            <strong>Instale o Painel de Gestão</strong>
+            <span>
+              {iosInstallHelp && !installAvailable
+                ? "No iPhone/iPad, use Compartilhar e depois Adicionar à Tela de Início."
+                : "Acesse vendas, eventos, perdas e tabloides direto pela tela inicial."}
+            </span>
+          </div>
+          <div className="pwa-install-actions">
+            <button type="button" className="pwa-install-later" onClick={dismissInstallBanner}>
+              Agora não
+            </button>
+            {installAvailable ? (
+              <button type="button" className="pwa-install-primary" onClick={handleInstallApp}>
+                Instalar
+              </button>
+            ) : (
+              <button type="button" className="pwa-install-primary" onClick={dismissInstallBanner}>
+                Entendi
+              </button>
+            )}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }
