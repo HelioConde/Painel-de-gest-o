@@ -264,16 +264,12 @@ function createPrice(product, template, priceBox, measure) {
   const style = template.textStyles.price
   const text = product.price || ''
   const strokeMm = 0.45
-  // ComicNeueSansID has taller ascenders/descenders than the condensed copy font.
-  // Keep a physical breathing margin so commas and lower glyphs never hit the clip edge.
-  const verticalSafetyMm = 0.7
-  const availableHeightMm = Math.max(style.fontMin, priceBox.height - ((strokeMm + verticalSafetyMm) * 2))
+  const availableHeightMm = Math.max(style.fontMin, priceBox.height - (strokeMm * 2))
   // Price ceilings are physical: a larger grid has a larger priceBox and can use a larger type size.
   // The binary fit below still constrains the full text, including comma, cents and outline.
   const physicalFontCap = (availableHeightMm / Math.max(style.lineHeight, 0.7)) * (style.scale ?? 1)
   const priceStyle = {
     ...style,
-    lineHeight: Math.max(style.lineHeight || 1, 1.08),
     fontMax: Math.max(style.fontMax, physicalFontCap / Math.max(style.scale ?? 1, 0.01)),
   }
   const rawFit = fitSingleLine({
@@ -296,7 +292,7 @@ function createPrice(product, template, priceBox, measure) {
   fontSizeMm = Math.floor(fontSizeMm * 1000) / 1000
   measured = measure(text || ' ', { ...priceStyle, fontSizeMm })
   contentHeightMm = Math.max(measured.heightMm, lineHeightMm(priceStyle, fontSizeMm))
-  const heightMm = contentHeightMm + ((strokeMm + verticalSafetyMm) * 2)
+  const heightMm = contentHeightMm + (strokeMm * 2)
   const widthMm = measured.widthMm + (strokeMm * 2)
   const [integer = '', decimal = ''] = text.split(',')
   return {

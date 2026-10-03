@@ -361,10 +361,10 @@
 .poster-app-box.poster-layout-box-debug small { z-index: 10; }
 .poster-app-box > span { width: 100%; max-height: 100%; overflow: hidden; font-family: "Burbank Big Cd Bk"; font-weight: 900; line-height: .94; letter-spacing: 0; }
 .poster-app-appTitle > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; white-space: pre-line; font-size: clamp(var(--app-font-min), calc(8cqi * var(--app-scale)), var(--app-font-max)); }
-.poster-app-appPrice > span { color: #df1725; font-family: "ComicNeueSansID", "Comic Neue", "Comic Sans MS", cursive; font-size: clamp(var(--app-font-min), calc(15cqi * var(--app-scale)), var(--app-font-max)); -webkit-text-stroke: .2mm #7f1020; paint-order: stroke fill; }
+.poster-app-appPrice > span { color: #df1725; font-family: "Burbank Big Cd Bk"; font-size: clamp(var(--app-font-min), calc(15cqi * var(--app-scale)), var(--app-font-max)); -webkit-text-stroke: .2mm #7f1020; paint-order: stroke fill; }
 .poster-app-appValidity > span { color: #1769c2; font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.6cqi * var(--app-scale)), var(--app-font-max)); font-weight: 850; }
 .poster-app-appRegularLabel > span { font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.7cqi * var(--app-scale)), var(--app-font-max)); font-weight: 800; }
-.poster-app-appRegularPrice > span { color: #078043; font-family: "ComicNeueSansID", "Comic Neue", "Comic Sans MS", cursive; font-size: clamp(var(--app-font-min), calc(7cqi * var(--app-scale)), var(--app-font-max)); }
+.poster-app-appRegularPrice > span { color: #078043; font-family: "Burbank Big Cd Bk"; font-size: clamp(var(--app-font-min), calc(7cqi * var(--app-scale)), var(--app-font-max)); }
 .poster-app-box small { position: absolute; top: 0; left: 0; padding: 1mm; background: #172033; color: #fff; font: 700 2.2mm/1 Inter, sans-serif; }
 
 .poster-background-layer, .poster-sheet-background { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -439,7 +439,7 @@
   align-items: inherit;
   justify-content: inherit;
   color: #e00016;
-  font-family: "ComicNeueSansID", "Comic Neue", "Comic Sans MS", cursive;
+  font-family: "Burbank Big Cd Bk";
   -webkit-text-stroke: .45mm #1b1012;
   paint-order: stroke fill;
 }
