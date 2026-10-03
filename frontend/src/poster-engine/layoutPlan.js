@@ -23,7 +23,9 @@ function styleForContentField(field, text, product, baseStyle) {
     scale *= 0.82
   }
   if (field === 'complement') {
-    scale *= LIGHT_COMPLEMENT_PATTERN.test(text) ? 0.68 : 0.82
+    // Complemento nunca deve competir com a descrição e a subdescrição.
+    // Ex.: "UVA PRETA" permanece maior que "SEM SEMENTES".
+    scale *= LIGHT_COMPLEMENT_PATTERN.test(text) ? 0.58 : 0.68
   }
 
   // Fontes condensadas com line-height menor que 1 podem cortar acentos no topo.

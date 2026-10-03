@@ -101,6 +101,17 @@ test('reduz o preço longo sem alterar o plano superior', () => {
   assert.ok(longPlan.price.fontSizeMm < basePlan.price.fontSizeMm)
 })
 
+test('mantém o complemento menor que a subdescrição', () => {
+  const template = createTestTemplate()
+  const product = {
+    description: 'UVA', subdescription: 'PRETA', complement: 'SEM SEMENTES', unit: '500G', price: '7,99',
+  }
+  const plan = createPosterLayout({ product, template, format: POSTER_FORMATS.A3, measure: estimateTextMeasure })
+  const subdescription = plan.content.lines.find((line) => line.field === 'subdescription')
+  const complement = plan.content.lines.find((line) => line.field === 'complement')
+  assert.ok(complement.fontSizeMm < subdescription.fontSizeMm)
+})
+
 test('usa o máximo válido para o stack superior e mantém a gramatura logo abaixo', () => {
   const template = createTestTemplate()
   template.contentBox = { ...template.contentBox, width: 82, height: 52 }
