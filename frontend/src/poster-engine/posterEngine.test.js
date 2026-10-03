@@ -109,7 +109,7 @@ test('mantém o complemento menor que a subdescrição', () => {
   const plan = createPosterLayout({ product, template, format: POSTER_FORMATS.A3, measure: estimateTextMeasure })
   const subdescription = plan.content.lines.find((line) => line.field === 'subdescription')
   const complement = plan.content.lines.find((line) => line.field === 'complement')
-  assert.ok(complement.fontSizeMm < subdescription.fontSizeMm)
+  assert.ok(complement.fontSizeMm <= subdescription.fontSizeMm * 0.6)
 })
 
 test('usa o máximo válido para o stack superior e mantém a gramatura logo abaixo', () => {
