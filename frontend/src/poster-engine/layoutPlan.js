@@ -264,7 +264,10 @@ function createPrice(product, template, priceBox, measure) {
   const style = template.textStyles.price
   const text = product.price || ''
   const strokeMm = 0.45
-  const availableHeightMm = Math.max(style.fontMin, priceBox.height - (strokeMm * 2))
+  // The visible outline extends beyond the font metrics, especially at the top
+  // of Burbank's tall numerals. Reserve real print-space on both sides.
+  const verticalSafetyMm = 0.6
+  const availableHeightMm = Math.max(style.fontMin, priceBox.height - ((strokeMm + verticalSafetyMm) * 2))
   // Price ceilings are physical: a larger grid has a larger priceBox and can use a larger type size.
   // The binary fit below still constrains the full text, including comma, cents and outline.
   const physicalFontCap = (availableHeightMm / Math.max(style.lineHeight, 0.7)) * (style.scale ?? 1)
@@ -292,7 +295,7 @@ function createPrice(product, template, priceBox, measure) {
   fontSizeMm = Math.floor(fontSizeMm * 1000) / 1000
   measured = measure(text || ' ', { ...priceStyle, fontSizeMm })
   contentHeightMm = Math.max(measured.heightMm, lineHeightMm(priceStyle, fontSizeMm))
-  const heightMm = contentHeightMm + (strokeMm * 2)
+  const heightMm = contentHeightMm + ((strokeMm + verticalSafetyMm) * 2)
   const widthMm = measured.widthMm + (strokeMm * 2)
   const [integer = '', decimal = ''] = text.split(',')
   return {
