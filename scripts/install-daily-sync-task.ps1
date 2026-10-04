@@ -18,7 +18,7 @@ if (-not (Test-Path -LiteralPath $runnerPath)) {
 
 $userId = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $at = [datetime]::Today.AddHours($Hour).AddMinutes($Minute)
-$arguments = '/d /c ""{0}""' -f $runnerPath
+$arguments = '/d /c call "{0}"' -f $runnerPath
 $action = New-ScheduledTaskAction -Execute $env:ComSpec -Argument $arguments -WorkingDirectory $projectRoot
 $dailyTrigger = New-ScheduledTaskTrigger -Daily -At $at
 $principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Limited
