@@ -32,12 +32,12 @@ const timestamp = (value) =>
     : "—";
 
 function campaignStatus(campaign) {
-  if (!campaign?.active) return "Inativa";
+  if (!campaign) return "Inativa";
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const start = new Date(`${campaign.start_date}T00:00:00`);
   const end = new Date(`${campaign.end_date}T23:59:59`);
-  if (today < start) return "Agendada";
+  if (today < start) return "Na fila";
   if (today > end) return "Finalizada";
   return "Em andamento";
 }
@@ -107,6 +107,14 @@ export default function SettingsPage() {
   const status = campaignStatus(form);
   const collectedUntil = selectedSnapshot?.period_end;
   const today = new Date();
+  const todayKey = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0"),
+  ].join("-");
+  const isFutureCampaign = Boolean(
+    form.start_date && form.start_date > todayKey,
+  );
   const todayValue = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -153,14 +161,32 @@ export default function SettingsPage() {
       setDateError("A data final não pode ser anterior à data inicial.");
       return;
     }
+
+    if (!form.id) {
+      const overlap = campaigns.find(
+        (campaign) =>
+          form.start_date <= campaign.end_date &&
+          form.end_date >= campaign.start_date,
+      );
+      if (overlap) {
+        setDateError(
+          `Já existe uma campanha no período ${date(overlap.start_date)} → ${date(overlap.end_date)}. Ajuste as datas para não sobrepor campanhas.`,
+        );
+        return;
+      }
+    }
+
     try {
       const saved = await saveTabloidCampaign(form, user?.id);
       const next = await getTabloidSettings();
       setCampaigns(next.campaigns);
       setSnapshotsByCampaign(next.snapshotsByCampaign);
       setForm(saved);
+      const startsInFuture = saved.start_date > todayKey;
       setMessage(
-        `Configuração salva. A próxima coleta usará ${date(saved.start_date)} → ${date(saved.end_date)} sem consultar datas futuras.`,
+        startsInFuture
+          ? `Campanha adicionada à fila. Ela inicia automaticamente em ${date(saved.start_date)} e termina em ${date(saved.end_date)}.`
+          : `Configuração salva. A coleta usará ${date(saved.start_date)} → ${date(saved.end_date)} sem consultar datas futuras.`,
       );
     } catch (nextError) {
       setError(nextError);
@@ -229,15 +255,14 @@ export default function SettingsPage() {
                 onChange={change}
               />
             </label>
-            <label className="settings-check">
-              <input
-                type="checkbox"
-                name="active"
-                checked={Boolean(form.active)}
-                onChange={change}
-              />{" "}
-              Campanha ativa
-            </label>
+            <div className="settings-readonly">
+              <span>Programação automática</span>
+              <strong>
+                {isFutureCampaign
+                  ? `Na fila · inicia em ${date(form.start_date)}`
+                  : status}
+              </strong>
+            </div>
             <div className="settings-readonly">
               <span>Tipo de promoção</span>
               <strong>1 · TABLOIDE</strong>
