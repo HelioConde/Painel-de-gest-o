@@ -4,6 +4,7 @@ import { buildSectorSummary, targetTone } from "../utils/lossDashboard";
 import { money } from "../utils/formatters";
 import { LOSS_STORE_SEQUENCE } from "../utils/losses";
 import PrintReportHeader from "./PrintReportHeader";
+import LossMetricCards from "./LossMetricCards";
 import {
   ChartCard,
   SectorIcon,
@@ -78,6 +79,17 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
     1,
     ...targetVisible.flatMap((item) => [item.percent, item.target]),
   );
+
+  const sectorsAboveTargetForPrint = sectors.filter((sector) => {
+    const currentPercent =
+      sector.current.percent === null ? null : Number(sector.current.percent);
+    const target = sector.target === null ? null : Number(sector.target);
+    return (
+      currentPercent !== null &&
+      target !== null &&
+      currentPercent > target
+    );
+  }).length;
 
   return (
     <section className="loss-summary-panel compact-loss-panel">
@@ -198,6 +210,30 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
             </article>
           );
         })}
+      </div>
+
+      <div className="loss-print-page2-summary" aria-hidden="true">
+        <PrintReportHeader
+          title="Perdas"
+          snapshot={row}
+          storeLabel={
+            row.store_name ||
+            `SUPERMERCADO PRIMOR ${String(storeSequence).padStart(2, "0")} ${storeCode}`
+          }
+          storeDetail={`Loja ${storeSequence} · Código ${storeCode}`}
+        />
+        <LossMetricCards
+          totals={{
+            current_total_value: row.current_total_value,
+            previous_total_value: row.previous_total_value,
+            loss_difference: row.loss_difference,
+            loss_variation_percent: row.loss_variation_percent,
+            current_loss_sales_percent: row.current_loss_sales_percent,
+            previous_loss_sales_percent: row.previous_loss_sales_percent,
+          }}
+          sectorsAboveTarget={sectorsAboveTargetForPrint}
+          sectorCount={sectors.length}
+        />
       </div>
 
       <section className="dashboard-chart-grid loss-chart-grid">
