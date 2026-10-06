@@ -547,7 +547,7 @@ def check_supabase_command() -> int:
 def collect_tabloid_command(today: date | None, *, dry_run: bool = False) -> int:
     settings = Settings.from_environment()
     try:
-        campaign = get_active_tabloid_campaign(settings)
+        campaign = get_active_tabloid_campaign(settings, today or datetime.now(UTC).astimezone().date())
         start = date.fromisoformat(str(campaign['start_date']))
         end = min(today or datetime.now(UTC).astimezone().date(), date.fromisoformat(str(campaign['end_date'])))
         if end < start:
