@@ -15,23 +15,47 @@ export function tabloidCampaignName(startDate, endDate) {
 
 export async function getActiveTabloid() {
   configured();
-  const { data: campaign, error } = await supabase
-    .from("tabloid_campaigns")
-    .select("*")
-    .eq("active", true)
-    .maybeSingle();
-  if (error) throw error;
-  if (!campaign) return { campaign: null, snapshot: null, products: [] };
 
-  // Durante o período do tabloide, sempre mantemos visível o último
-  // resultado válido já coletado. A tela não fica vazia apenas porque
-  // a coleta do dia atual ainda não terminou.
   const now = new Date();
   const localToday = [
     now.getFullYear(),
     String(now.getMonth() + 1).padStart(2, "0"),
     String(now.getDate()).padStart(2, "0"),
   ].join("-");
+
+  // A página deve mostrar a campanha cujo período inclui HOJE.
+  // Isso evita que uma campanha futura marcada como "ativa" esconda
+  // o tabloide que ainda está em andamento.
+  let { data: campaign, error } = await supabase
+    .from("tabloid_campaigns")
+    .select("*")
+    .lte("start_date", localToday)
+    .gte("end_date", localToday)
+    .order("start_date", { ascending: false })
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+
+  // Fora de qualquer período vigente, mantemos compatibilidade com a
+  // campanha marcada como ativa (por exemplo uma campanha agendada).
+  if (!campaign) {
+    const { data: activeCampaign, error: activeError } = await supabase
+      .from("tabloid_campaigns")
+      .select("*")
+      .eq("active", true)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (activeError) throw activeError;
+    campaign = activeCampaign;
+  }
+
+  if (!campaign) return { campaign: null, snapshot: null, products: [] };
+
+  // Durante o período do tabloide, sempre mantemos visível o último
+  // resultado válido já coletado. A tela não fica vazia apenas porque
+  // a coleta do dia atual ainda não terminou.
   const validUntil =
     localToday < campaign.end_date ? localToday : campaign.end_date;
 
