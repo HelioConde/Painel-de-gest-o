@@ -180,8 +180,8 @@ export default function LossesPage() {
                 <PrintReportHeader
                   title="Perdas"
                   snapshot={selectedRow}
-                  storeLabel={`Loja ${selectedStoreSequence} - ${selectedStoreCode}`}
-                  storeDetail={selectedRow.store_name}
+                  storeLabel={selectedRow.store_name || `Loja ${selectedStoreSequence} - ${selectedStoreCode}`}
+                  storeDetail={`Loja ${selectedStoreSequence} · Código ${selectedStoreCode}`}
                 />
                 <LossMetricCards
                   totals={{
