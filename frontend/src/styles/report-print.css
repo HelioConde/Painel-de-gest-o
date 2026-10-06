@@ -1737,3 +1737,260 @@
   .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-share { width: 9% !important; }
   .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-comparison { width: 11% !important; }
 }
+
+
+/* EVENTOS PRINT A4 — single-page compact layout */
+@media print {
+  .page-events {
+    page: events !important;
+  }
+
+  .page-events .event-store-panel {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+  }
+
+  .page-events .print-report-header {
+    grid-template-columns: 28mm minmax(0, 1fr) 28mm !important;
+    min-height: 13mm !important;
+    padding: 0 0 1.6mm !important;
+    margin: 0 0 1.8mm !important;
+    gap: 3mm !important;
+  }
+
+  .page-events .print-report-logo img {
+    width: 25mm !important;
+  }
+
+  .page-events .print-report-title {
+    font-size: 12pt !important;
+    margin-bottom: .5mm !important;
+  }
+
+  .page-events .print-report-store {
+    font-size: 7.8pt !important;
+  }
+
+  .page-events .print-report-period {
+    margin-top: .5mm !important;
+    font-size: 7pt !important;
+  }
+
+  .page-events .print-report-comparison {
+    font-size: 6.3pt !important;
+  }
+
+  .page-events .event-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 1.5mm !important;
+    margin: 0 0 1.8mm !important;
+  }
+
+  .page-events .event-kpi-grid .kpi-card {
+    min-height: 12mm !important;
+    padding: 1.25mm 1.6mm !important;
+    border-radius: 1.2mm !important;
+  }
+
+  .page-events .event-kpi-grid .kpi-card-top {
+    margin-bottom: .55mm !important;
+  }
+
+  .page-events .event-kpi-grid .kpi-card-top > span {
+    font-size: 5.4pt !important;
+  }
+
+  .page-events .event-kpi-grid .kpi-card > strong {
+    font-size: 8.9pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .page-events .event-kpi-grid .status-badge {
+    display: none !important;
+  }
+
+  .page-events .event-quick-summary {
+    display: grid !important;
+    grid-template-columns: minmax(40mm, .34fr) minmax(0, 1fr) !important;
+    gap: 3mm !important;
+    align-items: center !important;
+    min-height: 0 !important;
+    margin: 0 0 1.8mm !important;
+    padding: 1.4mm 2mm !important;
+    border: .25mm solid var(--print-border-color) !important;
+    border-radius: 1.2mm !important;
+    background: #fff !important;
+    break-inside: avoid !important;
+  }
+
+  .page-events .event-quick-summary > div {
+    gap: .35mm !important;
+  }
+
+  .page-events .event-quick-summary small {
+    font-size: 5.2pt !important;
+  }
+
+  .page-events .event-quick-summary strong {
+    font-size: 7.4pt !important;
+    line-height: 1.1 !important;
+  }
+
+  .page-events .event-quick-summary p {
+    font-size: 6.2pt !important;
+    line-height: 1.22 !important;
+  }
+
+  .page-events .performance-section {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.68fr) minmax(0, .92fr) !important;
+    align-items: stretch !important;
+    gap: 2.5mm !important;
+    margin: 0 !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+  }
+
+  .page-events .event-performance-card,
+  .page-events .event-chart-card {
+    min-height: 0 !important;
+    height: auto !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .page-events .event-performance-heading {
+    min-height: 0 !important;
+    padding: 1.15mm 1.7mm !important;
+  }
+
+  .page-events .event-performance-heading h2 {
+    font-size: 7.8pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .page-events .event-store-table th,
+  .page-events .event-store-table td {
+    padding: .85mm 1.1mm !important;
+    font-size: 6.25pt !important;
+    line-height: 1.08 !important;
+  }
+
+  .page-events .event-store-table th {
+    font-size: 5.55pt !important;
+  }
+
+  .page-events .event-store-table th:first-child,
+  .page-events .event-store-table td:first-child {
+    width: 40% !important;
+  }
+
+  .page-events .event-store-sequence {
+    width: 4.5mm !important;
+    height: 4.5mm !important;
+    margin-right: .8mm !important;
+    border-radius: .9mm !important;
+    font-size: 5.2pt !important;
+  }
+
+  .page-events .event-store-copy strong,
+  .page-events .event-store-name-desktop {
+    font-size: 6.15pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .page-events .event-store-table tfoot td {
+    font-size: 6.45pt !important;
+    padding-top: 1mm !important;
+    padding-bottom: 1mm !important;
+  }
+
+  .page-events .event-chart-card {
+    padding: 1.6mm 1.8mm !important;
+  }
+
+  .page-events .event-chart-card .section-card-header {
+    margin-bottom: .8mm !important;
+  }
+
+  .page-events .event-chart-card .section-card-header small {
+    font-size: 5.2pt !important;
+  }
+
+  .page-events .event-chart-card .section-card-header h2 {
+    font-size: 7.8pt !important;
+    line-height: 1.05 !important;
+  }
+
+  .page-events .event-vertical-chart {
+    height: 36mm !important;
+    min-height: 0 !important;
+  }
+
+  .page-events .event-chart-legend {
+    margin-bottom: .6mm !important;
+    gap: 2mm !important;
+    font-size: 5.5pt !important;
+  }
+
+  .page-events .event-chart-legend i {
+    width: 1.6mm !important;
+    height: 1.6mm !important;
+  }
+
+  .page-events .event-bars {
+    min-height: 0 !important;
+    gap: 1.2mm !important;
+    padding: 1mm .8mm 0 !important;
+  }
+
+  .page-events .event-bar-columns {
+    min-height: 0 !important;
+    gap: .6mm !important;
+  }
+
+  .page-events .event-bar-columns i {
+    width: min(3.2mm, 40%) !important;
+  }
+
+  .page-events .event-bars article > strong,
+  .page-events .event-bars strong {
+    font-size: 5.4pt !important;
+  }
+
+  .page-events .event-chart-insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: .8mm !important;
+    margin-top: 1mm !important;
+  }
+
+  .page-events .event-chart-insights article {
+    gap: .25mm .6mm !important;
+    padding: .75mm .85mm !important;
+    border-radius: .8mm !important;
+  }
+
+  .page-events .event-chart-insights article small {
+    font-size: 4.7pt !important;
+  }
+
+  .page-events .event-chart-insights article strong {
+    font-size: 5.8pt !important;
+  }
+
+  .page-events .event-chart-insights article > span:not(.status-badge) {
+    font-size: 4.8pt !important;
+  }
+
+  .page-events .event-chart-insights .status-badge {
+    padding: .3mm .7mm !important;
+    font-size: 4.6pt !important;
+  }
+
+  .page-events .event-mobile-store-list {
+    display: none !important;
+  }
+}
