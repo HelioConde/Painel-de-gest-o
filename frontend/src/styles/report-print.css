@@ -2068,3 +2068,92 @@
     display: none !important;
   }
 }
+
+
+/* PRINT V4.1 — Perdas: maior legibilidade na impressão A4 */
+@media print {
+  /* Identificação da loja mais legível no cabeçalho. */
+  .losses-page .print-report-store {
+    font-size: 8.6pt !important;
+    font-weight: 900 !important;
+    line-height: 1.08 !important;
+  }
+
+  /* Período/comparativo acompanham o aumento sem competir com o título. */
+  .losses-page .print-report-period,
+  .losses-page .print-report-comparison {
+    font-size: 6.7pt !important;
+  }
+
+  /* A folha possui espaço vertical suficiente: aumentamos corpo e respiro da tabela. */
+  .losses-page .compact-loss-table tr {
+    height: 5.15mm !important;
+    min-height: 5.15mm !important;
+  }
+
+  .losses-page .compact-loss-table th,
+  .losses-page .compact-loss-table td {
+    height: 5.15mm !important;
+    padding: .7mm 1.05mm !important;
+    font-size: 7.35pt !important;
+    line-height: 1.08 !important;
+  }
+
+  /* Nome dos setores precisa ser o ponto de entrada visual de cada linha. */
+  .losses-page .compact-loss-table tbody td:first-child {
+    font-size: 7.8pt !important;
+    font-weight: 950 !important;
+  }
+
+  /* Venda/perda atual e anterior: números maiores para leitura no papel. */
+  .losses-page .compact-loss-table tbody td:nth-child(2),
+  .losses-page .compact-loss-table tbody td:nth-child(3),
+  .losses-page .compact-loss-table tbody td:nth-child(6),
+  .losses-page .compact-loss-table tbody td:nth-child(7) {
+    font-size: 7.55pt !important;
+  }
+
+  /* As colunas de perda recebem um pouco mais de ênfase. */
+  .losses-page .compact-loss-table tbody td:nth-child(3),
+  .losses-page .compact-loss-table tbody td:nth-child(7) {
+    font-size: 7.8pt !important;
+    font-weight: 850 !important;
+  }
+
+  .losses-page .compact-loss-table thead tr.loss-summary-years,
+  .losses-page .compact-loss-table thead tr.loss-summary-years th {
+    height: 5.5mm !important;
+    min-height: 5.5mm !important;
+  }
+
+  .losses-page .compact-loss-table thead tr.loss-summary-years th {
+    font-size: 7.45pt !important;
+  }
+
+  .losses-page .compact-loss-table thead tr:nth-child(2),
+  .losses-page .compact-loss-table thead tr:nth-child(2) th {
+    height: 5mm !important;
+    min-height: 5mm !important;
+  }
+
+  .losses-page .compact-loss-table thead tr:nth-child(2) th {
+    font-size: 6.35pt !important;
+  }
+
+  .losses-page .compact-loss-table tfoot tr,
+  .losses-page .compact-loss-table tfoot td {
+    height: 5.35mm !important;
+    min-height: 5.35mm !important;
+    font-size: 7.65pt !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon {
+    width: 4.45mm !important;
+    height: 4.45mm !important;
+  }
+
+  .losses-page .loss-summary-sector .sector-icon svg {
+    width: 6.9pt !important;
+    height: 6.9pt !important;
+  }
+}
