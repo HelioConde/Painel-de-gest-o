@@ -9,18 +9,43 @@ from src.parsers.tabloid_html import parse_tabloid_html
 from src.supabase.client import SupabaseRestClient
 
 
-def get_active_tabloid_campaign(settings: Settings | None = None) -> dict[str, Any]:
+def get_active_tabloid_campaign(
+    settings: Settings | None = None,
+    reference_date: date | None = None,
+) -> dict[str, Any]:
+    """Retorna somente a campanha cujo período contém a data consultada.
+
+    Campanhas futuras permanecem na fila e não substituem a campanha vigente.
+    No primeiro dia do período novo, o worker passa a escolhê-la
+    automaticamente, mesmo que o campo legado active ainda esteja falso.
+    """
     settings = settings or Settings.from_environment()
+    target = reference_date or date.today()
     url, key = settings.require_supabase()
     client = SupabaseRestClient(url, key, timeout=settings.supabase_timeout)
     campaigns = client.select(
         'tabloid_campaigns',
-        select='id,name,start_date,end_date,promotion_type,promotion_name',
-        filters={'active': 'eq.true'},
-        limit=1,
+        select='id,name,start_date,end_date,promotion_type,promotion_name,active,updated_at',
+        filters={
+            'start_date': f'lte.{target.isoformat()}',
+            'end_date': f'gte.{target.isoformat()}',
+        },
+        limit=100,
     )
     if not campaigns:
-        raise RuntimeError('Não existe campanha de tabloide ativa.')
+        raise RuntimeError(
+            f'Não existe campanha de tabloide em andamento em {target.isoformat()}.'
+        )
+
+    # Em caso de cadastro legado sobreposto, vence a campanha com início mais
+    # recente; updated_at desempata edições do mesmo período.
+    campaigns.sort(
+        key=lambda item: (
+            str(item.get('start_date') or ''),
+            str(item.get('updated_at') or ''),
+        ),
+        reverse=True,
+    )
     return dict(campaigns[0])
 
 
