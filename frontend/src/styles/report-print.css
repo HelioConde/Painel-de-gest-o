@@ -2157,3 +2157,34 @@
     height: 6.9pt !important;
   }
 }
+
+
+/* PRINT V4.2 — Perdas: repetir cabeçalho e KPIs na segunda folha */
+.loss-print-page2-summary {
+  display: none;
+}
+
+@media print {
+  .losses-page.losses-view-perdas .loss-print-page2-summary {
+    display: block !important;
+    width: 100% !important;
+    break-before: page !important;
+    page-break-before: always !important;
+    margin: 0 0 2mm !important;
+  }
+
+  /* O page-break agora pertence ao resumo repetido, evitando uma folha em branco. */
+  .losses-page.losses-view-perdas .loss-print-page2-summary + .loss-chart-grid {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    margin-top: 0 !important;
+  }
+
+  .losses-page.losses-view-perdas .loss-print-page2-summary .print-report-header {
+    margin-bottom: 2mm !important;
+  }
+
+  .losses-page.losses-view-perdas .loss-print-page2-summary .loss-kpi-grid {
+    margin-bottom: 2.4mm !important;
+  }
+}
