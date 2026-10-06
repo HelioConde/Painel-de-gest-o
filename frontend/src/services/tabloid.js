@@ -22,22 +22,53 @@ export async function getActiveTabloid() {
     .maybeSingle();
   if (error) throw error;
   if (!campaign) return { campaign: null, snapshot: null, products: [] };
+
+  // Durante o período do tabloide, sempre mantemos visível o último
+  // resultado válido já coletado. A tela não fica vazia apenas porque
+  // a coleta do dia atual ainda não terminou.
+  const now = new Date();
+  const localToday = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
+  const validUntil =
+    localToday < campaign.end_date ? localToday : campaign.end_date;
+
   const { data: snapshot, error: snapshotError } = await supabase
     .from("tabloid_snapshots")
     .select("*")
     .eq("campaign_id", campaign.id)
+    .gte("reference_date", campaign.start_date)
+    .lte("reference_date", validUntil)
     .order("reference_date", { ascending: false })
     .limit(1)
     .maybeSingle();
   if (snapshotError) throw snapshotError;
-  if (!snapshot) return { campaign, snapshot: null, products: [] };
+  if (!snapshot)
+    return {
+      campaign,
+      snapshot: null,
+      products: [],
+      availableThrough: null,
+      awaitingUpdate: true,
+    };
+
   const { data: products, error: productsError } = await supabase
     .from("tabloid_product_sales")
     .select("*")
     .eq("snapshot_id", snapshot.id)
     .order("sales_value", { ascending: false });
   if (productsError) throw productsError;
-  return { campaign, snapshot, products: products || [] };
+
+  const availableThrough = snapshot.period_end || snapshot.reference_date;
+  return {
+    campaign,
+    snapshot,
+    products: products || [],
+    availableThrough,
+    awaitingUpdate: availableThrough < validUntil,
+  };
 }
 
 export async function getTabloidSettings() {
