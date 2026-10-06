@@ -1994,3 +1994,77 @@
     display: none !important;
   }
 }
+
+
+/* EVENTOS PRINT A4 — force desktop table in print preview */
+@media print {
+  /* O preview de impressão pode cair nos breakpoints de mobile.
+     Reativamos explicitamente a tabela desktop para não deixar
+     "Desempenho por loja" vazio no A4. */
+  .page-events .event-store-table-wrap {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .page-events .event-store-table {
+    display: table !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .page-events .event-store-table thead {
+    display: table-header-group !important;
+  }
+
+  .page-events .event-store-table tbody {
+    display: table-row-group !important;
+    padding: 0 !important;
+  }
+
+  .page-events .event-store-table tfoot {
+    display: table-footer-group !important;
+  }
+
+  .page-events .event-store-table tr {
+    display: table-row !important;
+    width: auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .page-events .event-store-table th,
+  .page-events .event-store-table td {
+    display: table-cell !important;
+    width: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: none !important;
+    white-space: nowrap !important;
+  }
+
+  .page-events .event-store-table th:first-child,
+  .page-events .event-store-table td:first-child {
+    width: 40% !important;
+    text-align: left !important;
+  }
+
+  .page-events .event-store-table td::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  .page-events .event-store-copy strong {
+    display: inline !important;
+  }
+
+  .page-events .event-store-copy::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .page-events .event-mobile-store-list {
+    display: none !important;
+  }
+}
