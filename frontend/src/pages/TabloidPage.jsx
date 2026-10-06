@@ -378,7 +378,14 @@ export default function TabloidPage() {
             <span className="tabloid-status">{status}</span>
           </p>
           <small className="tabloid-updated">
-            Dados atualizados até {date(data.snapshot?.period_end)}
+            {data.snapshot ? (
+              <>
+                Resultado disponível até {date(data.availableThrough || data.snapshot?.period_end)}
+                {data.awaitingUpdate ? " · aguardando atualização mais recente" : ""}
+              </>
+            ) : (
+              "Aguardando a primeira coleta do período"
+            )}
           </small>
         </div>
         <ShoppingCart size={28} />
