@@ -19,7 +19,7 @@ function sequenceOf(row) {
 }
 
 function compactName(row) {
-  return `Loja ${sequenceOf(row)} • ${codeOf(row)}`
+  return row?.store_name || `Loja ${sequenceOf(row)} • ${codeOf(row)}`
 }
 
 export function LossStoreFooter({ rows, selectedStore, onSelect }) {
