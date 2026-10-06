@@ -12980,7 +12980,8 @@ input:focus-visible {
   background: #e7f8ee;
   color: #087a43;
 }
-.settings-status-agendada {
+.settings-status-agendada,
+.settings-status-na-fila {
   background: #eef4ff;
   color: #1765e8;
 }
