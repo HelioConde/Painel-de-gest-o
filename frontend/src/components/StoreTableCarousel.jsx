@@ -213,6 +213,19 @@ export default function StoreTableCarousel({
         </div>
       </div>
 
+      <div className="sales-print-page2-header" aria-hidden="true">
+        <PrintReportHeader
+          title={reportTitle}
+          snapshot={snapshot}
+          storeLabel={
+            active.value === "network"
+              ? "Todas as lojas"
+              : `Loja ${sequence(active)} - ${storeCode(active)}`
+          }
+          storeDetail={active.value === "network" ? null : displayName(active)}
+        />
+      </div>
+
       <SalesCharts snapshot={snapshot} scope={activeScope} monthly={monthly} />
     </section>
   );
