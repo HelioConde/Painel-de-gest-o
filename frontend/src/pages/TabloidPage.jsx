@@ -358,15 +358,24 @@ export default function TabloidPage() {
     .sort((a, b) => b.sales - a.sales)[0];
   const leaderShare = leader?.sales ? (leader.sales / totalSales) * 100 : 0;
   const now = new Date();
-  const start = new Date(`${data.campaign.start_date}T12:00:00`);
-  const end = new Date(`${data.campaign.end_date}T23:59:59`);
-  const days = Math.round((end - start) / 86400000) + 1;
+  const parseDay = (value) => {
+    const [year, month, day] = value.split("-").map(Number);
+    return Date.UTC(year, month - 1, day);
+  };
+  const startDay = parseDay(data.campaign.start_date);
+  const endDay = parseDay(data.campaign.end_date);
+  const todayDay = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((endDay - startDay) / 86400000) + 1;
   const elapsed = Math.min(
     days,
-    Math.max(0, Math.floor((now - start) / 86400000) + 1),
+    Math.max(0, Math.floor((todayDay - startDay) / 86400000) + 1),
   );
   const status =
-    now < start ? "Agendado" : now > end ? "Finalizada" : "Em andamento";
+    todayDay < startDay
+      ? "Agendado"
+      : todayDay > endDay
+        ? "Finalizada"
+        : "Em andamento";
   return (
     <div className="page tabloid-page page-tight">
       <header className="page-header dashboard-hero page-header-compact tabloid-hero">
