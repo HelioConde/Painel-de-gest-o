@@ -37,20 +37,6 @@ export async function getActiveTabloid() {
     .maybeSingle();
   if (error) throw error;
 
-  // Fora de qualquer período vigente, mantemos compatibilidade com a
-  // campanha marcada como ativa (por exemplo uma campanha agendada).
-  if (!campaign) {
-    const { data: activeCampaign, error: activeError } = await supabase
-      .from("tabloid_campaigns")
-      .select("*")
-      .eq("active", true)
-      .order("updated_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (activeError) throw activeError;
-    campaign = activeCampaign;
-  }
-
   if (!campaign) return { campaign: null, snapshot: null, products: [] };
 
   // Durante o período do tabloide, sempre mantemos visível o último
@@ -139,15 +125,33 @@ export async function getTabloidSettings() {
 
 export async function saveTabloidCampaign(values, userId) {
   configured();
+
+  const now = new Date();
+  const localToday = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  const isCurrent =
+    values.start_date <= localToday && values.end_date >= localToday;
+
+  // Regra de fila:
+  // - campanha futura é cadastrada sem substituir a campanha atual;
+  // - quando o dia inicial chegar, as telas e o worker passam a escolhê-la
+  //   pelo período, sem exigir edição manual no admin;
+  // - somente a campanha que está vigente hoje permanece com active=true
+  //   para compatibilidade com dados antigos.
   const payload = {
     name: tabloidCampaignName(values.start_date, values.end_date),
     start_date: values.start_date,
     end_date: values.end_date,
     promotion_type: 1,
     promotion_name: "TABLOIDE",
-    active: Boolean(values.active),
+    active: isCurrent,
   };
-  if (payload.active) {
+
+  if (isCurrent) {
     const { error: deactivateError } = await supabase
       .from("tabloid_campaigns")
       .update({ active: false })
@@ -155,6 +159,7 @@ export async function saveTabloidCampaign(values, userId) {
       .neq("id", values.id || "00000000-0000-0000-0000-000000000000");
     if (deactivateError) throw deactivateError;
   }
+
   if (values.id) {
     const { data, error } = await supabase
       .from("tabloid_campaigns")
@@ -165,6 +170,7 @@ export async function saveTabloidCampaign(values, userId) {
     if (error) throw error;
     return data;
   }
+
   const { data, error } = await supabase
     .from("tabloid_campaigns")
     .insert({ ...payload, created_by: userId })
