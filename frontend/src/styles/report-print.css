@@ -34,7 +34,7 @@
   .data-status-banner, .split-view-tabs, .table-carousel-controlbar, .table-carousel-footer,
   .loss-carousel-footer-bottom, .loss-top-tools, .dashboard-hero-glow, .dashboard-title-accent,
   .table-carousel-slide:not(.active), .report-short-value, .report-short-label,
-  .event-store-name-mobile, .state-card, .no-print { display: none !important; }
+  .event-store-name-mobile, .state-card, .no-print, .pwa-install-banner, .sidebar-install-app { display: none !important; }
   .table-carousel-slide.active { opacity: 1 !important; width: 100% !important; }
   .page-header.dashboard-hero, .event-hero.event-hero-standard { display: none !important; }
   .print-report-header {
@@ -2186,5 +2186,44 @@
 
   .losses-page.losses-view-perdas .loss-print-page2-summary .loss-kpi-grid {
     margin-bottom: 2.4mm !important;
+  }
+}
+
+
+/* PRINT V4.3 — Vendas: ocultar PWA e repetir cabeçalho na folha dos gráficos */
+.sales-print-page2-header {
+  display: none;
+}
+
+@media print {
+  /* Nunca imprimir avisos/ações de instalação do PWA. */
+  .pwa-install-banner,
+  .sidebar-install-app {
+    display: none !important;
+  }
+
+  /* A segunda folha de Venda Diária, Venda Mensal e Fechamento Mensal
+     começa com o mesmo cabeçalho da primeira. */
+  .page-daily .sales-print-page2-header,
+  .page-monthly .sales-print-page2-header {
+    display: block !important;
+    width: 100% !important;
+    break-before: page !important;
+    page-break-before: always !important;
+    margin: 0 0 2.2mm !important;
+  }
+
+  .page-daily .sales-print-page2-header .print-report-header,
+  .page-monthly .sales-print-page2-header .print-report-header {
+    margin-bottom: 2.2mm !important;
+  }
+
+  /* O salto de página pertence ao cabeçalho repetido; os gráficos vêm logo abaixo,
+     evitando uma página vazia adicional. */
+  .page-daily .sales-print-page2-header + .sales-charts,
+  .page-monthly .sales-print-page2-header + .sales-charts {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    margin-top: 0 !important;
   }
 }
