@@ -304,7 +304,8 @@ export default function SettingsPage() {
             <div>
               <dt>Coleta automática</dt>
               <dd>
-                <span className="settings-dot active" /> Ativa
+                <span className="settings-dot active" />{" "}
+                {isFutureCampaign ? "Programada" : "Ativa"}
               </dd>
             </div>
             <div>
@@ -329,14 +330,24 @@ export default function SettingsPage() {
             </div>
             <div>
               <dt>Próxima coleta</dt>
-              <dd>Automática</dd>
+              <dd>
+                {isFutureCampaign
+                  ? `Inicia em ${date(form.start_date)}`
+                  : "Automática"}
+              </dd>
             </div>
           </dl>
           <div className="settings-collection-rule">
             <Calendar size={16} />
             <span>
-              {collectionRule}
-              <small>Sem consultar datas futuras.</small>
+              {isFutureCampaign
+                ? `Na fila · início automático em ${date(form.start_date)}`
+                : collectionRule}
+              <small>
+                {isFutureCampaign
+                  ? "A campanha atual continua normalmente até o período desta começar."
+                  : "Sem consultar datas futuras."}
+              </small>
             </span>
           </div>
         </section>
