@@ -35,7 +35,7 @@ export async function getActiveTabloid() {
   const validUntil =
     localToday < campaign.end_date ? localToday : campaign.end_date;
 
-  const { data: snapshot, error: snapshotError } = await supabase
+  let { data: snapshot, error: snapshotError } = await supabase
     .from("tabloid_snapshots")
     .select("*")
     .eq("campaign_id", campaign.id)
@@ -45,6 +45,25 @@ export async function getActiveTabloid() {
     .limit(1)
     .maybeSingle();
   if (snapshotError) throw snapshotError;
+
+  // Se a campanha foi recriada/reativada no admin, o histórico pode estar
+  // vinculado a outro campaign_id. Nesse caso reaproveitamos o último
+  // snapshot do MESMO período real do tabloide, sem misturar campanhas
+  // com data inicial diferente e sem consultar datas futuras.
+  if (!snapshot) {
+    const { data: periodSnapshot, error: periodSnapshotError } = await supabase
+      .from("tabloid_snapshots")
+      .select("*")
+      .eq("period_start", campaign.start_date)
+      .lte("period_end", validUntil)
+      .order("period_end", { ascending: false })
+      .order("reference_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (periodSnapshotError) throw periodSnapshotError;
+    snapshot = periodSnapshot;
+  }
+
   if (!snapshot)
     return {
       campaign,
