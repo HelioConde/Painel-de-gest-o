@@ -65,8 +65,26 @@ export default function SettingsPage() {
       const data = await getTabloidSettings();
       setCampaigns(data.campaigns);
       setSnapshotsByCampaign(data.snapshotsByCampaign);
+      const today = new Date();
+      const todayKey = [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0"),
+      ].join("-");
+      const currentCampaign = [...data.campaigns]
+        .filter(
+          (campaign) =>
+            campaign.start_date <= todayKey && campaign.end_date >= todayKey,
+        )
+        .sort(
+          (a, b) =>
+            b.start_date.localeCompare(a.start_date) ||
+            new Date(b.updated_at) - new Date(a.updated_at),
+        )[0];
+
       setForm(
-        data.campaigns.find((campaign) => campaign.active) ||
+        currentCampaign ||
+          data.campaigns.find((campaign) => campaign.active) ||
           data.campaigns[0] ||
           empty,
       );
@@ -331,7 +349,7 @@ export default function SettingsPage() {
                   <StatusBadge status={campaignStatus(campaign)} />
                 </span>
                 <span data-label="Última atualização">
-                  {timestamp(campaign.updated_at)}
+                  {timestamp(snapshotsByCampaign.get(campaign.id)?.imported_at)}
                 </span>
                 <button
                   className="settings-view"
