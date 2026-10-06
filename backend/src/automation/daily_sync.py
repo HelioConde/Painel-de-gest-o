@@ -263,7 +263,7 @@ def check_tabloid_sync(settings: Settings, reference_date: date) -> SyncCheck:
 
     fallback_period = SyncPeriod.for_reference_date(reference_date)
     try:
-        campaign = get_active_tabloid_campaign(settings)
+        campaign = get_active_tabloid_campaign(settings, reference_date)
     except RuntimeError as error:
         return SyncCheck('TABLOIDE', fallback_period, True, 0, (), str(error), should_sync=False)
 
