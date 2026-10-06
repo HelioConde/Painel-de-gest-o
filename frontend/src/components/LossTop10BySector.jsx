@@ -19,6 +19,7 @@ export default function LossTop10BySector({ row, onSelectSector }) {
   const sectors = useMemo(() => buildTopLossesBySector(row, ranking), [row, ranking])
   const storeCode = String(row.store_code).padStart(3, '0')
   const storeSequence = LOSS_STORE_SEQUENCE[storeCode] || storeCode
+  const storeDisplayName = row.store_name || `Loja ${storeSequence} - ${storeCode}`
 
 
   return (
@@ -26,8 +27,8 @@ export default function LossTop10BySector({ row, onSelectSector }) {
       <PrintReportHeader
         title="Top Perdas"
         snapshot={row}
-        storeLabel={`Loja ${storeSequence} - ${storeCode}`}
-        storeDetail={row.store_name}
+        storeLabel={storeDisplayName}
+        storeDetail={`Loja ${storeSequence} · Código ${storeCode}`}
       />
       <div className="section-heading loss-top-heading">
         <div>
@@ -63,8 +64,8 @@ export default function LossTop10BySector({ row, onSelectSector }) {
             <LossRankingCard
               id={`loss-sector-${normalize(sector.name).replace(/[^a-z0-9]+/g, '-')}`}
               title={sector.name}
-              contextLabel={`Loja ${storeSequence} - ${storeCode}`}
-              printCenterLabel={`TOP PERDAS • Loja ${storeSequence} - ${storeCode}`}
+              contextLabel={storeDisplayName}
+              printCenterLabel={`TOP PERDAS • ${storeDisplayName}`}
               products={sector.products}
               productCount={sector.productCount}
               totalValue={sector.totalValue}
