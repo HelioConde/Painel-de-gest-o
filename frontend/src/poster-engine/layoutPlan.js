@@ -31,7 +31,7 @@ function styleForContentField(field, text, product, baseStyle) {
 
   // Fontes condensadas com line-height menor que 1 podem cortar acentos no topo.
   // A reserva é feita no próprio planejamento para preview e impressão coincidirem.
-  const lineHeight = hasAccent(text) ? Math.max(baseStyle.lineHeight || 1, 1.16) : baseStyle.lineHeight
+  const lineHeight = hasAccent(text) ? Math.max(baseStyle.lineHeight || 1, 1.24) : baseStyle.lineHeight
 
   return { ...baseStyle, scale, lineHeight }
 }
