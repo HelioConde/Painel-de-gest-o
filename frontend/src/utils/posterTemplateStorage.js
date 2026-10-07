@@ -15,10 +15,23 @@ function sanitizeBox(saved, fallback, withGap) {
   if (withGap) box.gap = number(saved?.gap, fallback.gap, 0, 12)
   return box
 }
+function sanitizeFontFamily(value, fallback) {
+  if (typeof value !== 'string') return fallback
+  const clean = value.trim().slice(0, 120)
+  return clean || fallback
+}
 function sanitizeTextStyles(saved, fallback, useDefaultBounds) {
   return Object.fromEntries(Object.entries(fallback).map(([field, defaults]) => {
     const candidate = saved?.[field] || {}
-    return [field, { fontMin: useDefaultBounds ? defaults.fontMin : number(candidate.fontMin, defaults.fontMin, 0.5, 100), fontMax: useDefaultBounds ? defaults.fontMax : number(candidate.fontMax, defaults.fontMax, 0.75, 150), fontWeight: number(candidate.fontWeight, defaults.fontWeight, 300, 950), lineHeight: number(candidate.lineHeight, defaults.lineHeight, 0.7, 1.6), letterSpacing: number(candidate.letterSpacing, defaults.letterSpacing, -1, 5), scale: number(candidate.scale, defaults.scale, 0.25, 3) }]
+    return [field, {
+      fontMin: useDefaultBounds ? defaults.fontMin : number(candidate.fontMin, defaults.fontMin, 0.5, 100),
+      fontMax: useDefaultBounds ? defaults.fontMax : number(candidate.fontMax, defaults.fontMax, 0.75, 150),
+      fontWeight: number(candidate.fontWeight, defaults.fontWeight, 300, 950),
+      lineHeight: number(candidate.lineHeight, defaults.lineHeight, 0.7, 1.6),
+      letterSpacing: number(candidate.letterSpacing, defaults.letterSpacing, -1, 5),
+      scale: number(candidate.scale, defaults.scale, 0.25, 3),
+      fontFamily: sanitizeFontFamily(candidate.fontFamily, defaults.fontFamily),
+    }]
   }))
 }
 export function mergePosterTemplate(defaultTemplate, saved = {}) {
