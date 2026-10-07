@@ -452,7 +452,7 @@
   justify-content: center;
   max-width: 100%;
   color: inherit;
-  font-family: "Futura Price";
+  font-family: inherit;
   font-style: italic;
   font-weight: 900;
   line-height: .78;
@@ -462,6 +462,26 @@
 .poster-price-major { font-size: 1em; line-height: .78; }
 .poster-price-separator { align-self: flex-start; margin: .57em .02em 0 0; font-size: .44em; line-height: .8; }
 .poster-price-decimal { align-self: flex-start; margin: .015em 0 0 .02em; font-size: .71em; line-height: .84; }
+
+.poster-price-value-inline {
+  align-items: center;
+  line-height: .78;
+}
+.poster-price-value-inline .poster-price-major,
+.poster-price-value-inline .poster-price-separator,
+.poster-price-value-inline .poster-price-decimal {
+  align-self: center;
+  margin: 0;
+  font-size: 1em;
+  line-height: .78;
+}
+.poster-price-value-inline .poster-price-separator {
+  margin: 0 .015em;
+}
+.poster-price-value-inline .poster-price-currency {
+  align-self: center;
+  margin: 0 .12em 0 0;
+}
 
 .poster-preview-nav { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; gap: 8px; }
 .poster-preview-nav > span { color: #7a8494; font-size: 10px; text-align: center; }
@@ -1272,5 +1292,31 @@
 @media (max-width: 520px) {
   .poster-admin-font-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+
+/* Poster price display-mode control */
+.poster-admin-price-mode {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) 1fr;
+  align-items: end;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+.poster-admin-price-mode > span {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  color: #7a8494;
+  font-size: 9px;
+  line-height: 1.35;
+}
+@media (max-width: 520px) {
+  .poster-admin-price-mode {
+    grid-template-columns: 1fr;
+  }
+  .poster-admin-price-mode > span {
+    min-height: 0;
   }
 }
