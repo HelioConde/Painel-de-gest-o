@@ -5,14 +5,14 @@ import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
 import backgroundApp from '../../Fundo/app.png'
 
-export const LAYOUT_CONFIG_VERSION = 8
+export const LAYOUT_CONFIG_VERSION = 9
 
 const baseTextStyles = {
-  description: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
-  subdescription: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
-  complement: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 1 },
-  unit: { fontMin: 2.8, fontMax: 14, fontWeight: 900, lineHeight: 0.96, letterSpacing: 0, scale: 0.72 },
-  price: { fontMin: 7, fontMax: 34, fontWeight: 900, lineHeight: 0.88, letterSpacing: 0, scale: 1, fontFamily: '"Futura Price"' },
+  description: { fontMin: 3.4, fontMax: 36, fontWeight: 900, lineHeight: 0.92, letterSpacing: 0, scale: 1 },
+  subdescription: { fontMin: 3.4, fontMax: 36, fontWeight: 900, lineHeight: 0.92, letterSpacing: 0, scale: 1 },
+  complement: { fontMin: 3.2, fontMax: 32, fontWeight: 900, lineHeight: 0.92, letterSpacing: 0, scale: 1 },
+  unit: { fontMin: 3, fontMax: 15, fontWeight: 900, lineHeight: 0.94, letterSpacing: 0, scale: 0.76 },
+  price: { fontMin: 8, fontMax: 40, fontWeight: 900, lineHeight: 0.84, letterSpacing: 0, scale: 1, fontFamily: '"Futura Price"' },
 }
 
 function textStyles(textScale = 1, scales = {}) {
@@ -30,13 +30,15 @@ const price = (x, y, width, height) => ({ x, y, width, height, ...centered })
 
 // Official physical calibrations. Coordinates are relative to one logical plate, even in multi-plate formats.
 export const DEFAULT_POSTER_LAYOUTS = {
-  A4X4: { contentBox: content(9, 17, 83, 48), priceBox: price(16, 66, 75, 28), textScale: 0.72 },
-  A5: { contentBox: content(9, 20, 86, 52), priceBox: price(14, 73, 80, 23), textScale: 1 },
+  // Recalibrado a partir das placas físicas do Primor:
+  // descrição ocupa mais largura/altura e o preço domina o terço inferior.
+  A4X4: { contentBox: content(7, 16, 86, 48), priceBox: price(11, 64, 82, 31), textScale: 0.78 },
+  A5: { contentBox: content(7, 18, 88, 50), priceBox: price(10, 68, 84, 28), textScale: 1.08 },
   A4X2_CIMA_BAIXO: { contentBox: content(6, 26, 43, 65), priceBox: price(50, 13, 46, 78), textScale: 1 },
-  A4X2_INVERTIDO: { contentBox: content(10, 5, 80, 53), priceBox: price(10, 62, 80, 33), textScale: 1, textScales: { description: 1.8, subdescription: 1.85, complement: 1.1 } },
+  A4X2_INVERTIDO: { contentBox: content(7, 4, 86, 54), priceBox: price(8, 59, 84, 36), textScale: 1.08, textScales: { description: 1.88, subdescription: 1.9, complement: 1.12 } },
   A4X2_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 1 },
-  A4: { contentBox: content(10, 17, 82, 52), priceBox: price(16, 69, 76, 24), textScale: 1.36 },
-  A3: { contentBox: content(9, 17, 85, 51), priceBox: price(16, 69, 77, 25), textScale: 1.9 },
+  A4: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 1.5 },
+  A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
 }
 
 const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })
