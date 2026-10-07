@@ -157,6 +157,7 @@ export default function CartazesLayoutAdminPage() {
       contentBox: structuredClone(template.contentBox),
       priceBox: structuredClone(template.priceBox),
       textStyles: structuredClone(template.textStyles),
+      priceDisplayMode: template.priceDisplayMode || 'raised',
       safeArea: template.safeArea,
     }
     savePosterTemplate(duplicateConfig)
@@ -253,6 +254,18 @@ export default function CartazesLayoutAdminPage() {
             <p className="poster-admin-font-help">
               A fonte da descrição também é aplicada à subdescrição e ao complemento. Você pode escolher uma sugestão ou digitar o nome de outra fonte instalada.
             </p>
+            <div className="poster-admin-price-mode">
+              <SelectField
+                label="Formato do preço"
+                value={template.priceDisplayMode || 'raised'}
+                onChange={(value) => setTemplate((current) => ({ ...current, priceDisplayMode: value }))}
+                options={[
+                  { value: 'raised', label: 'Centavos elevados' },
+                  { value: 'inline', label: 'Preço reto (mesma linha)' },
+                ]}
+              />
+              <span>Ex.: 6,⁹⁹ ou 6,99.</span>
+            </div>
             <div className="poster-admin-scale-list">
               {Object.entries(textLabels).map(([field, label]) => (
                 <label key={field}><span>{label}</span><input type="range" min="0.25" max="2" step="0.05" value={template.textStyles[field].scale} onChange={(event) => updateTextScale(field, Number(event.target.value))} /><strong>{template.textStyles[field].scale.toFixed(2)}</strong></label>
