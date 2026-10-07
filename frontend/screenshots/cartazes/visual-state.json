@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-07T09:59:24.969Z",
-  "commit": "120e239c85896de21c00dac536c525d03a63ede4",
+  "generatedAt": "2026-10-07T10:09:30.674Z",
+  "commit": "002a67e4afd02aaccf0db9df20f7a881bbe32322",
   "desktopErrors": [],
   "mobileErrors": [],
   "samples": [
@@ -15,10 +15,10 @@
     {
       "sample": "banana-nanica",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -29,25 +29,25 @@
         "fontPx": 16
       },
       "description": {
-        "x": 7.41,
-        "y": 16.28,
-        "width": 85.17,
-        "height": 19.7,
-        "fontPx": 240.401
+        "x": 9.3,
+        "y": 18,
+        "width": 81.39,
+        "height": 18.81,
+        "fontPx": 229.5
       },
       "subdescription": {
-        "x": 7.35,
-        "y": 36.97,
-        "width": 85.29,
-        "height": 21.36,
-        "fontPx": 260.598
+        "x": 9.3,
+        "y": 37.73,
+        "width": 81.39,
+        "height": 20.37,
+        "fontPx": 248.557
       },
       "unit": {
-        "x": 46.28,
-        "y": 59.3,
-        "width": 7.43,
-        "height": 5.41,
-        "fontPx": 64.6299
+        "x": 46.53,
+        "y": 59.02,
+        "width": 6.93,
+        "height": 4.98,
+        "fontPx": 59.4595
       },
       "price": {
         "x": 9,
@@ -61,10 +61,10 @@
     {
       "sample": "banana-prata",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -75,25 +75,25 @@
         "fontPx": 16
       },
       "description": {
-        "x": 7.41,
-        "y": 17.09,
-        "width": 85.17,
-        "height": 19.7,
-        "fontPx": 240.401
+        "x": 9.3,
+        "y": 19.11,
+        "width": 81.39,
+        "height": 18.81,
+        "fontPx": 229.5
       },
       "subdescription": {
-        "x": 16.8,
-        "y": 37.78,
-        "width": 66.39,
-        "height": 19.74,
-        "fontPx": 240.831
+        "x": 19.51,
+        "y": 38.83,
+        "width": 60.98,
+        "height": 18.16,
+        "fontPx": 221.563
       },
       "unit": {
-        "x": 46.28,
-        "y": 58.49,
-        "width": 7.43,
-        "height": 5.41,
-        "fontPx": 64.6299
+        "x": 46.53,
+        "y": 57.91,
+        "width": 6.93,
+        "height": 4.98,
+        "fontPx": 59.4595
       },
       "price": {
         "x": 9,
@@ -107,10 +107,10 @@
     {
       "sample": "abacaxi-peca",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -121,18 +121,18 @@
         "fontPx": 16
       },
       "description": {
-        "x": 7.41,
-        "y": 19.49,
-        "width": 85.17,
-        "height": 18.3,
-        "fontPx": 223.298
+        "x": 9.3,
+        "y": 21.33,
+        "width": 81.39,
+        "height": 17.5,
+        "fontPx": 213.54
       },
       "subdescription": {
-        "x": 23.73,
-        "y": 38.77,
-        "width": 52.54,
-        "height": 22.74,
-        "fontPx": 240.831
+        "x": 25.87,
+        "y": 39.75,
+        "width": 48.25,
+        "height": 20.92,
+        "fontPx": 221.563
       },
       "unit": null,
       "price": {
@@ -147,10 +147,10 @@
     {
       "sample": "mamao-formosa",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -161,25 +161,25 @@
         "fontPx": 16
       },
       "description": {
-        "x": 8.23,
-        "y": 17.14,
-        "width": 83.53,
-        "height": 22.74,
-        "fontPx": 240.831
+        "x": 11.51,
+        "y": 19.21,
+        "width": 76.98,
+        "height": 20.92,
+        "fontPx": 221.563
       },
       "subdescription": {
-        "x": 7.35,
-        "y": 40.87,
-        "width": 85.29,
-        "height": 16.6,
-        "fontPx": 202.5
+        "x": 9.3,
+        "y": 41.05,
+        "width": 81.39,
+        "height": 15.84,
+        "fontPx": 193.24
       },
       "unit": {
-        "x": 46.28,
-        "y": 58.44,
-        "width": 7.43,
-        "height": 5.41,
-        "fontPx": 64.6299
+        "x": 46.53,
+        "y": 57.81,
+        "width": 6.93,
+        "height": 4.98,
+        "fontPx": 59.4595
       },
       "price": {
         "x": 9,
@@ -193,10 +193,10 @@
     {
       "sample": "manga-palmer",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -207,25 +207,25 @@
         "fontPx": 16
       },
       "description": {
-        "x": 11.19,
-        "y": 16.73,
-        "width": 77.61,
-        "height": 19.74,
-        "fontPx": 240.831
+        "x": 14.34,
+        "y": 18.78,
+        "width": 71.31,
+        "height": 18.16,
+        "fontPx": 221.563
       },
       "subdescription": {
-        "x": 7.35,
-        "y": 37.45,
-        "width": 85.29,
-        "height": 20.43,
-        "fontPx": 249.271
+        "x": 9.3,
+        "y": 37.86,
+        "width": 81.39,
+        "height": 19.46,
+        "fontPx": 237.441
       },
       "unit": {
-        "x": 46.28,
-        "y": 58.86,
-        "width": 7.43,
-        "height": 5.41,
-        "fontPx": 64.6299
+        "x": 46.53,
+        "y": 58.24,
+        "width": 6.93,
+        "height": 4.98,
+        "fontPx": 59.4595
       },
       "price": {
         "x": 9,
@@ -239,10 +239,10 @@
     {
       "sample": "manga-tommy",
       "contentBox": {
-        "x": 6,
-        "y": 16,
-        "width": 88,
-        "height": 49,
+        "x": 8,
+        "y": 18,
+        "width": 84,
+        "height": 46,
         "fontPx": 16
       },
       "priceBox": {
@@ -253,25 +253,25 @@
         "fontPx": 16
       },
       "description": {
-        "x": 11.19,
-        "y": 17.08,
-        "width": 77.61,
-        "height": 19.74,
-        "fontPx": 240.831
+        "x": 14.34,
+        "y": 19.43,
+        "width": 71.31,
+        "height": 18.16,
+        "fontPx": 221.563
       },
       "subdescription": {
-        "x": 8.99,
-        "y": 37.79,
-        "width": 82.02,
-        "height": 19.74,
-        "fontPx": 240.831
+        "x": 12.2,
+        "y": 38.51,
+        "width": 75.59,
+        "height": 18.16,
+        "fontPx": 221.563
       },
       "unit": {
-        "x": 46.28,
-        "y": 58.51,
-        "width": 7.43,
-        "height": 5.41,
-        "fontPx": 64.6299
+        "x": 46.53,
+        "y": 57.59,
+        "width": 6.93,
+        "height": 4.98,
+        "fontPx": 59.4595
       },
       "price": {
         "x": 9,
