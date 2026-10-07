@@ -1,6 +1,8 @@
-const cache = new Map()
-
 export function createTextMeasurer(measure) {
+  // Cada medidor precisa do próprio cache. Assim, quando as fontes de cartaz
+  // terminam de carregar, o novo medidor não reutiliza métricas da fonte fallback.
+  const cache = new Map()
+
   return (text, style = {}) => {
     const size = Number(style.fontSizeMm || 1)
     const letterSpacingMm = style.letterSpacingMm ?? style.letterSpacing ?? 0
