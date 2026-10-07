@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-07T10:14:49.171Z",
-  "commit": "ccc404463df3738771c79e3ba911085c48a9e57f",
+  "generatedAt": "2026-10-07T10:15:38.097Z",
+  "commit": "e9a6875e45a89e65f27c0299e76af0cb0880e7ca",
   "desktopErrors": [],
   "mobileErrors": [],
   "samples": [
@@ -122,16 +122,16 @@
       },
       "description": {
         "x": 9.3,
-        "y": 21.33,
+        "y": 20.34,
         "width": 81.39,
         "height": 17.5,
         "fontPx": 213.54
       },
       "subdescription": {
         "x": 11.22,
-        "y": 39.75,
+        "y": 38.76,
         "width": 77.55,
-        "height": 20.92,
+        "height": 22.9,
         "fontPx": 221.563
       },
       "unit": null,
@@ -162,21 +162,21 @@
       },
       "description": {
         "x": 9.26,
-        "y": 21.82,
+        "y": 21.08,
         "width": 81.48,
-        "height": 15.71,
+        "height": 17.19,
         "fontPx": 166.348
       },
       "subdescription": {
         "x": 9.3,
-        "y": 38.44,
+        "y": 39.19,
         "width": 81.39,
         "height": 15.84,
         "fontPx": 193.24
       },
       "unit": {
         "x": 46.53,
-        "y": 55.2,
+        "y": 55.94,
         "width": 6.93,
         "height": 4.98,
         "fontPx": 59.4595
