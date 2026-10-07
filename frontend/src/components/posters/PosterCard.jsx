@@ -6,8 +6,8 @@ function hasAccent(text) {
   return ACCENT_PATTERN.test(String(text || ''))
 }
 
-function fontFamilyForText() {
-  return PRIMARY_POSTER_FONT
+function fontFamilyForText(text) {
+  return hasAccent(text) ? ACCENT_POSTER_FONT : PRIMARY_POSTER_FONT
 }
 
 
