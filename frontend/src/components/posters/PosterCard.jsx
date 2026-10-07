@@ -73,7 +73,7 @@ export function PosterBackground({ template, widthMm, heightMm, className = 'pos
 export default function PosterCard({ product, format, template, layoutPlan, inverted = false, showBackground = false, showLayoutDebug = false, editable = false, onBoxPointerDown, badgeLabel, selected = false, onSelect }) {
   const plan = layoutPlan
   return (
-    <article className={`poster-card ${inverted ? 'poster-card-inverted' : ''} ${selected ? 'poster-card-selected' : ''}`} data-product-id={product.id} onClick={onSelect}>
+    <article className={`poster-card poster-card-format-${String(format.id || '').toLocaleLowerCase('pt-BR').replace(/_/g, '-')} ${inverted ? 'poster-card-inverted' : ''} ${selected ? 'poster-card-selected' : ''}`} data-product-id={product.id} onClick={onSelect}>
       <div className="poster-card-layers">
         {badgeLabel ? <span className="poster-preview-badge">{badgeLabel}</span> : null}
         {showBackground ? <PosterBackground template={template} widthMm={format.widthMm / format.columns} heightMm={format.heightMm / format.rows} /> : null}
