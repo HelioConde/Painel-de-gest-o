@@ -4,6 +4,7 @@ const KEY_PREFIX = 'poster-background-template:'
 const BOX_KEYS = ['x', 'y', 'width', 'height']
 const ALIGN_X = ['left', 'center', 'right']
 const ALIGN_Y = ['top', 'center', 'bottom']
+const PRICE_DISPLAY_MODES = ['raised', 'inline']
 
 function number(value, fallback, min, max) { const parsed = Number(value); return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback }
 function sanitizeBox(saved, fallback, withGap) {
@@ -37,7 +38,7 @@ function sanitizeTextStyles(saved, fallback, useDefaultBounds) {
 export function mergePosterTemplate(defaultTemplate, saved = {}) {
   if (Number(saved.configVersion) !== defaultTemplate.configVersion) return structuredClone(defaultTemplate)
   const useDefaultBounds = Number(saved.configVersion || 0) < defaultTemplate.configVersion
-  const merged = { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), showCurrency: typeof saved.showCurrency === 'boolean' ? saved.showCurrency : defaultTemplate.showCurrency, currencyFromBackground: typeof saved.currencyFromBackground === 'boolean' ? saved.currencyFromBackground : defaultTemplate.currencyFromBackground, contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
+  const merged = { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), showCurrency: typeof saved.showCurrency === 'boolean' ? saved.showCurrency : defaultTemplate.showCurrency, currencyFromBackground: typeof saved.currencyFromBackground === 'boolean' ? saved.currencyFromBackground : defaultTemplate.currencyFromBackground, priceDisplayMode: PRICE_DISPLAY_MODES.includes(saved.priceDisplayMode) ? saved.priceDisplayMode : defaultTemplate.priceDisplayMode, contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
   if (defaultTemplate.specialLayout === 'app-offer') ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => { merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false) })
   return merged
 }
