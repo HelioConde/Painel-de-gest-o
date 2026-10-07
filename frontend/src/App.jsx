@@ -10,6 +10,7 @@ import AiAnalysisPage from './pages/AiAnalysisPage'
 import SettingsPage from './pages/SettingsPage'
 import TabloidPage from './pages/TabloidPage'
 import LoginPage from './pages/LoginPage'
+import PosterVisualQaPage from './pages/PosterVisualQaPage'
 import { AuthProvider, useAuth } from './auth/AuthProvider'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { defaultRouteForRole } from './auth/permissions'
@@ -27,11 +28,14 @@ function RoleHome() {
   return <Navigate to={defaultRouteForRole(role)} replace />
 }
 
+const visualQaEnabled = import.meta.env.VITE_VISUAL_QA === '1'
+
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        {visualQaEnabled ? <Route path="/visual-qa/cartazes" element={<PosterVisualQaPage />} /> : null}
         <Route element={<ProtectedShell />}>
           <Route path="/" element={<RoleHome />} />
           <Route path="/diaria" element={<ProtectedRoute permission="vendaDiaria"><DailyPage /></ProtectedRoute>} />
