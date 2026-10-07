@@ -441,8 +441,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #e00016;
-  -webkit-text-stroke: .45mm #1b1012;
+  color: #d91820;
+  -webkit-text-stroke: .08mm rgba(145, 15, 26, .72);
   paint-order: stroke fill;
 }
 
@@ -455,13 +455,13 @@
   font-family: "Futura Price";
   font-style: italic;
   font-weight: 900;
-  line-height: .82;
+  line-height: .78;
   white-space: nowrap;
 }
-.poster-price-currency { align-self: flex-end; margin: 0 .1em .1em 0; font-size: .32em; line-height: 1; }
-.poster-price-major { font-size: 1em; line-height: .82; }
-.poster-price-separator { align-self: flex-start; margin: .6em .035em 0 0; font-size: .5em; line-height: .82; }
-.poster-price-decimal { align-self: flex-start; margin: .04em 0 0 .035em; font-size: .64em; line-height: .9; }
+.poster-price-currency { align-self: flex-end; margin: 0 .12em .11em 0; font-size: .29em; line-height: 1; }
+.poster-price-major { font-size: 1em; line-height: .78; }
+.poster-price-separator { align-self: flex-start; margin: .57em .02em 0 0; font-size: .44em; line-height: .8; }
+.poster-price-decimal { align-self: flex-start; margin: .015em 0 0 .02em; font-size: .71em; line-height: .84; }
 
 .poster-preview-nav { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; gap: 8px; }
 .poster-preview-nav > span { color: #7a8494; font-size: 10px; text-align: center; }
@@ -1091,4 +1091,24 @@
     min-height: 46px;
     padding: 0 11px 0 13px;
   }
+}
+
+
+/* Store-reference poster tuning — 2026-10-07 */
+.poster-field-description,
+.poster-field-subdescription {
+  font-weight: 950;
+}
+
+.poster-field-unit {
+  letter-spacing: -.015em;
+}
+
+/* Mantém o preço visualmente dominante como nas placas físicas do Primor. */
+.poster-price-box .poster-field-price {
+  overflow: visible;
+}
+
+.poster-price-box .poster-price-content {
+  overflow: visible;
 }
