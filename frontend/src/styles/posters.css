@@ -434,10 +434,13 @@
 .poster-field-complement { font-family: "Burbank Big Cd Bk"; font-weight: 800; }
 .poster-field-unit { font-family: "Burbank Big Cd Bk"; font-weight: 900; }
 .poster-field-price {
+  left: 0 !important;
+  width: 100% !important;
   height: 100%;
   display: flex;
-  align-items: inherit;
-  justify-content: inherit;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   color: #e00016;
   -webkit-text-stroke: .45mm #1b1012;
   paint-order: stroke fill;
