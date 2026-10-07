@@ -1176,10 +1176,15 @@
   color: #667085;
 }
 
+.poster-visual-qa-card .poster-preview-frame {
+  height: 500px;
+  min-height: 500px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #edf2f8;
+}
+
 .poster-visual-qa-card .poster-sheet {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 210 / 297;
   box-shadow: 0 3px 12px rgba(15, 23, 42, .14);
 }
 
@@ -1191,4 +1196,8 @@
   .poster-visual-qa { padding: 14px; }
   .poster-visual-qa-grid { grid-template-columns: 1fr; }
   .poster-visual-qa-header h1 { font-size: 24px; }
+  .poster-visual-qa-card .poster-preview-frame {
+    height: 470px;
+    min-height: 470px;
+  }
 }
