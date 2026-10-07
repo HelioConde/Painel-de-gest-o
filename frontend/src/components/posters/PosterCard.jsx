@@ -1,9 +1,10 @@
 const PRIMARY_POSTER_FONT = '"Burbank Big Cd Bk"'
 const ACCENT_POSTER_FONT = 'Impact, "Arial Black", sans-serif'
-const ACCENT_PATTERN = /[À-ÖØ-öø-ÿ]/
+const ACCENT_PATTERN = /[À-ÖØ-öø-ÿ\u0300-\u036f]/
 
 function hasAccent(text) {
-  return ACCENT_PATTERN.test(String(text || ''))
+  const value = String(text || '')
+  return ACCENT_PATTERN.test(value) || ACCENT_PATTERN.test(value.normalize('NFD'))
 }
 
 function fontFamilyForText(text) {
@@ -29,6 +30,7 @@ function plannedFieldStyle(line, box) {
     textAlign: box.alignX || 'center',
     overflow: 'visible',
     boxSizing: 'border-box',
+    transform: hasAccent(line.text) ? 'translateY(0.07em)' : undefined,
   }
 }
 
