@@ -48,11 +48,11 @@ function ContentBox({ plan, box, showDebug, editable, onBoxPointerDown }) {
   )
 }
 
-function PriceBox({ plan, box, showDebug, editable, onBoxPointerDown }) {
+function PriceBox({ plan, box, priceDisplayMode, showDebug, editable, onBoxPointerDown }) {
   return (
     <div className={`poster-layout-box poster-price-box ${showDebug ? 'poster-layout-box-debug' : ''}`} style={boxStyle(box)} data-layout-box="priceBox" onPointerDown={editable ? (event) => onBoxPointerDown?.('priceBox', 'move', event) : undefined}>
       <div className="poster-price-content">
-        <div className="poster-field poster-planned-field poster-field-price" style={plannedFieldStyle(plan.price, box)}><PriceValue value={plan.price.text} /></div>
+        <div className="poster-field poster-planned-field poster-field-price" style={plannedFieldStyle(plan.price, box)}><PriceValue value={plan.price.text} mode={priceDisplayMode} /></div>
       </div>
       {showDebug ? <span className="poster-box-label">priceBox</span> : null}
       {editable ? <button type="button" className="poster-resize-handle" aria-label="Redimensionar priceBox" onPointerDown={(event) => onBoxPointerDown?.('priceBox', 'resize', event)} /> : null}
@@ -81,7 +81,7 @@ export default function PosterCard({ product, format, template, layoutPlan, inve
         {showBackground ? <PosterBackground template={template} widthMm={format.widthMm / format.columns} heightMm={format.heightMm / format.rows} /> : null}
         {showLayoutDebug ? <div className="poster-safe-area" style={{ inset: `${template.safeArea}%` }} aria-hidden="true" /> : null}
         <ContentBox plan={plan} box={template.contentBox} showDebug={showLayoutDebug} editable={editable} onBoxPointerDown={onBoxPointerDown} />
-        <PriceBox plan={plan} box={template.priceBox} showDebug={showLayoutDebug} editable={editable} onBoxPointerDown={onBoxPointerDown} />
+        <PriceBox plan={plan} box={template.priceBox} priceDisplayMode={template.priceDisplayMode || 'raised'} showDebug={showLayoutDebug} editable={editable} onBoxPointerDown={onBoxPointerDown} />
       </div>
     </article>
   )
