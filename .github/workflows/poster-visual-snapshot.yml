@@ -1,0 +1,127 @@
+name: Poster Visual Snapshot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/src/components/posters/**'
+      - 'frontend/src/config/posterTemplates.js'
+      - 'frontend/src/poster-engine/**'
+      - 'frontend/src/styles/posters.css'
+      - 'frontend/src/pages/PosterVisualQaPage.jsx'
+      - 'frontend/src/App.jsx'
+      - 'frontend/scripts/capture-poster-visuals.mjs'
+      - '.github/workflows/poster-visual-snapshot.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: poster-visual-snapshot
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install app dependencies
+        run: npm ci
+
+      - name: Install Playwright for visual capture
+        run: npm install --no-save playwright@1.55.0
+
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-poster-playwright-1.55.0
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build visual QA version
+        run: npm run build
+        env:
+          VITE_VISUAL_QA: '1'
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Start local preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 5183 > /tmp/poster-preview.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:5183/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/poster-preview.log
+          exit 1
+
+      - name: Capture poster screenshots
+        env:
+          CAPTURE_BASE_URL: http://127.0.0.1:5183
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/capture-poster-visuals.mjs
+
+      - name: Upload visual artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poster-visual-snapshot
+          path: frontend/screenshots/cartazes/
+          retention-days: 30
+
+      - name: Commit latest screenshots
+        working-directory: .
+        run: |
+          set -euo pipefail
+
+          SNAPSHOT_TMP="$(mktemp -d)"
+          cp -a frontend/screenshots/cartazes/. "$SNAPSHOT_TMP"/
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for attempt in 1 2 3; do
+            echo "Poster snapshot push attempt $attempt/3"
+            git fetch origin main
+            git reset --hard origin/main
+
+            rm -rf frontend/screenshots/cartazes
+            mkdir -p frontend/screenshots/cartazes
+            cp -a "$SNAPSHOT_TMP"/. frontend/screenshots/cartazes/
+
+            git add frontend/screenshots/cartazes/
+            if git diff --cached --quiet; then
+              echo "No visual changes detected."
+              exit 0
+            fi
+
+            git commit -m "chore: refresh poster visual snapshots [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            sleep $((attempt * 2))
+          done
+
+          echo "Could not publish poster snapshots after 3 attempts."
+          exit 1
