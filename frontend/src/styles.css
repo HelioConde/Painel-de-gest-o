@@ -14176,3 +14176,24 @@ input:focus-visible {
     flex: 1 1 0;
   }
 }
+
+
+/* Sidebar grid guard — keep menu items compact even when few permissions are visible. */
+.app-shell .sidebar .nav-list {
+  align-content: start;
+  grid-auto-flow: row;
+  grid-auto-rows: max-content;
+}
+
+.app-shell .sidebar .nav-list > .nav-item {
+  width: 100%;
+  height: auto;
+  align-self: start;
+}
+
+@media screen and (max-width: 820px) {
+  .app-shell .sidebar .nav-list {
+    align-content: start;
+    grid-auto-rows: max-content;
+  }
+}
