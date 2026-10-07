@@ -6,12 +6,13 @@ const CONTENT_FIELDS = ['description', 'subdescription', 'complement', 'unit']
 const GROWTH_FIELDS = ['description', 'subdescription']
 const EPSILON = 0.01
 
-const ACCENT_PATTERN = /[À-ÖØ-öø-ÿ]/
+const ACCENT_PATTERN = /[À-ÖØ-öø-ÿ\u0300-\u036f]/
 const GENERIC_DESCRIPTION_PATTERN = /^(?:CREME DENTAL|CREME PARA PENTEAR|AZEITE DE OLIVA|BISCOITO RECHEADO|LIMPADOR PERFUMADO|DESODORANTE AEROSSOL|SUPLEMENTO HIDROTÔNICO|WHEY PROTEIN|FARINHA DE ARROZ|SUCO MISTO|BATATA PALHA|MILHO VERDE)$/i
 const LIGHT_COMPLEMENT_PATTERN = /^(?:POTE|SACHÊ|SACHE|PERFUMES?|JUNTINHOS|TRADICIONAL(?:\s*\/\s*ORIGINAL)?|ORIGINAL|CLÁSSICO|CLASSICO|TIPO \d+|RECHEADO|MINI BOLO)$/i
 
 function hasAccent(text) {
-  return ACCENT_PATTERN.test(String(text || ''))
+  const value = String(text || '')
+  return ACCENT_PATTERN.test(value) || ACCENT_PATTERN.test(value.normalize('NFD'))
 }
 
 function styleForContentField(field, text, product, baseStyle) {
@@ -30,7 +31,7 @@ function styleForContentField(field, text, product, baseStyle) {
 
   // Fontes condensadas com line-height menor que 1 podem cortar acentos no topo.
   // A reserva é feita no próprio planejamento para preview e impressão coincidirem.
-  const lineHeight = hasAccent(text) ? Math.max(baseStyle.lineHeight || 1, 1.06) : baseStyle.lineHeight
+  const lineHeight = hasAccent(text) ? Math.max(baseStyle.lineHeight || 1, 1.16) : baseStyle.lineHeight
 
   return { ...baseStyle, scale, lineHeight }
 }
