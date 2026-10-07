@@ -8,6 +8,7 @@ on:
       - 'frontend/src/components/posters/**'
       - 'frontend/src/config/posterTemplates.js'
       - 'frontend/src/poster-engine/**'
+      - 'frontend/src/utils/posterBrowserMeasure.js'
       - 'frontend/src/styles/posters.css'
       - 'frontend/src/pages/PosterVisualQaPage.jsx'
       - 'frontend/src/App.jsx'
