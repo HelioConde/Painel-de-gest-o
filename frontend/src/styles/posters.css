@@ -457,7 +457,7 @@
 }
 .poster-price-currency { align-self: flex-end; margin: 0 .1em .1em 0; font-size: .32em; line-height: 1; }
 .poster-price-major { font-size: 1em; line-height: .82; }
-.poster-price-separator { align-self: flex-end; margin: 0 .035em .04em 0; font-size: .5em; line-height: .82; }
+.poster-price-separator { align-self: flex-start; margin: .04em .035em 0 0; font-size: .5em; line-height: .82; }
 .poster-price-decimal { align-self: flex-start; margin: .04em 0 0 .035em; font-size: .64em; line-height: .9; }
 
 .poster-preview-nav { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; gap: 8px; }
