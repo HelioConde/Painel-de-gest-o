@@ -103,7 +103,7 @@ function fitPhysicalLine(line, maxHeightMm, measure) {
   const lineHeight = Math.max(line.style.lineHeight || 1, 0.01)
   const physicalFontMax = maxHeightMm / lineHeight
   const compactLength = String(line.text || '').replace(/\s/g, '').length
-  const growthFactor = compactLength <= 5 ? 1.12 : compactLength <= 8 ? 1.28 : 1.42
+  const growthFactor = compactLength <= 5 ? 1.18 : compactLength <= 8 ? 1.45 : 1.62
   const configuredMax = effectiveMax(line.style)
   const growthCeilingMm = configuredMax * growthFactor
 
@@ -208,7 +208,9 @@ function growStackByPriority(lines, maxHeightMm, gapMm, measure) {
 }
 
 function createContentLines(product, template, contentBox, measure) {
-  const copyWidth = Math.min(contentBox.width, contentBox.width * Math.min(1, 79 / template.contentBox.width))
+  // As placas físicas usam quase toda a largura útil para o nome do produto.
+  // Reservamos apenas uma pequena folga lateral para evitar encostar na moldura.
+  const copyWidth = contentBox.width * 0.97
   const gapMm = (template.contentBox.gap || 0) / 100 * contentBox.height
   const copyBox = {
     ...contentBox,
@@ -265,10 +267,10 @@ function createContentLines(product, template, contentBox, measure) {
 function createPrice(product, template, priceBox, measure) {
   const style = template.textStyles.price
   const text = product.price || ''
-  const strokeMm = 0.45
-  // The visible outline extends beyond the font metrics, especially at the top
-  // of Burbank's tall numerals. Reserve real print-space on both sides.
-  const verticalSafetyMm = 0.6
+  const strokeMm = 0.12
+  // Preço das placas reais é grande e praticamente sem contorno.
+  // Mantemos uma margem física pequena só para evitar corte na impressão.
+  const verticalSafetyMm = 0.35
   const availableHeightMm = Math.max(style.fontMin, priceBox.height - ((strokeMm + verticalSafetyMm) * 2))
   // Price ceilings are physical: a larger grid has a larger priceBox and can use a larger type size.
   // The binary fit below still constrains the full text, including comma, cents and outline.
