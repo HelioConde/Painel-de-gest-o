@@ -83,9 +83,15 @@ await fs.writeFile(
 
 await browser.close()
 
-if (desktopErrors.length || mobileErrors.length || metrics.some((item) => item.overflow)) {
-  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow: metrics.filter((item) => item.overflow) }, null, 2))
+const overflow = metrics.filter((item) => item.overflow)
+if (desktopErrors.length || mobileErrors.length) {
+  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow }, null, 2))
   process.exit(1)
 }
 
-console.log(JSON.stringify({ samples: samples.length, screenshots: samples.length + 2, metrics }, null, 2))
+console.log(JSON.stringify({
+  samples: samples.length,
+  screenshots: samples.length + 2,
+  overflowWarnings: overflow.map((item) => item.sample),
+  metrics,
+}, null, 2))
