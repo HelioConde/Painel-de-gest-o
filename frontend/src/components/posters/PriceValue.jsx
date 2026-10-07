@@ -18,7 +18,8 @@ export default function PriceValue({ value, className = '' }) {
   return (
     <span className={`poster-price-value ${className}`.trim()}>
       {price.prefix ? <span className="poster-price-currency">{price.prefix}</span> : null}
-      <span className="poster-price-major">{price.major}{price.separator}</span>
+      <span className="poster-price-major">{price.major}</span>
+      <span className="poster-price-separator">{price.separator}</span>
       <span className="poster-price-decimal">{price.cents}</span>
     </span>
   )
