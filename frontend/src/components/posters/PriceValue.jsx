@@ -11,12 +11,12 @@ function splitPrice(value) {
   }
 }
 
-export default function PriceValue({ value, className = '' }) {
+export default function PriceValue({ value, className = '', mode = 'raised' }) {
   const price = splitPrice(value)
-  if (!price.major) return <span className={`poster-price-value ${className}`.trim()}>{price.raw || '\u00a0'}</span>
+  if (!price.major) return <span className={`poster-price-value poster-price-value-${mode} ${className}`.trim()}>{price.raw || '\u00a0'}</span>
 
   return (
-    <span className={`poster-price-value ${className}`.trim()}>
+    <span className={`poster-price-value poster-price-value-${mode} ${className}`.trim()}>
       {price.prefix ? <span className="poster-price-currency">{price.prefix}</span> : null}
       <span className="poster-price-major">{price.major}</span>
       <span className="poster-price-separator">{price.separator}</span>
