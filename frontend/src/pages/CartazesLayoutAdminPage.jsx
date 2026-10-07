@@ -28,6 +28,15 @@ const TEXT_LABELS = {
 const APP_BOX_LABELS = { appTitleBox: 'Título', appPriceBox: 'Preço App', appValidityBox: 'Validade', appRegularLabelBox: 'Texto auxiliar', appRegularPriceBox: 'Preço fora App' }
 const APP_TEXT_LABELS = { appTitle: 'Título', appPrice: 'Preço App', appValidity: 'Validade', appRegularLabel: 'Texto auxiliar', appRegularPrice: 'Preço fora App' }
 
+const FONT_SUGGESTIONS = [
+  'Burbank Big Cd Bk',
+  'Futura Price',
+  'Impact',
+  'Arial Black',
+  'Arial',
+  'Inter',
+]
+
 function NumberField({ label, value, onChange, min = 0, max = 100, step = 1 }) {
   return (
     <label className="poster-admin-number-field">
@@ -44,6 +53,23 @@ function SelectField({ label, value, onChange, options }) {
       <select value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
       </select>
+    </label>
+  )
+}
+
+function FontField({ label, value, onChange, placeholder }) {
+  return (
+    <label className="poster-admin-font-field">
+      <span>{label}</span>
+      <input
+        type="text"
+        list="poster-font-suggestions"
+        value={value || ''}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        autoComplete="off"
+        spellCheck="false"
+      />
     </label>
   )
 }
@@ -94,6 +120,23 @@ export default function CartazesLayoutAdminPage() {
     ...current,
     textStyles: { ...current.textStyles, [field]: { ...current.textStyles[field], scale } },
   }))
+
+  const updateFontFamily = (fields, fontFamily) => setTemplate((current) => ({
+    ...current,
+    textStyles: fields.reduce((styles, field) => ({
+      ...styles,
+      [field]: { ...styles[field], fontFamily: fontFamily.trim() || undefined },
+    }), current.textStyles),
+  }))
+
+  const descriptionFontFields = template.specialLayout === 'app-offer'
+    ? ['appTitle']
+    : ['description', 'subdescription', 'complement']
+  const priceFontFields = template.specialLayout === 'app-offer'
+    ? ['appPrice', 'appRegularPrice']
+    : ['price']
+  const descriptionFont = template.textStyles[descriptionFontFields[0]]?.fontFamily || ''
+  const priceFont = template.textStyles[priceFontFields[0]]?.fontFamily || ''
 
   const save = () => {
     savePosterTemplate(template)
@@ -189,7 +232,27 @@ export default function CartazesLayoutAdminPage() {
           </section>
 
           <section className="poster-panel poster-admin-section">
-            <div className="poster-admin-section-heading"><span>Tipografia</span><strong>Escala relativa</strong></div>
+            <div className="poster-admin-section-heading"><span>Tipografia</span><strong>Fonte e escala</strong></div>
+            <datalist id="poster-font-suggestions">
+              {FONT_SUGGESTIONS.map((font) => <option value={font} key={font} />)}
+            </datalist>
+            <div className="poster-admin-font-grid">
+              <FontField
+                label={template.specialLayout === 'app-offer' ? 'Fonte do título' : 'Fonte da descrição'}
+                value={descriptionFont.replace(/^["']|["']$/g, '')}
+                placeholder="Automática (padrão do cartaz)"
+                onChange={(value) => updateFontFamily(descriptionFontFields, value)}
+              />
+              <FontField
+                label="Fonte do preço"
+                value={priceFont.replace(/^["']|["']$/g, '')}
+                placeholder="Futura Price"
+                onChange={(value) => updateFontFamily(priceFontFields, value)}
+              />
+            </div>
+            <p className="poster-admin-font-help">
+              A fonte da descrição também é aplicada à subdescrição e ao complemento. Você pode escolher uma sugestão ou digitar o nome de outra fonte instalada.
+            </p>
             <div className="poster-admin-scale-list">
               {Object.entries(textLabels).map(([field, label]) => (
                 <label key={field}><span>{label}</span><input type="range" min="0.25" max="2" step="0.05" value={template.textStyles[field].scale} onChange={(event) => updateTextScale(field, Number(event.target.value))} /><strong>{template.textStyles[field].scale.toFixed(2)}</strong></label>
