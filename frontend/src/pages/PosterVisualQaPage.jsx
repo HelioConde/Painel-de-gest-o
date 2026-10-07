@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import PosterSheet from '../components/posters/PosterSheet'
+import PosterPreview from '../components/posters/PosterPreview'
 import { getPosterFormat } from '../config/posterFormats'
 import { getDefaultTemplateForFormat } from '../config/posterTemplates'
 import { createPosterLayouts } from '../poster-engine/layoutPlan'
@@ -50,12 +50,13 @@ export default function PosterVisualQaPage() {
               <strong>{product.description} {product.subdescription}</strong>
               <span>{product.unit || 'PEÇA'} · R$ {product.price}</span>
             </div>
-            <PosterSheet
+            <PosterPreview
               format={format}
               products={[product]}
               template={template}
               layoutPlans={layouts}
               showBackground
+              fitViewport
             />
           </article>
         ))}
