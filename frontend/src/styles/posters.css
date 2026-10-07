@@ -361,10 +361,10 @@
 .poster-app-box.poster-layout-box-debug small { z-index: 10; }
 .poster-app-box > span { width: 100%; max-height: 100%; overflow: hidden; font-family: "Burbank Big Cd Bk"; font-weight: 900; line-height: .94; letter-spacing: 0; }
 .poster-app-appTitle > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; white-space: pre-line; font-size: clamp(var(--app-font-min), calc(8cqi * var(--app-scale)), var(--app-font-max)); }
-.poster-app-appPrice > span { color: #df1725; font-family: "Burbank Big Cd Bk"; font-size: clamp(var(--app-font-min), calc(15cqi * var(--app-scale)), var(--app-font-max)); -webkit-text-stroke: .2mm #7f1020; paint-order: stroke fill; }
+.poster-app-appPrice > span { color: #df1725; font-size: clamp(var(--app-font-min), calc(15cqi * var(--app-scale)), var(--app-font-max)); -webkit-text-stroke: .2mm #7f1020; paint-order: stroke fill; }
 .poster-app-appValidity > span { color: #1769c2; font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.6cqi * var(--app-scale)), var(--app-font-max)); font-weight: 850; }
 .poster-app-appRegularLabel > span { font-family: Inter, sans-serif; font-size: clamp(var(--app-font-min), calc(3.7cqi * var(--app-scale)), var(--app-font-max)); font-weight: 800; }
-.poster-app-appRegularPrice > span { color: #078043; font-family: "Burbank Big Cd Bk"; font-size: clamp(var(--app-font-min), calc(7cqi * var(--app-scale)), var(--app-font-max)); }
+.poster-app-appRegularPrice > span { color: #078043; font-size: clamp(var(--app-font-min), calc(7cqi * var(--app-scale)), var(--app-font-max)); }
 .poster-app-box small { position: absolute; top: 0; left: 0; padding: 1mm; background: #172033; color: #fff; font: 700 2.2mm/1 Inter, sans-serif; }
 
 .poster-background-layer, .poster-sheet-background { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -439,10 +439,25 @@
   align-items: inherit;
   justify-content: inherit;
   color: #e00016;
-  font-family: "Burbank Big Cd Bk";
   -webkit-text-stroke: .45mm #1b1012;
   paint-order: stroke fill;
 }
+
+.poster-price-value {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 100%;
+  color: inherit;
+  font-family: "Futura Price";
+  font-style: italic;
+  font-weight: 900;
+  line-height: .82;
+  white-space: nowrap;
+}
+.poster-price-currency { align-self: flex-end; margin: 0 .1em .1em 0; font-size: .32em; line-height: 1; }
+.poster-price-major { font-size: 1em; line-height: .82; }
+.poster-price-decimal { align-self: flex-start; margin: .04em 0 0 .035em; font-size: .52em; line-height: .9; }
 
 .poster-preview-nav { display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; gap: 8px; }
 .poster-preview-nav > span { color: #7a8494; font-size: 10px; text-align: center; }
@@ -759,6 +774,11 @@
 @font-face {
   font-family: "Burbank Big Cd Bk";
   src: url("../assets/fonts/primor-cartazes.otf") format("opentype"), local("Burbank Big Cd Bk");
+  font-display: block;
+}
+@font-face {
+  font-family: "Futura Price";
+  src: url("../assets/fonts/futura-extra-black-condensed-italic.otf") format("opentype");
   font-display: block;
 }
 

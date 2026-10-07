@@ -50,7 +50,7 @@ function PriceBox({ plan, box, showDebug, editable, onBoxPointerDown }) {
   return (
     <div className={`poster-layout-box poster-price-box ${showDebug ? 'poster-layout-box-debug' : ''}`} style={boxStyle(box)} data-layout-box="priceBox" onPointerDown={editable ? (event) => onBoxPointerDown?.('priceBox', 'move', event) : undefined}>
       <div className="poster-price-content">
-        <div className="poster-field poster-planned-field poster-field-price" style={plannedFieldStyle(plan.price, box)}>{plan.price.text || '\u00a0'}</div>
+        <div className="poster-field poster-planned-field poster-field-price" style={plannedFieldStyle(plan.price, box)}><PriceValue value={plan.price.text} /></div>
       </div>
       {showDebug ? <span className="poster-box-label">priceBox</span> : null}
       {editable ? <button type="button" className="poster-resize-handle" aria-label="Redimensionar priceBox" onPointerDown={(event) => onBoxPointerDown?.('priceBox', 'resize', event)} /> : null}
@@ -84,3 +84,4 @@ export default function PosterCard({ product, format, template, layoutPlan, inve
     </article>
   )
 }
+import PriceValue from './PriceValue'
