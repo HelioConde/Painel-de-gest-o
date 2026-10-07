@@ -13,6 +13,7 @@ function styleFor(box, textStyle) {
     left: `${box.x}%`, top: `${box.y}%`, width: `${box.width}%`, height: `${box.height}%`,
     '--app-font-min': `${textStyle.fontMin}mm`, '--app-font-max': `${textStyle.fontMax}mm`,
     '--app-scale': textStyle.scale || 1, '--app-align-x': alignX, '--app-align-y': alignY,
+    '--app-font-family': textStyle.fontFamily || '"Burbank Big Cd Bk"',
   }
 }
 
