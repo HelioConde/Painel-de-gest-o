@@ -32,7 +32,7 @@ const price = (x, y, width, height) => ({ x, y, width, height, ...centered })
 export const DEFAULT_POSTER_LAYOUTS = {
   // Recalibrado a partir das placas físicas do Primor:
   // descrição ocupa mais largura/altura e o preço domina o terço inferior.
-  A4X4: { contentBox: content(7, 16, 86, 48), priceBox: price(11, 64, 82, 31), textScale: 0.78 },
+  A4X4: { contentBox: content(7, 18, 86, 46), priceBox: price(11, 64, 82, 31), textScale: 0.78 },
   A5: { contentBox: content(9, 21, 82, 44), priceBox: price(10, 68, 84, 28), textScale: 1.02 },
   A4X2_CIMA_BAIXO: { contentBox: content(6, 26, 43, 65), priceBox: price(50, 13, 46, 78), textScale: 1 },
   A4X2_INVERTIDO: { contentBox: content(7, 4, 86, 54), priceBox: price(8, 59, 84, 36), textScale: 1.08, textScales: { description: 1.88, subdescription: 1.9, complement: 1.12 } },
