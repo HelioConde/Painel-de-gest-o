@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react'
 
 export default function PosterPrintDialog({ open, format, productCount, pageCount, printConfig, onClose, onPrint }) {
   const [copies, setCopies] = useState(printConfig.copies)
+  const [includeBackground, setIncludeBackground] = useState(Boolean(printConfig.includeBackground))
 
   useEffect(() => {
-    if (open) setCopies(printConfig.copies)
-  }, [open, printConfig.copies])
+    if (!open) return
+    setCopies(printConfig.copies)
+    setIncludeBackground(format.specialLayout === 'app-offer' ? true : Boolean(printConfig.includeBackground))
+  }, [format.specialLayout, open, printConfig.copies, printConfig.includeBackground])
 
   useEffect(() => {
     if (!open) return undefined
@@ -42,7 +45,25 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
           <div><dt>Folhas</dt><dd>{pageCount} por cópia · {totalSheets} no total</dd></div>
           <div><dt>Frente e verso</dt><dd>Não</dd></div>
           <div><dt>Placa superior invertida</dt><dd>{format.invertedSlots.includes(0) ? 'Sim' : 'Não'}</dd></div>
+          <div><dt>Fundo da placa</dt><dd>{format.specialLayout === 'app-offer' || includeBackground ? 'Imprimir' : 'Não imprimir'}</dd></div>
         </dl>
+
+        <label className="poster-print-background-option">
+          <input
+            type="checkbox"
+            checked={format.specialLayout === 'app-offer' || includeBackground}
+            disabled={format.specialLayout === 'app-offer'}
+            onChange={(event) => setIncludeBackground(event.target.checked)}
+          />
+          <span>
+            <strong>Imprimir fundo da placa</strong>
+            <small>
+              {format.specialLayout === 'app-offer'
+                ? 'Este modelo usa o fundo como parte obrigatória do cartaz.'
+                : 'Marque para imprimir a arte completa em papel branco. Deixe desmarcado ao usar placas pré-impressas.'}
+            </small>
+          </span>
+        </label>
 
         <div className="poster-copy-control">
           <span>Cópias</span>
@@ -55,7 +76,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
 
         <footer>
           <button type="button" className="poster-button poster-button-secondary" onClick={onClose}>Cancelar</button>
-          <button type="button" className="poster-button poster-button-primary" onClick={() => onPrint({ ...printConfig, copies })} disabled={!productCount}>
+          <button type="button" className="poster-button poster-button-primary" onClick={() => onPrint({ ...printConfig, copies, includeBackground: format.specialLayout === 'app-offer' || includeBackground })} disabled={!productCount}>
             <Printer size={17} /> Imprimir
           </button>
         </footer>
