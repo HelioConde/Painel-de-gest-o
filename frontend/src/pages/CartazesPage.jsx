@@ -103,7 +103,7 @@ export default function CartazesPage() {
   const [templateConfig, setTemplateConfig] = useState(() => loadPosterTemplate(getDefaultTemplateForFormat('A4X4').id))
   const [currentPage, setCurrentPage] = useState(0)
   const [printDialogOpen, setPrintDialogOpen] = useState(false)
-  const [printConfig, setPrintConfig] = useState({ copies: 1 })
+  const [printConfig, setPrintConfig] = useState({ copies: 1, includeBackground: false })
   const [activeSection, setActiveSection] = useState('create')
   const [historyItems, setHistoryItems] = useState(() => listPosterJobs())
   const [currentJobId, setCurrentJobId] = useState(null)
@@ -361,7 +361,7 @@ export default function CartazesPage() {
 
   const printCurrentSheet = () => {
     setPrintOnlyCurrentPage(true)
-    printPosters({ copies: 1 })
+    printPosters({ ...printConfig, copies: 1 })
     window.setTimeout(() => setPrintOnlyCurrentPage(false), 2200)
   }
 
@@ -588,7 +588,7 @@ export default function CartazesPage() {
             products={products}
             template={templateConfig}
             layoutPlans={layoutPlans}
-            showBackground={formatConfig.specialLayout === 'app-offer'}
+            showBackground={formatConfig.specialLayout === 'app-offer' || Boolean(printConfig.includeBackground)}
           />
         )))}
       </div>
