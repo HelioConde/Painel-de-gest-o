@@ -786,6 +786,8 @@
   body.poster-printing .poster-slot { border-color: #a8a8a8 !important; }
   body.poster-printing .poster-background-layer,
   body.poster-printing .poster-sheet-background { display: none !important; }
+  body.poster-printing.poster-print-with-background .poster-background-layer,
+  body.poster-printing.poster-print-with-background .poster-sheet-background,
   body.poster-printing .poster-sheet-app .poster-sheet-background { display: block !important; }
   body.poster-printing .poster-sheet,
   body.poster-printing .poster-card { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
