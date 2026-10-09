@@ -39,6 +39,13 @@ export function mergePosterTemplate(defaultTemplate, saved = {}) {
   if (Number(saved.configVersion) !== defaultTemplate.configVersion) return structuredClone(defaultTemplate)
   const useDefaultBounds = Number(saved.configVersion || 0) < defaultTemplate.configVersion
   const merged = { ...defaultTemplate, safeArea: number(saved.safeArea, defaultTemplate.safeArea, 0, 20), showCurrency: typeof saved.showCurrency === 'boolean' ? saved.showCurrency : defaultTemplate.showCurrency, currencyFromBackground: typeof saved.currencyFromBackground === 'boolean' ? saved.currencyFromBackground : defaultTemplate.currencyFromBackground, priceDisplayMode: PRICE_DISPLAY_MODES.includes(saved.priceDisplayMode) ? saved.priceDisplayMode : defaultTemplate.priceDisplayMode, contentBox: sanitizeBox(saved.contentBox, defaultTemplate.contentBox, true), priceBox: sanitizeBox(saved.priceBox, defaultTemplate.priceBox, false), textStyles: sanitizeTextStyles(saved.textStyles, defaultTemplate.textStyles, useDefaultBounds) }
+  // A4 4x1: keep the description clear of the OFERTA header. Existing saved layouts
+  // are migrated by moving only the top edge down and preserving the lower edge.
+  if (defaultTemplate.format === 'A4X4' && merged.contentBox.y < 18) {
+    const previousBottom = merged.contentBox.y + merged.contentBox.height
+    merged.contentBox.y = 18
+    merged.contentBox.height = Math.max(10, previousBottom - 18)
+  }
   if (defaultTemplate.specialLayout === 'app-offer') ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => { merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false) })
   return merged
 }
