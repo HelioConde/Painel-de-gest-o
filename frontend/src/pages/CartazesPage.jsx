@@ -74,7 +74,7 @@ function productDisplayName(product) {
   return [product?.description, product?.subdescription, product?.complement, product?.unit].filter(Boolean).join(' ') || 'Cartazes'
 }
 
-function applyPosterPrintPage(format) {
+function applyPosterPrintPage(format, includeBackground = false) {
   let style = document.getElementById(PRINT_STYLE_ID)
   if (!style) {
     style = document.createElement('style')
@@ -83,11 +83,12 @@ function applyPosterPrintPage(format) {
   }
   style.textContent = `@page { size: ${format.paper} ${format.orientation}; margin: 0; }`
   document.body.classList.add('poster-printing')
+  document.body.classList.toggle('poster-print-with-background', Boolean(includeBackground))
 }
 
 function clearPosterPrintPage() {
   document.getElementById(PRINT_STYLE_ID)?.remove()
-  document.body.classList.remove('poster-printing')
+  document.body.classList.remove('poster-printing', 'poster-print-with-background')
 }
 
 export default function CartazesPage() {
@@ -349,7 +350,7 @@ export default function CartazesPage() {
     if (fontAvailable === false) return
     setPrintConfig(confirmedConfig)
     closePrintDialog()
-    applyPosterPrintPage(formatConfig)
+    applyPosterPrintPage(formatConfig, confirmedConfig.includeBackground)
     const cleanup = () => {
       clearPosterPrintPage()
       window.removeEventListener('afterprint', cleanup)
@@ -588,7 +589,7 @@ export default function CartazesPage() {
             products={products}
             template={templateConfig}
             layoutPlans={layoutPlans}
-            showBackground={formatConfig.specialLayout === 'app-offer' || Boolean(printConfig.includeBackground)}
+            showBackground
           />
         )))}
       </div>
