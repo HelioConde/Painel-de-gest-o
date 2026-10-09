@@ -43,13 +43,14 @@ export const DEFAULT_POSTER_LAYOUTS = {
 
 const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })
 const APP_LAYOUT = {
-  // Calibrated to match the edited A4 2x1 App layout used in the admin layout tool.
-  // These coordinates preserve the manually approved positioning seen in the reference.
-  appTitleBox: appBox(8, 40, 84, 27),
-  appPriceBox: appBox(8.5, 67, 83, 9),
-  appValidityBox: appBox(17, 76, 62, 5),
-  appRegularLabelBox: appBox(12, 81, 44, 11),
-  appRegularPriceBox: appBox(56, 81, 28, 11),
+  // Tuned for readability in preview, print and mobile inspection.
+  // Product copy gets more breathing room; validity is intentionally quieter;
+  // the outside-app comparison is larger so the price difference is obvious.
+  appTitleBox: appBox(7, 39, 86, 29),
+  appPriceBox: appBox(8, 67.5, 84, 9.5),
+  appValidityBox: appBox(19, 76.5, 58, 3.8),
+  appRegularLabelBox: appBox(10, 81, 45, 11),
+  appRegularPriceBox: appBox(54, 81, 35, 11),
 }
 
 function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0, specialLayout, backgroundVisible }) {
@@ -63,11 +64,11 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
     template.appRegularLabel = 'Preço fora do aplicativo'
     template.textStyles = {
       ...template.textStyles,
-      appTitle: { ...baseTextStyles.description, fontMin: 3, fontMax: 12, scale: 1 },
-      appPrice: { ...baseTextStyles.price, fontMin: 6, fontMax: 20, scale: 1 },
-      appValidity: { ...baseTextStyles.unit, fontMin: 2.1, fontMax: 5, scale: 1 },
-      appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.3, fontMax: 5, scale: 1 },
-      appRegularPrice: { ...baseTextStyles.price, fontMin: 4, fontMax: 10, scale: 1 },
+      appTitle: { ...baseTextStyles.description, fontMin: 3.4, fontMax: 13.5, scale: 1.08 },
+      appPrice: { ...baseTextStyles.price, fontMin: 6.5, fontMax: 21, scale: 1.04 },
+      appValidity: { ...baseTextStyles.unit, fontMin: 1.8, fontMax: 3.8, scale: 0.82 },
+      appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 6.2, scale: 1.14 },
+      appRegularPrice: { ...baseTextStyles.price, fontMin: 5.2, fontMax: 13.5, scale: 1.18 },
     }
   }
   return template
