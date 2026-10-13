@@ -8,6 +8,7 @@ export default function PosterSheet({ format, products, template, layoutPlans, s
     <section
       className={`poster-sheet ${format.specialLayout === 'app-offer' ? 'poster-sheet-app' : ''} ${format.backgroundScope === 'sheet' && showBackground ? 'poster-sheet-has-background' : ''} ${className}`.trim()}
       aria-label={`Folha ${format.label}`}
+      data-poster-format={format.id}
       style={{
         '--sheet-width': `${format.widthMm}mm`,
         '--sheet-height': `${format.heightMm}mm`,

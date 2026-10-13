@@ -39,6 +39,7 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A4X2_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 1 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
+  SRA3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
 }
 
 const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })
@@ -82,6 +83,8 @@ export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a4', name: 'A4', format: 'A4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
+  // SRA3 utiliza a própria arte A3, dimensionada para a folha maior; não duplicar a imagem.
+  createTemplate({ id: 'fundo-sra3', name: 'SRA3', format: 'SRA3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
 ]
 
 export const DEFAULT_TEMPLATE_BY_FORMAT = Object.fromEntries(POSTER_TEMPLATES.map((template) => [template.format, template.id]))

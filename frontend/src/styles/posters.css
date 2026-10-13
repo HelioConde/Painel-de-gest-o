@@ -784,6 +784,8 @@
     page-break-after: auto !important;
   }
   body.poster-printing .poster-slot { border-color: #a8a8a8 !important; }
+  /* SRA3 é uma placa por folha: a borda pontilhada é apenas uma guia de prévia. */
+  body.poster-printing .poster-sheet[data-poster-format="SRA3"] > .poster-slot { border: 0 !important; }
   body.poster-printing .poster-background-layer,
   body.poster-printing .poster-sheet-background { display: none !important; }
   body.poster-printing.poster-print-with-background .poster-background-layer,
@@ -1373,3 +1375,6 @@
     margin-inline: 14px;
   }
 }
+
+/* Ajuda contextual para impressão SRA3 no painel de cartazes. */
+.poster-print-sra3-help { margin: 10px 0 14px; padding: 11px 13px; border: 1px solid #c7d8ed; border-radius: 9px; background: #f7fbff; color: #34465f; font-size: 12px; line-height: 1.55; }

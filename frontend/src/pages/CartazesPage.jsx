@@ -81,7 +81,8 @@ function applyPosterPrintPage(format, includeBackground = false) {
     style.id = PRINT_STYLE_ID
     document.head.appendChild(style)
   }
-  style.textContent = `@page { size: ${format.paper} ${format.orientation}; margin: 0; }`
+  // Dimensões explícitas: o navegador não precisa reconhecer o nome do papel SRA3.
+  style.textContent = `@page { size: ${format.widthMm}mm ${format.heightMm}mm; margin: 0; }`
   document.body.classList.add('poster-printing')
   document.body.classList.toggle('poster-print-with-background', Boolean(includeBackground))
 }

@@ -40,7 +40,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
 
         <dl className="poster-print-summary">
           <div><dt>Modelo</dt><dd>{format.label}</dd></div>
-          <div><dt>Papel</dt><dd>{format.paper} · {format.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}</dd></div>
+          <div><dt>Papel</dt><dd>{format.paper} · {format.widthMm} × {format.heightMm} mm · {format.orientation === 'portrait' ? 'Retrato' : 'Paisagem'}</dd></div>
           <div><dt>Cartazes</dt><dd>{productCount}</dd></div>
           <div><dt>Folhas</dt><dd>{pageCount} por cópia · {totalSheets} no total</dd></div>
           <div><dt>Frente e verso</dt><dd>Não</dd></div>
@@ -64,6 +64,12 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
             </small>
           </span>
         </label>
+
+        {format.id === 'SRA3' ? (
+          <p className="poster-print-sra3-help" role="note">
+            SRA3 usa o mesmo fundo do A3, mas ocupa uma folha de 320 × 450 mm. Na impressora, selecione papel SRA3, escala 100%, margens “Nenhuma” e impressão de gráficos de fundo. Evite “Ajustar à página”. Bordas totalmente preenchidas dependem de a impressora aceitar impressão sem margens.
+          </p>
+        ) : null}
 
         <div className="poster-copy-control">
           <span>Cópias</span>

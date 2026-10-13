@@ -156,10 +156,10 @@ test('escala o preço pela região física disponível em cada grid', () => {
   })
 })
 
-test('calcula geometria física para todos os sete formatos suportados', () => {
+test('calcula geometria física para todos os oito formatos suportados', () => {
   const template = createTestTemplate()
   const product = parseProductLine('Cerveja Heineken Long Neck 300ml 5,99')
-  ;['A5', 'A4', 'A3', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4X4'].forEach((formatId) => {
+  ;['A5', 'A4', 'A3', 'SRA3', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4X4'].forEach((formatId) => {
     const plan = createPosterLayout({ product, template, format: POSTER_FORMATS[formatId], measure: estimateTextMeasure })
     assert.ok(plan.geometry.poster.widthMm > 0, formatId)
     assert.ok(plan.geometry.poster.heightMm > 0, formatId)
@@ -170,8 +170,30 @@ test('calcula geometria física para todos os sete formatos suportados', () => {
 
 test('mantém somente a lista oficial de formatos de placa', () => {
   assert.deepEqual(Object.keys(POSTER_FORMATS), [
-    'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A5', 'A3',
+    'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A5', 'A3', 'SRA3',
   ])
   assert.deepEqual(POSTER_FORMATS.A4X2_INVERTIDO.invertedSlots, [0])
   assert.equal(POSTER_FORMATS.A4X2_APP.orientation, 'landscape')
+})
+
+
+test('SRA3 preserva o formato e a composição A3, alterando somente o papel físico', () => {
+  const a3 = POSTER_FORMATS.A3
+  const sra3 = POSTER_FORMATS.SRA3
+  assert.equal(a3.widthMm, 297)
+  assert.equal(a3.heightMm, 420)
+  assert.equal(sra3.widthMm, 320)
+  assert.equal(sra3.heightMm, 450)
+  assert.equal(sra3.postersPerSheet, 1)
+  assert.equal(sra3.paper, 'SRA3')
+  for (const key of ['columns', 'rows', 'orientation', 'backgroundScope']) assert.equal(sra3[key], a3[key])
+  assert.deepEqual(sra3.invertedSlots, a3.invertedSlots)
+  const product = parseProductLine('Patinho bovino kg 41,90')
+  const template = createTestTemplate()
+  const a3Plan = createPosterLayout({ product, template, format: a3, measure: estimateTextMeasure })
+  const sra3Plan = createPosterLayout({ product, template, format: sra3, measure: estimateTextMeasure })
+  assert.deepEqual(sra3Plan.content.box, a3Plan.content.box)
+  assert.deepEqual(sra3Plan.price.box, a3Plan.price.box)
+  assert.equal(sra3Plan.geometry.poster.widthMm, 320)
+  assert.equal(sra3Plan.geometry.poster.heightMm, 450)
 })
