@@ -7,6 +7,7 @@ from src.business.sectors import (
     SALES_SECTOR_ORDER,
     canonical_sector_key,
     canonical_sector_name,
+    is_excluded_sales_sector,
     normalize_sector_key,
     unknown_sector_names,
 )
@@ -64,6 +65,15 @@ def _all_raw_sector_names(parsed: dict[str, Any]) -> list[str]:
         for sector in store.get('sectors', []):
             result.append(str(sector.get('name') or sector.get('key') or ''))
     return result
+
+
+def _excluded_sales_value(store: dict[str, Any]) -> float:
+    """Valores administrativos que o relatório mistura ao total comercial."""
+    return round(sum(
+        _number(sector.get('sales_value'))
+        for sector in store.get('sectors', [])
+        if is_excluded_sales_sector(str(sector.get('name') or sector.get('key') or ''))
+    ), 4)
 
 
 def _group_identity(group: dict[str, Any]) -> str:
@@ -326,8 +336,11 @@ def build_sales_hierarchy_pair(
         ]
         cur_total = round(sum(item['current_value'] for item in sectors), 4)
         prev_total = round(sum(item['previous_value'] for item in sectors), 4)
-        expected_cur = _round4(cur_store.get('sales_value'))
-        expected_prev = _round4(prev_store.get('sales_value'))
+        # O SUPERUS inclui setores administrativos no cabeçalho da loja. Eles
+        # são excluídos do painel comercial e precisam ser removidos também da
+        # base de reconciliação para manter o total consistente.
+        expected_cur = round(_round4(cur_store.get('sales_value')) - _excluded_sales_value(cur_store), 4)
+        expected_prev = round(_round4(prev_store.get('sales_value')) - _excluded_sales_value(prev_store), 4)
         if abs(cur_total - expected_cur) > 0.01 or abs(prev_total - expected_prev) > 0.01:
             raise ReportValidationError(
                 f'Reconciliação canônica de 17 setores falhou loja {store_code}: '

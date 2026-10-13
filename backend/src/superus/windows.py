@@ -257,6 +257,32 @@ class Win32:
             return hwnd
         return None
 
+    def dismiss_release_warning_if_present(self) -> bool:
+        """Confirma somente o aviso conhecido de liberação do SUPERUS.
+
+        A licença emite esse alerta durante coletas longas. O reconhecimento
+        exige classe, título e conteúdo específicos para não agir sobre caixas
+        de diálogo de outros programas ou mensagens inesperadas do SUPERUS.
+        """
+        dialog = self.find_window('TFormMensagem')
+        if not dialog:
+            return False
+        message = comparable_text(' '.join(control.text for control in self.children(dialog)))
+        if 'falta' not in message or 'liber' not in message:
+            return False
+        button = next(
+            (
+                control for control in self.children(dialog)
+                if comparable_text(control.text) == 'ok' and control.enabled
+            ),
+            None,
+        )
+        if button is not None:
+            self.click(button.hwnd)
+        else:
+            self.post(dialog, WM_COMMAND, IDOK, 0)
+        return True
+
     def child_hwnds(self, parent: int) -> list[int]:
         result: list[int] = []
 
@@ -440,6 +466,7 @@ class Win32:
     def wait(self, predicate: Callable[[], int | bool | None], timeout: float, description: str) -> int:
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
+            self.dismiss_release_warning_if_present()
             value = predicate()
             if value:
                 return int(value)

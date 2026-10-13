@@ -45,6 +45,17 @@ SALES_SECTOR_ALIASES: dict[str, str] = {
     normalize_sector_key('PERECÍVEIS'): 'PERECIVEIS',
 }
 
+# Setores administrativos aparecem eventualmente no SUPERUS junto ao relatório
+# comercial. Eles não representam venda de loja e, portanto, não devem compor
+# os 17 setores nem o total exibido pelo painel.
+EXCLUDED_SALES_SECTOR_KEYS: frozenset[str] = frozenset({
+    normalize_sector_key('ADM PATRIMONIAL'),
+})
+
+
+def is_excluded_sales_sector(value: str | None) -> bool:
+    return normalize_sector_key(value) in EXCLUDED_SALES_SECTOR_KEYS
+
 
 def canonical_sector_name(value: str | None) -> str | None:
     key = normalize_sector_key(value)
@@ -65,7 +76,7 @@ def unknown_sector_names(values: Iterable[str | None]) -> list[str]:
     seen: set[str] = set()
     for value in values:
         raw = str(value or '').strip()
-        if not raw or canonical_sector_name(raw):
+        if not raw or canonical_sector_name(raw) or is_excluded_sales_sector(raw):
             continue
         key = normalize_sector_key(raw)
         if key and key not in seen:

@@ -92,6 +92,11 @@ class DailySyncLock:
             return False
         except PermissionError:
             return True
+        except OSError:
+            # No Windows, os.kill(pid, 0) can report WinError 87 when a PID
+            # recorded by a previous run no longer exists. That is a stale
+            # lock, not a reason to block the scheduled execution.
+            return False
         return True
 
     def _stale_lock(self) -> bool:

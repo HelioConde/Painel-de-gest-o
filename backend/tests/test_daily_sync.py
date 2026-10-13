@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+import os
 from pathlib import Path
 
 import pytest
@@ -153,3 +154,11 @@ def test_lock_rejects_concurrent_execution_and_recovers_stale_file(tmp_path: Pat
     with DailySyncLock(path):
         assert path.exists()
     assert not path.exists()
+
+
+def test_lock_treats_windows_invalid_pid_error_as_stale(monkeypatch):
+    def invalid_pid(*_args):
+        raise OSError(87, 'Parâmetro incorreto')
+
+    monkeypatch.setattr(os, 'kill', invalid_pid)
+    assert DailySyncLock._pid_is_alive(15172) is False
