@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-13T01:28:06.393Z",
-  "commit": "e2d6c54d64d0637afe76af7bcd89a4b964ac3433",
+  "generatedAt": "2026-10-13T01:37:59.944Z",
+  "commit": "ca1aa06c12ebf4d150c22f0904f6e8782605de9b",
   "desktopErrors": [],
   "mobileErrors": [],
   "samples": [
@@ -9,7 +9,9 @@
     "abacaxi-peca",
     "mamao-formosa",
     "manga-palmer",
-    "manga-tommy"
+    "manga-tommy",
+    "cerveja-a3",
+    "cerveja-sra3"
   ],
   "metrics": [
     {
@@ -279,6 +281,98 @@
         "width": 86,
         "height": 30.87,
         "fontPx": 377.934
+      },
+      "overflow": true
+    },
+    {
+      "sample": "cerveja-a3",
+      "contentBox": {
+        "x": 6,
+        "y": 16,
+        "width": 88,
+        "height": 49,
+        "fontPx": 16
+      },
+      "priceBox": {
+        "x": 9,
+        "y": 64,
+        "width": 86,
+        "height": 31,
+        "fontPx": 16
+      },
+      "description": {
+        "x": 9.69,
+        "y": 16,
+        "width": 80.62,
+        "height": 17.9,
+        "fontPx": 308.806
+      },
+      "subdescription": {
+        "x": 10.8,
+        "y": 34.88,
+        "width": 78.39,
+        "height": 15.93,
+        "fontPx": 274.847
+      },
+      "unit": {
+        "x": 40.64,
+        "y": 59.84,
+        "width": 18.71,
+        "height": 5.15,
+        "fontPx": 87.035
+      },
+      "price": {
+        "x": 9,
+        "y": 64.02,
+        "width": 86,
+        "height": 30.97,
+        "fontPx": 537.88
+      },
+      "overflow": true
+    },
+    {
+      "sample": "cerveja-sra3",
+      "contentBox": {
+        "x": 4,
+        "y": 16,
+        "width": 92,
+        "height": 49,
+        "fontPx": 16
+      },
+      "priceBox": {
+        "x": 4,
+        "y": 63,
+        "width": 92,
+        "height": 34,
+        "fontPx": 16
+      },
+      "description": {
+        "x": 11.43,
+        "y": 16,
+        "width": 77.14,
+        "height": 17.23,
+        "fontPx": 318.489
+      },
+      "subdescription": {
+        "x": 8.29,
+        "y": 33.57,
+        "width": 83.42,
+        "height": 17.07,
+        "fontPx": 315.647
+      },
+      "unit": {
+        "x": 39.21,
+        "y": 59.05,
+        "width": 21.58,
+        "height": 5.95,
+        "fontPx": 107.717
+      },
+      "price": {
+        "x": 4,
+        "y": 63.02,
+        "width": 92,
+        "height": 33.96,
+        "fontPx": 633.199
       },
       "overflow": true
     }
