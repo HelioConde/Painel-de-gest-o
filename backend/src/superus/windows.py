@@ -264,11 +264,15 @@ class Win32:
         exige classe, título e conteúdo específicos para não agir sobre caixas
         de diálogo de outros programas ou mensagens inesperadas do SUPERUS.
         """
-        dialog = self.find_window('TFormMensagem')
+        dialog = next(
+            (
+                hwnd for hwnd in self.enum_top_windows()
+                if self.class_name(hwnd) == 'TFormMensagem'
+                and comparable_text(self.text(hwnd)).startswith('seguran')
+            ),
+            None,
+        )
         if not dialog:
-            return False
-        message = comparable_text(' '.join(control.text for control in self.children(dialog)))
-        if 'falta' not in message or 'liber' not in message:
             return False
         button = next(
             (
