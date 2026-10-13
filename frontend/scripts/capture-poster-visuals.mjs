@@ -98,8 +98,10 @@ const largePaperRegression = !a3Sample || !sra3Sample ||
   !Number.isFinite(largePaperMetrics.sra3DescriptionFontPx) ||
   !Number.isFinite(largePaperMetrics.a3PriceFontPx) ||
   !Number.isFinite(largePaperMetrics.sra3PriceFontPx) ||
-  largePaperMetrics.sra3DescriptionFontPx <= largePaperMetrics.a3DescriptionFontPx * 1.05 ||
-  largePaperMetrics.sra3PriceFontPx <= largePaperMetrics.a3PriceFontPx * 1.05
+  // A descrição pode atingir primeiro o limite de largura; 2,5% é o mínimo realista
+  // com CERVEJA/HEINEKEN/LONG NECK/300ML, enquanto o preço precisa crescer >= 10%.
+  largePaperMetrics.sra3DescriptionFontPx <= largePaperMetrics.a3DescriptionFontPx * 1.025 ||
+  largePaperMetrics.sra3PriceFontPx <= largePaperMetrics.a3PriceFontPx * 1.10
 
 const overflow = metrics.filter((item) => item.overflow)
 if (desktopErrors.length || mobileErrors.length || largePaperRegression) {
