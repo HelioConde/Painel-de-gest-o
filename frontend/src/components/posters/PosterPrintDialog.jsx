@@ -67,7 +67,7 @@ export default function PosterPrintDialog({ open, format, productCount, pageCoun
 
         {format.id === 'SRA3' ? (
           <p className="poster-print-sra3-help" role="note">
-            SRA3 usa o mesmo fundo do A3, mas ocupa uma folha de 320 × 450 mm. Na impressora, selecione papel SRA3, escala 100%, margens “Nenhuma” e impressão de gráficos de fundo. Evite “Ajustar à página”. Bordas totalmente preenchidas dependem de a impressora aceitar impressão sem margens.
+            Modelo SRA3 confirmado neste painel: a descrição e o preço foram dimensionados para 320 × 450 mm. Selecione também SRA3 na impressora, escala 100%, margens “Nenhuma” (não “Mínima”) e impressão de gráficos de fundo ao usar a arte colorida. Evite “Ajustar à página”. O preenchimento até a borda do papel depende de a impressora aceitar impressão sem margens.
           </p>
         ) : null}
 

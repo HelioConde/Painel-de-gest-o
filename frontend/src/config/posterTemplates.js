@@ -39,7 +39,9 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A4X2_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 1 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
-  SRA3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
+  // A3 mantém a calibração original; SRA3 expande a área útil e deixa texto/preço maiores,
+  // respeitando a moldura e o cabeçalho do mesmo fundo "a3.png".
+  SRA3: { contentBox: content(4, 16, 92, 49), priceBox: price(4, 63, 92, 34), textScale: 2.5 },
 }
 
 const appBox = (x, y, width, height) => ({ x, y, width, height, ...centered })

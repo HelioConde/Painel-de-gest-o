@@ -409,6 +409,13 @@ export default function CartazesPage() {
                 <span className="poster-current-format">{hasFormat ? `Formato: ${formatConfig.label}` : 'Escolha um formato'}</span>
               </div>
 
+              {formatId === 'SRA3' ? (
+                <div className="poster-sra3-format-hint" role="note">
+                  <strong>SRA3 · 320 × 450 mm</strong>
+                  <span>Placa ampliada com o mesmo fundo A3. Este formato deve estar selecionado aqui no painel <b>antes</b> de abrir a impressão. Escolher SRA3 apenas no Chrome não amplia uma placa A3.</span>
+                </div>
+              ) : null}
+
               {formatId === 'A4X2_APP' ? (
                 <div className="poster-app-format-hint">
                   <strong>Modelo App</strong>

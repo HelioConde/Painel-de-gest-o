@@ -83,9 +83,27 @@ await fs.writeFile(
 
 await browser.close()
 
+// O SRA3 deve renderizar tipografia fisicamente maior que o A3,
+ // sem deslocar textos para fora das áreas da placa.
+const a3Sample = metrics.find((item) => item.sample === 'cerveja-a3')
+const sra3Sample = metrics.find((item) => item.sample === 'cerveja-sra3')
+const largePaperMetrics = {
+  a3DescriptionFontPx: a3Sample?.description?.fontPx ?? null,
+  sra3DescriptionFontPx: sra3Sample?.description?.fontPx ?? null,
+  a3PriceFontPx: a3Sample?.price?.fontPx ?? null,
+  sra3PriceFontPx: sra3Sample?.price?.fontPx ?? null,
+}
+const largePaperRegression = !a3Sample || !sra3Sample ||
+  !Number.isFinite(largePaperMetrics.a3DescriptionFontPx) ||
+  !Number.isFinite(largePaperMetrics.sra3DescriptionFontPx) ||
+  !Number.isFinite(largePaperMetrics.a3PriceFontPx) ||
+  !Number.isFinite(largePaperMetrics.sra3PriceFontPx) ||
+  largePaperMetrics.sra3DescriptionFontPx <= largePaperMetrics.a3DescriptionFontPx * 1.05 ||
+  largePaperMetrics.sra3PriceFontPx <= largePaperMetrics.a3PriceFontPx * 1.05
+
 const overflow = metrics.filter((item) => item.overflow)
-if (desktopErrors.length || mobileErrors.length) {
-  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow }, null, 2))
+if (desktopErrors.length || mobileErrors.length || largePaperRegression) {
+  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow, largePaperRegression, largePaperMetrics }, null, 2))
   process.exit(1)
 }
 
@@ -93,5 +111,6 @@ console.log(JSON.stringify({
   samples: samples.length,
   screenshots: samples.length + 2,
   overflowWarnings: overflow.map((item) => item.sample),
+  largePaperMetrics,
   metrics,
 }, null, 2))

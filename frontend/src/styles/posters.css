@@ -1378,3 +1378,8 @@
 
 /* Ajuda contextual para impressão SRA3 no painel de cartazes. */
 .poster-print-sra3-help { margin: 10px 0 14px; padding: 11px 13px; border: 1px solid #c7d8ed; border-radius: 9px; background: #f7fbff; color: #34465f; font-size: 12px; line-height: 1.55; }
+
+/* SRA3: a escolha deve acontecer dentro do painel, e não apenas no driver. */
+.poster-sra3-format-hint { display: grid; gap: 4px; margin: 8px 0 13px; padding: 10px 12px; border: 1px solid #c7d8ed; border-radius: 8px; background: #f6faff; color: #314b69; font-size: 11px; line-height: 1.45; }
+.poster-sra3-format-hint strong { font-size: 12px; color: #1c4d7f; }
+.poster-sra3-format-hint b { color: #173d66; }

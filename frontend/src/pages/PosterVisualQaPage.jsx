@@ -5,6 +5,8 @@ import { getDefaultTemplateForFormat } from '../config/posterTemplates'
 import { createPosterLayouts } from '../poster-engine/layoutPlan'
 import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 
+const LARGE_PAPER_SAMPLE = { id: 'cerveja-sra3-comparativo', description: 'CERVEJA', subdescription: 'HEINEKEN', complement: 'LONG NECK', unit: '300ML', price: '5,99' }
+
 const SAMPLES = [
   { id: 'banana-nanica', description: 'BANANA', subdescription: 'NANICA', complement: '', unit: 'KG', price: '3,99' },
   { id: 'banana-prata', description: 'BANANA', subdescription: 'PRATA', complement: '', unit: 'KG', price: '4,99' },
@@ -23,6 +25,16 @@ export default function PosterVisualQaPage() {
     () => createPosterLayouts(SAMPLES, template, format, measure),
     [format, measure, template],
   )
+  const largePaperComparisons = useMemo(() => ['A3', 'SRA3'].map((formatId) => {
+    const formatOption = getPosterFormat(formatId)
+    const templateOption = getDefaultTemplateForFormat(formatId)
+    return {
+      format: formatOption,
+      template: templateOption,
+      product: LARGE_PAPER_SAMPLE,
+      layouts: createPosterLayouts([LARGE_PAPER_SAMPLE], templateOption, formatOption, measure),
+    }
+  }), [measure])
 
   useEffect(() => {
     let active = true
@@ -55,6 +67,22 @@ export default function PosterVisualQaPage() {
               products={[product]}
               template={template}
               layoutPlans={layouts}
+              showBackground
+              fitViewport
+            />
+          </article>
+        ))}
+        {largePaperComparisons.map(({ format: largeFormat, template: largeTemplate, product, layouts: largeLayouts }) => (
+          <article className="poster-visual-qa-card" data-sample={'cerveja-' + largeFormat.id.toLowerCase()} key={largeFormat.id}>
+            <div className="poster-visual-qa-label">
+              <strong>{largeFormat.label} · {product.description} {product.subdescription}</strong>
+              <span>{largeFormat.widthMm} × {largeFormat.heightMm} mm · R$ {product.price}</span>
+            </div>
+            <PosterPreview
+              format={largeFormat}
+              products={[product]}
+              template={largeTemplate}
+              layoutPlans={largeLayouts}
               showBackground
               fitViewport
             />
