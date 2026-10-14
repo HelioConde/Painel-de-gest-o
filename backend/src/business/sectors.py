@@ -45,11 +45,12 @@ SALES_SECTOR_ALIASES: dict[str, str] = {
     normalize_sector_key('PERECÍVEIS'): 'PERECIVEIS',
 }
 
-# Setores administrativos aparecem eventualmente no SUPERUS junto ao relatório
-# comercial. Eles não representam venda de loja e, portanto, não devem compor
-# os 17 setores nem o total exibido pelo painel.
+# Setores administrativos/técnicos aparecem eventualmente no SUPERUS junto ao
+# relatório comercial. Eles não representam venda de loja e, portanto, não
+# devem compor os 17 setores nem o total exibido pelo painel.
 EXCLUDED_SALES_SECTOR_KEYS: frozenset[str] = frozenset({
     normalize_sector_key('ADM PATRIMONIAL'),
+    normalize_sector_key('SERVICO'),
 })
 
 

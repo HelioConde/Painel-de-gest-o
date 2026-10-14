@@ -107,12 +107,15 @@ def test_fixed_17_sector_order_and_missing_sector_zero():
         assert peixaria['previous_value'] == 0.0
 
 
-def test_excludes_adm_patrimonial_from_commercial_sales_totals():
+def test_excludes_non_commercial_sectors_from_sales_totals():
     current = _parsed(acougue=100, pizza=50, pizza_qty=5)
     previous = _parsed(acougue=90, pizza=40, pizza_qty=4)
-    for report, value in ((current, 25.0), (previous, 20.0)):
+    for report, sector_name, value in (
+        (current, 'ADM PATRIMONIAL', 25.0),
+        (previous, 'SERVICO', 20.0),
+    ):
         store = next(item for item in report['stores'] if item['store_code'] == '212')
-        store['sectors'].append(_sector('ADM PATRIMONIAL', value, 1.0))
+        store['sectors'].append(_sector(sector_name, value, 1.0))
         store['sales_value'] += value
 
     hierarchy = build_sales_hierarchy_pair(current, previous)
