@@ -77,7 +77,28 @@ async function run() {
         `Overflow horizontal em ${width}px: ${dimensions.documentWidth}px`);
       assert(dimensions.selectHeight >= 44,
         `Seletor abaixo de 44px em ${width}px: ${dimensions.selectHeight}px`);
-      results.push({ test: 'layout_responsivo', width, status: 'PASS', ...dimensions });
+
+      // Overflow do documento não detecta badge cortado DENTRO do card.
+      // Mede os limites das células e de seus badges, usando a linha como caixa.
+      const clippedValues = await page.evaluate(() => {
+        const rows = [...document.querySelectorAll('.table-carousel-slide.active .sector-row')];
+        return rows.flatMap((row) => {
+          const rowBox = row.getBoundingClientRect();
+          const sector = row.querySelector('.hierarchy-name strong')?.textContent?.trim() || 'Setor';
+          const targets = row.querySelectorAll('.hierarchy-values > *, .hierarchy-values .status-badge');
+          return [...targets].flatMap((target) => {
+            const box = target.getBoundingClientRect();
+            if (box.width === 0 || box.height === 0) return [];
+            const outside = box.right > rowBox.right + 1.5 || box.left < rowBox.left - 1.5;
+            return outside ? [{ sector, className: target.className || target.tagName,
+              overflowPixels: Math.ceil(box.right - rowBox.right) }] : [];
+          });
+        });
+      });
+      assert(clippedValues.length === 0,
+        `Valores cortados na tabela em ${width}px: ${JSON.stringify(clippedValues)}`);
+      results.push({ test: 'layout_responsivo', width, status: 'PASS', ...dimensions,
+        clippedValues: clippedValues.length });
     }
 
     // O formulário precisa ser operável pelo teclado e o foco deve ser visível.
