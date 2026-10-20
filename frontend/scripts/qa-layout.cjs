@@ -1,16 +1,17 @@
-const { chromium } = require('C:/Users/Usuario/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
+const { chromium } = require('playwright')
 const fs = require('node:fs')
 const path = require('node:path')
+const baseUrl = (process.env.QA_BASE_URL || 'http://127.0.0.1:5183').replace(/\\/$/, '')
 const out = path.join(__dirname, '../qa-output')
 fs.mkdirSync(out, { recursive: true })
 ;(async () => {
- const browser = await chromium.launch({channel:'chrome',headless:true})
- const page = await browser.newPage()
+ const browser = await chromium.launch({headless:true, ...(process.env.QA_CHROMIUM_PATH ? {executablePath:process.env.QA_CHROMIUM_PATH} : {})})
+ const page = await browser.newPage(process.env.QA_STORAGE_STATE ? { storageState: process.env.QA_STORAGE_STATE } : {})
  const errors = []
  page.on('pageerror', e => errors.push(e.message))
  const results = []
  for(const route of ['diaria','mensal','eventos','perdas','top']) {
-  await page.goto('http://127.0.0.1:5183/#/' + (route === 'top' ? 'perdas' : route))
+  await page.goto(baseUrl + '/#/' + (route === 'top' ? 'perdas' : route))
   await page.locator(route === 'diaria' || route === 'mensal' ? '.hierarchy-row' : route === 'eventos' ? '.event-store-row' : '.loss-summary-table').first().waitFor()
   if(route === 'top') await page.getByRole('tab',{name:'Top Perdas',exact:true}).click()
   for(const width of [1920,1600,1366,768,621,480,430,412,400,390,375,360]) {
