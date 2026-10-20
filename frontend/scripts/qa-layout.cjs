@@ -1,7 +1,7 @@
 const { chromium } = require('playwright')
 const fs = require('node:fs')
 const path = require('node:path')
-const baseUrl = (process.env.QA_BASE_URL || 'http://127.0.0.1:5183').replace(/\\/$/, '')
+const baseUrl = (process.env.QA_BASE_URL || 'http://127.0.0.1:5183').replace(/\/$/, '')
 const out = path.join(__dirname, '../qa-output')
 fs.mkdirSync(out, { recursive: true })
 ;(async () => {
