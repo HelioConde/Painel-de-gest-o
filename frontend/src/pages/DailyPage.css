@@ -1,0 +1,125 @@
+/* Filtro do histórico da Venda Diária: compacto e independente da impressão. */
+.daily-history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 11px 14px;
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.035);
+}
+
+.daily-history-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: #2563eb;
+}
+
+.daily-history-info > div {
+  display: grid;
+  gap: 2px;
+}
+
+.daily-history-info strong {
+  color: #25324a;
+  font-size: 12px;
+}
+
+.daily-history-info span {
+  color: #667085;
+  font-size: 10px;
+}
+
+.daily-history-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.daily-history-actions label {
+  color: #475467;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.daily-history-actions select {
+  min-width: 190px;
+  min-height: 36px;
+  border: 1px solid #d8e2ee;
+  border-radius: 8px;
+  padding: 0 11px;
+  background: #fff;
+  color: #25324a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.daily-history-actions select:focus-visible,
+.daily-history-latest:focus-visible,
+.daily-history-error button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.daily-history-latest {
+  padding: 8px 10px;
+  min-height: 36px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.daily-history-message {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.daily-history-error {
+  color: #b45309;
+}
+
+.daily-history-error button {
+  background: none;
+  border: 0;
+  padding: 0 2px;
+  color: #1d4ed8;
+  font-size: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+@media (max-width: 620px) {
+  .daily-history-toolbar,
+  .daily-history-actions {
+    align-items: stretch;
+  }
+
+  .daily-history-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .daily-history-actions select,
+  .daily-history-latest {
+    width: 100%;
+  }
+}
+
+@media print {
+  .daily-history-toolbar,
+  .daily-history-message {
+    display: none !important;
+  }
+}
