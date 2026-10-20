@@ -121,3 +121,22 @@ Na página **Venda Diária**, o seletor **Data da venda** permite acessar qualqu
 - A listagem é paginada para incluir históricos superiores ao limite padrão de linhas do PostgREST.
 
 Se uma data não aparecer, confirme que a coleta diária daquele dia foi sincronizada e está acessível à conta no Supabase. O seletor é somente leitura e não cria nem recupera relatórios que não foram enviados.
+
+## Auditoria de interface e QA
+
+A linguagem visual documentada está em [Guia Visual do Painel](../docs/ui-ux/GUIA_VISUAL_PAINEL.md). A avaliação por Taste Skill, Web Design Guidelines, Awesome Design, Image to Code e Playwright está em [Auditoria 20/10/2026](../docs/ui-ux/AUDITORIA_2026-10-20.md).
+
+Para executar a verificação automática do histórico em ambiente local:
+
+```powershell
+npm ci
+npm install --no-save playwright@1.55.0
+npx playwright install chromium
+npm run dev -- --host 127.0.0.1 --port 5183
+# Em outro terminal:
+npm run qa:daily
+```
+
+A execução sem `QA_STORAGE_STATE` abre navegador visível para fazer login manual. Os screenshots e o relatório da auditoria ficam em `frontend/qa-output/daily-history/` (ignorado pelo Git). **Nunca adicione tokens ou sessões autenticadas ao repositório.**
+
+Também há `npm run qa:layout` para inspecionar as demais telas após disponibilizar uma sessão autenticada. Esses scripts não substituem build/QA manual.
