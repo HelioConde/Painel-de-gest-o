@@ -38,7 +38,7 @@ async function run() {
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/#/diaria`, { waitUntil: 'domcontentloaded' });
-    if (!sessionFile) process.stdout.write('Entre no Painel de Gestão pela janela do navegador para iniciar a auditoria.\\n');
+    if (!sessionFile) process.stdout.write('Entre no Painel de Gestão pela janela do navegador para iniciar a auditoria.\n');
     await page.locator('#daily-sales-date').waitFor({ timeout: sessionFile ? 20000 : 180000 });
 
     // Verifica presença do histórico e pelo menos um dia real sincronizado.
