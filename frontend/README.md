@@ -140,3 +140,18 @@ npm run qa:daily
 A execução sem `QA_STORAGE_STATE` abre navegador visível para fazer login manual. Os screenshots e o relatório da auditoria ficam em `frontend/qa-output/daily-history/` (ignorado pelo Git). **Nunca adicione tokens ou sessões autenticadas ao repositório.**
 
 Também há `npm run qa:layout` para inspecionar as demais telas após disponibilizar uma sessão autenticada. Esses scripts não substituem build/QA manual.
+
+
+### QA responsivo dos relatórios
+
+As quatro páginas de relatório agora compartilham `src/styles/report-ui-polish.css`, com regras exclusivas de tela e sem mudar o layout de impressão. Para validar as alterações em dados reais:
+
+```cmd
+npm run build
+npm run qa:daily
+npm run qa:reports
+```
+
+`qa:reports` faz login manual no Chromium, percorre **Venda Diária, Venda Mensal, Eventos e Perdas**, salva capturas nas larguras **1366, 768, 390 e 360px** e confere overflow, corte de valores, layout 2x2 dos indicadores de vendas no celular e estados dos filtros. Resultados e PNGs ficam em `qa-output/report-mobile/` (fora do versionamento).
+
+Os testes exigem a aplicação local no ar em `http://127.0.0.1:5183`, ou `QA_BASE_URL` configurado. Sem uma sessão do painel, a auditoria visual não pode ser considerada aprovada.
