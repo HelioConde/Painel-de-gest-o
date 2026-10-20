@@ -78,3 +78,12 @@ A nova seleção já apresenta estado contextual e mensagens ao usuário; confir
 - [ ] Nenhum token, arquivo de sessão ou screenshot contendo dados comerciais foi incluído no Git.
 
 **Situação:** análise estática concluída; correções iniciais feitas; validação real de navegador **pendente**.
+
+
+## Complemento: retorno dos testes locais e correção mobile
+
+Em 20/10 o usuário confirmou `npm audit` com **0 vulnerabilities**, `source-map-js@1.2.2` e `npm run build` concluído no computador local. O build ainda informou avisos sobre `register-sw.js` e chunks acima de 500 kB; são melhorias posteriores, não erros de compilação.
+
+As capturas de 390px e 360px mostraram as badges percentuais cortadas à direita, apesar do QA inicial indicar PASS para overflow global. Foi adicionada uma composição em duas linhas (nome do setor + quatro valores rotulados) exclusivamente em telas de até 480px, mantendo controles de ordenação e o resumo final. O mesmo ajuste cobre Venda Diária e Venda Mensal. O Playwright agora compara as caixas dos badges e dos valores com os limites de cada linha, detectando o recorte que passou despercebido.
+
+**Atenção:** CSS e teste atualizados no GitHub, mas essa correção ainda necessita nova execução do QA e conferência de capturas. A instalação local já possui lockfile corrigido; **não foi alterado o lockfile remoto** para não conflitar com a cópia atualizada pelo usuário. É necessário publicar o `frontend/package-lock.json` local via Git após revisão do `git status`.
