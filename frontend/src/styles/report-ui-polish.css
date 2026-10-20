@@ -14,6 +14,18 @@
     --report-ui-gap: 12px;
   }
 
+  /* Histórico: campo e ação secundária seguem o mesmo alvo mínimo. */
+  .page-daily .daily-history-actions :is(select, .daily-history-latest) {
+    min-height: 44px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .page-daily .daily-history-info span {
+    color: var(--report-ui-muted);
+    font-size: 12px;
+  }
+
   /* Um mesmo tratamento para foco, independemente da página. */
   :is(.page-daily, .page-monthly, .page-events, .losses-page)
   :is(button, select, input, a):focus-visible {
