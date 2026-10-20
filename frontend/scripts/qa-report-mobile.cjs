@@ -44,9 +44,29 @@ async function main() {
 
       for (const width of widths) {
         await page.setViewportSize({ width, height: width < 500 ? 850 : 900 });
+        // Espera fontes e transição responsiva antes de fotografar.
+        // Sem isso, a sidebar de desktop aparece parcialmente sobre a página
+        // na captura de 768px mesmo estando fechada após a animação.
+        await page.evaluate(async () => { await document.fonts.ready; });
+        if (width <= 820) {
+          await page.waitForFunction(() => {
+            const sidebar = document.querySelector(".app-shell > .sidebar");
+            if (!sidebar || sidebar.classList.contains("sidebar-open")) return false;
+            return sidebar.getBoundingClientRect().right <= 1;
+          }, null, { timeout: 5000 });
+        }
         await page.screenshot({
           path: path.join(outDir, `${route.slug}-${width}.png`),
           fullPage: true,
+          animations: "disabled",
+          caret: "hide",
+        });
+        // Uma segunda imagem captura a tela visível sem a composição de
+        // uma página muito longa, útil para conferir artefatos do Chromium.
+        await page.screenshot({
+          path: path.join(outDir, `${route.slug}-${width}-viewport.png`),
+          animations: "disabled",
+          caret: "hide",
         });
         const metrics = await page.evaluate((name) => {
           const bounds = element => element?.getBoundingClientRect();
@@ -80,7 +100,25 @@ async function main() {
             : name === "perdas"
               ? document.querySelectorAll(".loss-mobile-sector-card").length
               : 0;
+          const sidebar = document.querySelector(".app-shell > .sidebar");
+          const sidebarOverlaps = innerWidth <= 820 &&
+            Boolean(sidebar && sidebar.getBoundingClientRect().right > 1);
+          // A distância entre linhas sucessivas não pode criar buracos na lista,
+          // ainda que um screenshot fullPage apresente falhas de composição.
+          const sectionGaps = [];
+          if (name === "diaria" || name === "mensal") {
+            const sections = [...document.querySelectorAll(
+              ".table-carousel-slide.active .hierarchy-sector"
+            )];
+            for (let i = 1; i < sections.length; i++) {
+              const gap = sections[i].getBoundingClientRect().top -
+                sections[i - 1].getBoundingClientRect().bottom;
+              if (gap > 36) sectionGaps.push({ position: i, gap: Math.round(gap) });
+            }
+          }
           return {
+            sidebarOverlaps,
+            sectionGaps,
             documentWidth: document.documentElement.scrollWidth,
             viewportWidth: document.documentElement.clientWidth,
             clipped,
@@ -93,6 +131,10 @@ async function main() {
           `${route.slug} ${width}px: overflow da página (${metrics.documentWidth}px)`);
         check(metrics.clipped.length === 0,
           `${route.slug} ${width}px: valor cortado ${JSON.stringify(metrics.clipped)}`);
+        check(!metrics.sidebarOverlaps,
+          `${route.slug} ${width}px: barra lateral cobre relatório no celular/tablet`);
+        check(metrics.sectionGaps.length === 0,
+          `${route.slug} ${width}px: espaços excessivos entre setores ${JSON.stringify(metrics.sectionGaps)}`);
         if (width <= 420 && ["diaria", "mensal"].includes(route.slug)) {
           check(metrics.visual?.columns === 2,
             `${route.slug} ${width}px: esperado resumo numérico em duas colunas`);
