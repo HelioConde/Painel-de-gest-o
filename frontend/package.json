@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "qa:daily": "node scripts/qa-daily-history.cjs",
-    "qa:layout": "node scripts/qa-layout.cjs"
+    "qa:layout": "node scripts/qa-layout.cjs",
+    "qa:reports": "node scripts/qa-report-mobile.cjs"
   },
   "dependencies": {
     "@e965/xlsx": "^0.20.3",
