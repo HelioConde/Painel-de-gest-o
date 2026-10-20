@@ -130,7 +130,7 @@ Para executar a verificação automática do histórico em ambiente local:
 
 ```powershell
 npm ci
-npm install --no-save playwright@1.55.0
+npm install --save-dev --save-exact playwright@1.56.0
 npx playwright install chromium
 npm run dev -- --host 127.0.0.1 --port 5183
 # Em outro terminal:
