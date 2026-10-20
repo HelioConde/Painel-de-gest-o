@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "qa:daily": "node scripts/qa-daily-history.cjs",
     "qa:layout": "node scripts/qa-layout.cjs",
-    "qa:reports": "node scripts/qa-report-mobile.cjs"
+    "qa:reports": "node scripts/qa-report-mobile.cjs",
+    "qa:print-events": "node scripts/qa-event-print.cjs"
   },
   "dependencies": {
     "@e965/xlsx": "^0.20.3",
