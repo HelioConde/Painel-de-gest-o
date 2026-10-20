@@ -135,6 +135,13 @@
     font-size: 10px;
   }
 
+  /* Reservar 44px para cada seta na grade evita sobreposição ao nome da loja. */
+  :is(.page-daily, .page-monthly) .compact-store-switcher,
+  .losses-page .compact-report-toolbar .loss-table-carousel .table-carousel-controlbar {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+
   :is(.page-daily, .page-monthly, .losses-page) .compact-store-arrow,
   .losses-page .loss-table-carousel .table-carousel-arrow {
     min-width: 44px;
