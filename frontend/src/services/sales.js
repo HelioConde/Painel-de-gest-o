@@ -94,3 +94,61 @@ export async function getLatestEvents() {
 
   return [...latestBySlug.values()];
 }
+
+
+// A data visível da venda diária é current_end: a coleta feita no dia
+// seguinte usa reference_date para identificar o processamento.
+export async function getAvailableDailySalesDates() {
+  ensureConfigured();
+
+  const dates = new Set();
+  const pageSize = 500;
+  let offset = 0;
+
+  // A paginação evita perder dias antigos ao atingir o limite de linhas do PostgREST.
+  while (true) {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select("current_end")
+      .eq("snapshot_type", "DAILY")
+      .eq("slug", "daily")
+      .not("current_end", "is", null)
+      .order("current_end", { ascending: false })
+      .range(offset, offset + pageSize - 1);
+
+    if (error) throw error;
+    const rows = data ?? [];
+    rows.forEach((row) => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(row.current_end || "")) {
+        dates.add(row.current_end);
+      }
+    });
+    if (rows.length < pageSize) break;
+    offset += pageSize;
+  }
+
+  return [...dates].sort((a, b) => b.localeCompare(a));
+}
+
+export async function getDailySalesSnapshot(salesDate = null) {
+  if (!salesDate) return getLatestSnapshot({ type: "DAILY", slug: "daily" });
+  ensureConfigured();
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(salesDate)) {
+    throw new Error("Data de venda inválida.");
+  }
+
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select(COLUMNS)
+    .eq("snapshot_type", "DAILY")
+    .eq("slug", "daily")
+    .eq("current_end", salesDate)
+    .order("reference_date", { ascending: false })
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ?? null;
+}
