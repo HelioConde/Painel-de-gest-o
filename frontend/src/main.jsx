@@ -6,6 +6,7 @@ import './styles.css'
 import './styles/report-layout.css'
 import './styles/report-print.css'
 import './styles/posters.css'
+import './styles/report-ui-polish.css'
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || 'dev'
 
