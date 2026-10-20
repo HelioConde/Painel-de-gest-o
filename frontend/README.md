@@ -155,3 +155,18 @@ npm run qa:reports
 `qa:reports` faz login manual no Chromium, percorre **Venda Diária, Venda Mensal, Eventos e Perdas**, salva capturas nas larguras **1366, 768, 390 e 360px** e confere overflow, corte de valores, layout 2x2 dos indicadores de vendas no celular e estados dos filtros. Resultados e PNGs ficam em `qa-output/report-mobile/` (fora do versionamento).
 
 Os testes exigem a aplicação local no ar em `http://127.0.0.1:5183`, ou `QA_BASE_URL` configurado. Sem uma sessão do painel, a auditoria visual não pode ser considerada aprovada.
+
+
+### Testar a impressão dos eventos (A4)
+
+A impressão do **Comparativo de vendas por loja** usa regras próprias em `src/styles/event-print-chart.css` para preservar a altura das barras e seus percentuais em todos os eventos (incluindo *Segunda da Pizza*).
+
+Para testar com os snapshots reais, mantenha `npm run dev -- --host 127.0.0.1 --port 5183` ativo e execute em outro terminal:
+
+```cmd
+npm run qa:print-events
+```
+
+O Playwright percorre os eventos disponíveis, simula CSS de impressão, valida se a maior barra ocupa pelo menos 75% do eixo e gera `qa-output/event-print/*-a4.pdf` e `*-print.png`. Esses arquivos não são enviados ao Git. Reabra a prévia de impressão do Chrome para verificar a folha A4 e as configurações da impressora física.
+
+O teste não altera dados nem configurações de impressão do Windows.
