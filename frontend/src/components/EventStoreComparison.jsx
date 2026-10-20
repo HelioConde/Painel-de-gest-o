@@ -325,6 +325,7 @@ export default function EventStoreComparison({
             <div className="event-performance-controls no-print" aria-label="Filtrar lojas por desempenho">
               <button
                 type="button"
+                aria-pressed={filter === "all"}
                 className={filter === "all" ? "active" : ""}
                 onClick={() => setFilter("all")}
               >
@@ -332,6 +333,7 @@ export default function EventStoreComparison({
               </button>
               <button
                 type="button"
+                aria-pressed={filter === "positive"}
                 className={filter === "positive" ? "active positive" : "positive"}
                 onClick={() => setFilter("positive")}
               >
@@ -339,6 +341,7 @@ export default function EventStoreComparison({
               </button>
               <button
                 type="button"
+                aria-pressed={filter === "negative"}
                 className={filter === "negative" ? "active negative" : "negative"}
                 onClick={() => setFilter("negative")}
               >
