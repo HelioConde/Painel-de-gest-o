@@ -75,3 +75,32 @@ Sem `QA_STORAGE_STATE`, o script abre um Chromium visível para login **manual**
 ## 7. Critério para aprovação de mudança visual
 
 Revisão humana do antes/depois, comportamento de teclado, 360px e 1366px, nenhum texto essencial cortado, nenhum overflow da página, períodos financeiros coerentes e CSS de impressão sem filtros interativos. Check visual não substitui testes sobre dados reais.
+
+
+## 8. Padrão responsivo de relatórios — revisão de outubro/2026
+
+A folha `frontend/src/styles/report-ui-polish.css` concentra os refinamentos compartilhados de **Venda Diária, Venda Mensal, Eventos e Perdas** e é importada por último no `main.jsx`. Evite acrescentar novas exceções no `styles.css` gigante: prefira seletores com escopo da página e documente a razão de cada breakpoint.
+
+**Token de refinamento:** `--report-ui-text` (texto principal), `--report-ui-muted` (texto secundário), `--report-ui-line` (bordas), `--report-ui-radius` (raios), `--report-ui-focus` (foco) e `--report-ui-gap` (espaçamento). A paleta principal do painel continua vindo de `frontend/src/styles.css`.
+
+- **Acima de 820px:** cards compactos, KPIs com hierarquia clara e textos de apoio legíveis.
+- **820px ou menos:** controles de loja com áreas mínimas de 44px; filtros horizontais com rolagem própria; cartões de Eventos/Perdas com valores de fonte maior.
+- **480px ou menos:** nomes de setores completos e ordenação mais visível, mantendo a estrutura em duas linhas já aplicada.
+- **420px ou menos:** quatro métricas de Setores exibidas em uma matriz **2 × 2**, incluindo seus rótulos, sem cortar percentuais. Também vale para totais e detalhamentos de Venda Diária/Mensal.
+- **Impressão:** nenhuma nova regra altera páginas A4; todas as alterações ficam em `@media screen`.
+- **Movimento reduzido:** respeitar `prefers-reduced-motion`.
+
+Os filtros de Setores, Perdas e Eventos comunicam estado ativo por `aria-pressed`. Novos botões de filtro devem seguir o mesmo padrão e manter seus nomes acessíveis.
+
+### QA da rodada (obrigatório antes de declarar aprovação visual)
+
+```cmd
+cd /d "C:\Painel de gestão\frontend"
+npm run build
+npm run qa:daily
+npm run qa:reports
+```
+
+`qa:reports` abre um navegador para login manual, visita Diária/Mensal/Eventos/Perdas, testa 1366/768/390/360px, verifica corte de valores e filtros, e grava capturas em `frontend/qa-output/report-mobile/`.
+
+**Atenção:** análises estáticas e commits não equivalem a screenshots verificadas em produção; os relatórios só estarão visualmente aprovados após conferir os PNGs gerados pela rotina no computador com acesso aos dados.
