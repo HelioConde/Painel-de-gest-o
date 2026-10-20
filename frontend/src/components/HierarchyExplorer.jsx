@@ -183,16 +183,16 @@ export default function HierarchyExplorer({
 
         {enableManagementControls ? (
           <div className="daily-sector-filters no-print" aria-label="Filtrar setores">
-            <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>
+            <button type="button" aria-pressed={filter === "all"} className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>
               Todos <span>{sectors.length}</span>
             </button>
-            <button type="button" className={filter === "positive" ? "active positive" : "positive"} onClick={() => setFilter("positive")}>
+            <button type="button" aria-pressed={filter === "positive"} className={filter === "positive" ? "active positive" : "positive"} onClick={() => setFilter("positive")}>
               Alta <span>{rising}</span>
             </button>
-            <button type="button" className={filter === "negative" ? "active negative" : "negative"} onClick={() => setFilter("negative")}>
+            <button type="button" aria-pressed={filter === "negative"} className={filter === "negative" ? "active negative" : "negative"} onClick={() => setFilter("negative")}>
               Queda <span>{falling}</span>
             </button>
-            <button type="button" className={filter === "stable" ? "active" : ""} onClick={() => setFilter("stable")}>
+            <button type="button" aria-pressed={filter === "stable"} className={filter === "stable" ? "active" : ""} onClick={() => setFilter("stable")}>
               Estáveis <span>{stable}</span>
             </button>
           </div>
@@ -201,20 +201,20 @@ export default function HierarchyExplorer({
         <div className="table-legend">
           {enableManagementControls ? (
             <>
-              <button type="button" className={sort.key === "current" ? "active" : ""} onClick={() => changeSort("current")}>
+              <button type="button" aria-pressed={sort.key === "current"} className={sort.key === "current" ? "active" : ""} onClick={() => changeSort("current")}>
                 Atual <ArrowDownUp size={10} />
               </button>
-              <button type="button" className={sort.key === "previous" ? "active" : ""} onClick={() => changeSort("previous")}>
+              <button type="button" aria-pressed={sort.key === "previous"} className={sort.key === "previous" ? "active" : ""} onClick={() => changeSort("previous")}>
                 <span className="report-full-label">Anterior</span>
                 <span className="report-short-label">Ant.</span>
                 <ArrowDownUp size={10} />
               </button>
-              <button type="button" className={`legend-difference ${sort.key === "difference" ? "active" : ""}`} onClick={() => changeSort("difference")}>
+              <button type="button" aria-pressed={sort.key === "difference"} className={`legend-difference ${sort.key === "difference" ? "active" : ""}`} onClick={() => changeSort("difference")}>
                 <span className="report-full-label">Diferença</span>
                 <span className="report-short-label">Dif.</span>
                 <ArrowDownUp size={10} />
               </button>
-              <button type="button" className={sort.key === "variation" ? "active" : ""} onClick={() => changeSort("variation")}>
+              <button type="button" aria-pressed={sort.key === "variation"} className={sort.key === "variation" ? "active" : ""} onClick={() => changeSort("variation")}>
                 <span className="report-full-label">Variação</span>
                 <span className="report-short-label">%</span>
                 <ArrowDownUp size={10} />
