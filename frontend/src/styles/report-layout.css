@@ -381,3 +381,194 @@
     transform: translate3d(0, 0, 0) !important;
   }
 }
+
+/* MOBILE SALES GRID: preserve all four values without clipping */
+@media screen and (max-width: 480px) {
+  /* Separate the sector identity from its numeric values, avoiding the
+     rigid name + four-columns row that cut off variation badges on phones. */
+  .page-daily .hierarchy-panel .hierarchy-row,
+  .page-monthly .hierarchy-panel .hierarchy-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    width: 100%;
+    padding: 10px 11px;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-name,
+  .page-monthly .hierarchy-panel .hierarchy-name {
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-name strong,
+  .page-monthly .hierarchy-panel .hierarchy-name strong {
+    font-size: 12px;
+    line-height: 1.3;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values,
+  .page-monthly .hierarchy-panel .hierarchy-values {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    gap: 5px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values > *,
+  .page-monthly .hierarchy-panel .hierarchy-values > * {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    min-width: 0;
+    margin: 0;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values > *::before,
+  .page-monthly .hierarchy-panel .hierarchy-values > *::before {
+    display: block;
+    font-size: 8.5px;
+    line-height: 1;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: .02em;
+    color: #667085;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values > :nth-child(1)::before,
+  .page-monthly .hierarchy-panel .hierarchy-values > :nth-child(1)::before {
+    content: "ATUAL";
+  }
+  .page-daily .hierarchy-panel .hierarchy-values > :nth-child(2)::before,
+  .page-monthly .hierarchy-panel .hierarchy-values > :nth-child(2)::before {
+    content: "ANTERIOR";
+  }
+  .page-daily .hierarchy-panel .hierarchy-values > :nth-child(3)::before,
+  .page-monthly .hierarchy-panel .hierarchy-values > :nth-child(3)::before {
+    content: "DIF.";
+  }
+  .page-daily .hierarchy-panel .hierarchy-values > :nth-child(4)::before,
+  .page-monthly .hierarchy-panel .hierarchy-values > :nth-child(4)::before {
+    content: "VARIAÇÃO";
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values > *,
+  .page-monthly .hierarchy-panel .hierarchy-values > * {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values .status-badge,
+  .page-monthly .hierarchy-panel .hierarchy-values .status-badge {
+    display: inline-flex;
+    justify-content: flex-end;
+    gap: 2px;
+    max-width: 100%;
+    padding: 2px 3px;
+    margin: 0;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
+  .page-daily .hierarchy-panel .hierarchy-values .status-badge svg,
+  .page-monthly .hierarchy-panel .hierarchy-values .status-badge svg {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 auto;
+  }
+
+  /* Keep sorting usable. Move headings into a toolbar instead of
+     pretending they still align with a single-line numeric table. */
+  .page-daily .hierarchy-panel .section-heading-compact,
+  .page-monthly .hierarchy-panel .section-heading-compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+  .page-daily .hierarchy-panel .section-heading-compact > div:first-child,
+  .page-monthly .hierarchy-panel .section-heading-compact > div:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .page-daily .hierarchy-panel .section-heading-compact .daily-sector-filters,
+  .page-monthly .hierarchy-panel .section-heading-compact .daily-sector-filters {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+  }
+  .page-daily .hierarchy-panel .section-heading-compact .table-legend,
+  .page-monthly .hierarchy-panel .section-heading-compact .table-legend {
+    display: grid;
+    grid-column: 1;
+    grid-row: 3;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+    width: 100%;
+    margin: 0;
+  }
+  .page-daily .hierarchy-panel .table-legend button,
+  .page-monthly .hierarchy-panel .table-legend button {
+    justify-content: center;
+    min-height: 32px;
+    border-radius: 7px;
+    background: #f2f5fb;
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  /* Total follows the same two-line structure; labels remain visible. */
+  .page-daily .hierarchy-panel .hierarchy-summary-footer,
+  .page-monthly .hierarchy-panel .hierarchy-summary-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 9px;
+    padding: 11px;
+  }
+  .page-daily .hierarchy-panel .hierarchy-summary-values,
+  .page-monthly .hierarchy-panel .hierarchy-summary-values {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    gap: 5px;
+  }
+  .page-daily .hierarchy-panel .hierarchy-summary-values > div,
+  .page-monthly .hierarchy-panel .hierarchy-summary-values > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 0;
+    gap: 4px;
+    text-align: right;
+  }
+  .page-daily .hierarchy-panel .hierarchy-summary-values small,
+  .page-monthly .hierarchy-panel .hierarchy-summary-values small {
+    display: block;
+    color: #667085;
+    font-size: 9px;
+    font-weight: 700;
+  }
+  .page-daily .hierarchy-panel .hierarchy-summary-values strong,
+  .page-monthly .hierarchy-panel .hierarchy-summary-values strong {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .page-daily .hierarchy-panel .hierarchy-values .status-badge svg,
+  .page-monthly .hierarchy-panel .hierarchy-values .status-badge svg {
+    display: none;
+  }
+}
