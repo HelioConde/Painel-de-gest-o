@@ -1,6 +1,6 @@
 // Auditoria visual e funcional da Venda Diária com Playwright.
-// Requer uma sessão autenticada exportada LOCALMENTE em QA_STORAGE_STATE.
-// Não salve o estado autenticado nem credenciais no repositório.
+// Abre login interativo (sem salvar credenciais) ou usa QA_STORAGE_STATE local.
+// Não salve tokens de autenticação nem screenshots comerciais no Git.
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -20,18 +20,17 @@ function brDate(iso) {
 }
 
 async function run() {
-  assert(sessionFile && fs.existsSync(sessionFile),
-    'Defina QA_STORAGE_STATE com o caminho de um arquivo Playwright storageState autenticado, mantido FORA do Git.');
+  if (sessionFile) assert(fs.existsSync(sessionFile), 'Arquivo QA_STORAGE_STATE não encontrado.');
   fs.mkdirSync(outDir, { recursive: true });
   const browser = await chromium.launch({
-    headless: true,
+    headless: Boolean(sessionFile),
     ...(browserPath ? { executablePath: browserPath } : {}),
   });
   const errors = [];
   const results = [];
   try {
     const context = await browser.newContext({
-      storageState: sessionFile,
+      ...(sessionFile ? { storageState: sessionFile } : {}),
       viewport: { width: 1440, height: 900 },
       deviceScaleFactor: 1,
       locale: 'pt-BR',
@@ -39,7 +38,8 @@ async function run() {
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(`${baseUrl}/#/diaria`, { waitUntil: 'domcontentloaded' });
-    await page.locator('#daily-sales-date').waitFor({ timeout: 20000 });
+    if (!sessionFile) process.stdout.write('Entre no Painel de Gestão pela janela do navegador para iniciar a auditoria.\\n');
+    await page.locator('#daily-sales-date').waitFor({ timeout: sessionFile ? 20000 : 180000 });
 
     // Verifica presença do histórico e pelo menos um dia real sincronizado.
     await page.waitForFunction(() => {
