@@ -60,7 +60,7 @@ export default function DailyPage() {
           <CalendarDays size={18} aria-hidden="true" />
           <div>
             <strong>Histórico de vendas</strong>
-            <span>Consulte os dias com relatórios enviados ao sistema.</span>
+            <span id="daily-sales-help">{datesLoading && !availableDates ? "Buscando datas sincronizadas…" : `${dates.length} ${dates.length === 1 ? "dia disponível" : "dias disponíveis"} para consulta`}</span>
           </div>
         </div>
         <div className="daily-history-actions">
@@ -69,7 +69,7 @@ export default function DailyPage() {
             id="daily-sales-date"
             value={selectedDate}
             onChange={(event) => setSelectedDate(event.target.value)}
-            aria-label="Selecionar data da venda diária"
+            aria-describedby="daily-sales-help"
           >
             <option value="latest">Relatório mais recente</option>
             {dates.map((date) => (
@@ -89,6 +89,10 @@ export default function DailyPage() {
           )}
         </div>
       </section>
+
+      <p className="daily-history-selection" role="status" aria-live="polite">
+        {selectedDate === "latest" ? "Exibindo o relatório mais recente." : `Consultando as vendas de ${formatSalesDate(selectedDate)}.`}
+      </p>
 
       {datesLoading && !availableDates && (
         <p className="daily-history-message" role="status">Carregando datas disponíveis...</p>
