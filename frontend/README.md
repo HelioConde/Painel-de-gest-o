@@ -108,3 +108,16 @@ A tela de Perdas segue o relatório operacional:
 2. Top 10 Produtos por Setor — somente setores com perda; unidade exibida junto da quantidade perdida.
 
 Para preencher corretamente vendas de setores que tiveram perda zero, use o backend V8.3.3 e ressincronize o run de perdas. O front detecta snapshots antigos e mostra um aviso em vez de inventar vendas zeradas.
+
+
+## Histórico da Venda Diária
+
+Na página **Venda Diária**, o seletor **Data da venda** permite acessar qualquer dia já sincronizado no Supabase. A opção **Relatório mais recente** continua sendo a seleção padrão.
+
+- A lista é consultada na tabela `public.superus_period_snapshots`, filtrando `snapshot_type = 'DAILY'` e `slug = 'daily'`, sem modificar o backend ou os dados armazenados.
+- O dia escolhido corresponde a `current_end` (data efetiva da venda), **não** a `reference_date` (data da execução). O backend normalmente coleta a venda do dia anterior.
+- Datas sem relatório sincronizado não são oferecidas na lista.
+- Selecionar outra data recarrega todos os comparativos e detalhamentos do snapshot daquela data, mantendo a navegação por loja.
+- A listagem é paginada para incluir históricos superiores ao limite padrão de linhas do PostgREST.
+
+Se uma data não aparecer, confirme que a coleta diária daquele dia foi sincronizada e está acessível à conta no Supabase. O seletor é somente leitura e não cria nem recupera relatórios que não foram enviados.
