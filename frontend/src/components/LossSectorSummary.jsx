@@ -112,16 +112,16 @@ export default function LossSectorSummary({ row, showPrintHeader = true }) {
 
       <div className="loss-summary-controls no-print">
         <div className="loss-summary-filters" aria-label="Filtrar setores por situação">
-          <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>Todos <span>{sectors.length}</span></button>
-          <button type="button" className={filter === "above" ? "active danger" : "danger"} onClick={() => setFilter("above")}>Acima da meta</button>
-          <button type="button" className={filter === "within" ? "active success" : "success"} onClick={() => setFilter("within")}>Dentro da meta</button>
-          <button type="button" className={filter === "zero" ? "active" : ""} onClick={() => setFilter("zero")}>Sem perda</button>
+          <button type="button" aria-pressed={filter === "all"} className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>Todos <span>{sectors.length}</span></button>
+          <button type="button" aria-pressed={filter === "above"} className={filter === "above" ? "active danger" : "danger"} onClick={() => setFilter("above")}>Acima da meta</button>
+          <button type="button" aria-pressed={filter === "within"} className={filter === "within" ? "active success" : "success"} onClick={() => setFilter("within")}>Dentro da meta</button>
+          <button type="button" aria-pressed={filter === "zero"} className={filter === "zero" ? "active" : ""} onClick={() => setFilter("zero")}>Sem perda</button>
         </div>
         <div className="loss-summary-sort" aria-label="Ordenar setores">
           <span>Ordenar por</span>
-          <button type="button" className={sortBy === "loss" ? "active" : ""} onClick={() => setSortBy("loss")}>Perda R$</button>
-          <button type="button" className={sortBy === "percent" ? "active" : ""} onClick={() => setSortBy("percent")}>% Perda</button>
-          <button type="button" className={sortBy === "deviation" ? "active" : ""} onClick={() => setSortBy("deviation")}>Desvio meta</button>
+          <button type="button" aria-pressed={sortBy === "loss"} className={sortBy === "loss" ? "active" : ""} onClick={() => setSortBy("loss")}>Perda R$</button>
+          <button type="button" aria-pressed={sortBy === "percent"} className={sortBy === "percent" ? "active" : ""} onClick={() => setSortBy("percent")}>% Perda</button>
+          <button type="button" aria-pressed={sortBy === "deviation"} className={sortBy === "deviation" ? "active" : ""} onClick={() => setSortBy("deviation")}>Desvio meta</button>
         </div>
       </div>
 
