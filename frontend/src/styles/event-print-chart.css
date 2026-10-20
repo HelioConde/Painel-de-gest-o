@@ -1,0 +1,133 @@
+/*
+ * Impressão de Eventos — correção das colunas do comparativo por loja.
+ *
+ * O gráfico usa alturas percentuais inline em .event-bar-columns i.
+ * No layout de impressão compacto anterior, .event-bars e a grade das
+ * colunas podiam perder a altura de referência, gerando barras achatadas
+ * no topo do painel. A regra abaixo fixa uma altura física para o
+ * contêiner das barras e não altera nenhuma visualização na tela.
+ */
+@media print {
+  .page-events .event-chart-card {
+    overflow: visible !important;
+    break-inside: avoid !important;
+  }
+
+  .page-events .event-chart-card .section-card-header {
+    margin-bottom: 2mm !important;
+  }
+
+  .page-events .event-chart-card .section-card-header h2 {
+    font-size: 9pt !important;
+    line-height: 1.18 !important;
+  }
+
+  .page-events .event-vertical-chart {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 59mm !important;
+    min-height: 59mm !important;
+    overflow: visible !important;
+  }
+
+  .page-events .event-chart-legend {
+    flex: 0 0 auto !important;
+    margin-bottom: 2mm !important;
+    font-size: 7pt !important;
+  }
+
+  /*
+   * Alturas em mm = referência definida no papel A4.
+   * Important: a altura percentual inline dos i deve continuar intacta
+   * para representar exatamente a razão entre o valor e o maior valor.
+   */
+  .page-events .event-bars {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    flex: 0 0 auto !important;
+    height: 49mm !important;
+    min-height: 49mm !important;
+    gap: 1.5mm !important;
+    padding: 1mm 1mm 0 !important;
+    border-bottom: .25mm solid #b9c8d8 !important;
+    background-size: 100% 100% !important;
+  }
+
+  .page-events .event-bars article {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    gap: 1.3mm !important;
+  }
+
+  .page-events .event-bar-columns {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: 42mm !important;
+    min-height: 42mm !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    gap: 1mm !important;
+    overflow: hidden !important;
+  }
+
+  .page-events .event-bar-columns i {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: min(4.1mm, 38%) !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    border-radius: .8mm .8mm 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .page-events .event-bar-columns .current {
+    background: #079b56 !important;
+  }
+
+  .page-events .event-bar-columns .previous {
+    background: #b0bdd0 !important;
+  }
+
+  .page-events .event-bars article > strong {
+    flex: 0 0 auto !important;
+    display: block !important;
+    margin: 0 !important;
+    color: #30445f !important;
+    font-size: 7.2pt !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+  }
+
+  .page-events .event-chart-insights {
+    gap: 1.2mm !important;
+    margin-top: 2.5mm !important;
+  }
+
+  .page-events .event-chart-insights article {
+    padding: 1.3mm 1.4mm !important;
+    gap: .6mm 1mm !important;
+  }
+
+  .page-events .event-chart-insights article small,
+  .page-events .event-chart-insights article > span:not(.status-badge) {
+    font-size: 6.3pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .page-events .event-chart-insights article strong {
+    font-size: 7.5pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .page-events .event-chart-insights .status-badge {
+    font-size: 6.1pt !important;
+  }
+}
