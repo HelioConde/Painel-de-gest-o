@@ -34,6 +34,46 @@ class FakeWin32:
         return self.windows.get(class_name)
 
 
+class ClosingWin32(FakeWin32):
+    def __init__(self, windows: dict[str, int]) -> None:
+        super().__init__(windows)
+        self.closed: list[int] = []
+
+    def post_if_present(self, hwnd: int, *_args) -> bool:
+        self.closed.append(hwnd)
+        self.windows = {name: value for name, value in self.windows.items() if value != hwnd}
+        return True
+
+
+class FakeCommand:
+    def __init__(self, stdout: str = '') -> None:
+        self.stdout = stdout
+
+
+def test_closes_preexisting_superus_window_before_collection() -> None:
+    win32 = ClosingWin32({'TFormMenuPrincipal': 99})
+
+    def runner(*_args, **_kwargs):
+        return FakeCommand()
+
+    assert superus_launcher.close_preexisting_superus(
+        win32, timeout=0.1, sleep=lambda _seconds: None, runner=runner,
+    )
+    assert win32.closed == [99]
+
+
+def test_preflight_is_noop_when_superus_is_not_open() -> None:
+    win32 = ClosingWin32({})
+
+    def runner(*_args, **_kwargs):
+        return FakeCommand()
+
+    assert not superus_launcher.close_preexisting_superus(
+        win32, timeout=0.1, sleep=lambda _seconds: None, runner=runner,
+    )
+    assert win32.closed == []
+
+
 def test_startup_prefers_existing_session(tmp_path: Path) -> None:
     launcher = tmp_path / 'Launcher.exe'
     launcher.touch()

@@ -98,6 +98,12 @@ def managed_superus_processes(function):
     def wrapped(*args, **kwargs):
         if current_process_owner() is not None:
             return function(*args, **kwargs)
+        # Cada coleta começa de uma aplicação limpa. Uma sessão manual aberta
+        # preserva filtros/diálogos e torna a automação não determinística.
+        from src.superus.launcher import close_preexisting_superus
+        from src.superus.windows import Win32
+
+        close_preexisting_superus(Win32())
         owner = OwnedProcesses()
         token = _active_run.set(owner)
         try:
