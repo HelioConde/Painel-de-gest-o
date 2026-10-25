@@ -1,101 +1,109 @@
-# Painel de Gestão — Indicadores e automação para o varejo
+<div align="center">
+  <h1>📊 Painel de Gestão</h1>
+  <p><strong>Indicadores de vendas, perdas e operação para apoiar decisões no varejo.</strong></p>
+  <p>Interface React com backend Python e integração de dados planejada por meio do Supabase.</p>
+  <p>
+    <img alt="React e TypeScript" src="https://img.shields.io/badge/React%20%2B%20TypeScript-Frontend-149ECA">
+    <img alt="Python" src="https://img.shields.io/badge/Python-Automa%C3%A7%C3%A3o-3776AB?logo=python&logoColor=white">
+    <img alt="Status" src="https://img.shields.io/badge/status-em%20evolu%C3%A7%C3%A3o-64748b">
+  </p>
+</div>
 
-**Projeto com interface React e serviços Python para consolidar informações operacionais e apoiar análises de vendas e perdas.**
+## O que é
 
-![React](https://img.shields.io/badge/React-frontend-149ECA?logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-backend-3776AB?logo=python&logoColor=white) ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-64748b)
+Um projeto com **dois módulos independentes**: um frontend para visualizar indicadores e emitir relatórios; e um backend que planeja, extrai e valida informações do sistema autorizado **SUPERUS**.
 
-## Arquitetura resumida
+> **Acesso controlado:** as rotinas de coleta são específicas de um ambiente com SUPERUS instalado e permissão de uso. O repositório não fornece acesso ao sistema, credenciais, dados privados nem conexão automática a qualquer supermercado.
+
+## Arquitetura
 
 ```text
-SUPERUS → automação Python → Supabase → interface React
+SUPERUS (ambiente autorizado)
+          │
+          ▼
+Backend Python — planner, coleta e validação
+          │
+          ▼
+Supabase — integração e persistência conforme ambiente
+          │
+          ▼
+Frontend React — indicadores, relatórios e visualização
 ```
 
-O frontend e o backend ficam em pastas separadas; a automação depende de configuração e acesso ao ambiente autorizado de origem. **Não há promessa de integração automática completa fora do ambiente configurado.**
+Os componentes podem evoluir separadamente; o frontend **não lê arquivos locais** do backend.
 
-| Área | Caminho | Foco |
-| --- | --- | --- |
-| Frontend | `frontend/` | Painéis e relatórios |
-| Backend | `backend/` | Coleta, planejamento e validação |
-| Documentação | `docs/` | Arquitetura, automação e UX |
-| Histórico | `legacy/` | Referências preservadas |
+| Pasta | Conteúdo |
+| --- | --- |
+| `frontend/` | React, TypeScript, Vite, relatórios e interfaces |
+| `backend/` | Python, automação e validação de dados |
+| `docs/` | Arquitetura, UX e operação com SUPERUS |
+| `supabase/` | Configurações e integração do banco |
+| `legacy/` | Referências históricas preservadas |
 
-**Desenvolvimento:** entre em `frontend/`, execute `npm install` e `npm run dev`. A preparação do backend e os testes estão detalhados abaixo.
+## Funcionalidades documentadas
 
----
+**Frontend:** relatórios, indicadores e consulta de vendas por datas, com rotinas de QA para histórico diário, layout, versão mobile e impressão de eventos.
 
-Projeto unificado com **frontend React + TypeScript + Vite** e **backend Python**. O frontend e o backend são independentes; a integração futura entre eles é via Supabase.
+**Backend:** planejamento das coletas diárias, mensais, de eventos e de fechamento; extração de perdas por períodos e lojas. Os jobs de coleta trabalham com **relatórios HTM novos** para não confundir dados antigos com extração recente.
 
-## Estrutura
+## Executar o frontend
 
-- `frontend/` — interface web React.
-- `backend/` — planner, automação do SUPERUS, parser/quality gates e integrações.
-- `legacy/` — referências, não usadas como fonte de coleta de produção.
-- `docs/` — arquitetura, UI/UX e documentação do SUPERUS.
+Requer Node.js e npm compatíveis com a versão do Vite.
 
-Fluxo arquitetural:
+```bash
+git clone https://github.com/HelioConde/Painel-de-gest-o.git
+cd Painel-de-gest-o/frontend
+npm install
+npm run dev
+```
 
-**SUPERUS → Backend Python → Supabase → Frontend React**
+Scripts adicionais definidos no `frontend/package.json`:
 
-O frontend nunca lê arquivos locais do backend.
+```bash
+npm run build
+npm run qa:daily
+npm run qa:layout
+npm run qa:reports
+npm run qa:print-events
+```
 
-## Backend — automação já implementada
+As verificações que abrem navegadores podem exigir autenticação ou Playwright configurado; a existência dos scripts **não significa que os testes foram executados nesta documentação**.
 
-O backend contém dois fluxos de automação:
+## Preparar o backend (ambiente autorizado)
 
-- **Vendas:** rotina diária orientada pelo planner (`DAILY`, `MONTHLY`, `EVENT` e `MONTHLY_CLOSE` no dia 1).
-- **Perdas:** coleta manual por período e lojas, via GUI ou CLI.
-
-As coletas usam **HTM novo em toda execução**. Nenhum relatório antigo é reutilizado para evitar uma nova automação no SUPERUS.
-
-Documentação completa: `docs/superus/AUTOMACAO_COMPLETA.md`.
-
-## Preparar backend na máquina com SUPERUS
+Na pasta `backend/` do projeto, usando Python:
 
 ```cmd
-cd /d "C:\Painel de gestão\backend"
 python -m venv .venv
 .venv\Scripts\activate
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Depois configure `backend\.env`.
+Configure o arquivo `.env` com dados adequados ao ambiente **sem incluí-lo no Git**.
 
-### Vendas
+### Exemplos de comandos
 
 ```cmd
 python main.py --plan
 python main.py --daily-auto --dry-run
-python main.py --daily-auto --only-job daily
-python main.py --daily-auto
-```
-
-### Perdas
-
-```cmd
 python main.py --losses-gui
 ```
 
-ou:
+Para os fluxos reais e seus pré-requisitos, consulte [AUTOMACAO_COMPLETA.md](docs/superus/AUTOMACAO_COMPLETA.md). A execução de coletas deve ser feita apenas onde houver autorização e acesso legítimo.
 
-```cmd
-python main.py --losses-auto --inicio 01/09/2026 --fim 03/09/2026 --lojas 307,212,600,120,033,018
-```
+## Qualidade, segurança e limites
 
-### Testes
+- Não publique relatórios, dados de funcionários, clientes ou números internos sem permissão.
+- Mantenha segredos e URLs privadas em arquivos de ambiente ou mecanismos próprios de deploy.
+- Verifique a origem, a data e a loja de cada relatório antes de interpretar resultados.
+- Revise manualmente impressão, responsividade e integridade de gráficos nos relatórios mais importantes.
+- Teste permissões do banco e perfis de acesso antes de hospedar dados operacionais.
 
-```cmd
-python -m pytest
-python -m ruff check .
-```
+**Documentos relacionados:** [Configurar autenticação](SETUP_AUTH.md) · [Auditoria de acesso](AUTH_DATA_ACCESS_AUDIT.md) · [Testes de acesso](AUTH_ACCESS_TESTS.md).
 
-## Frontend
+## Situação atual
 
-Na máquina com Node/npm:
+**Em evolução.** O repositório reúne interface, automação e documentação, mas a implantação integrada depende da infraestrutura disponível e das permissões sobre os dados do sistema de origem.
 
-```cmd
-cd /d "C:\Painel de gestão\frontend"
-npm install
-npm run dev
-```
+Criado por [Hélio Conde](https://github.com/HelioConde).
