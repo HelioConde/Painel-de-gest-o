@@ -1,4 +1,27 @@
-# Painel de Gestão
+# Painel de Gestão — Indicadores e automação para o varejo
+
+**Projeto com interface React e serviços Python para consolidar informações operacionais e apoiar análises de vendas e perdas.**
+
+![React](https://img.shields.io/badge/React-frontend-149ECA?logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Python](https://img.shields.io/badge/Python-backend-3776AB?logo=python&logoColor=white) ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-64748b)
+
+## Arquitetura resumida
+
+```text
+SUPERUS → automação Python → Supabase → interface React
+```
+
+O frontend e o backend ficam em pastas separadas; a automação depende de configuração e acesso ao ambiente autorizado de origem. **Não há promessa de integração automática completa fora do ambiente configurado.**
+
+| Área | Caminho | Foco |
+| --- | --- | --- |
+| Frontend | `frontend/` | Painéis e relatórios |
+| Backend | `backend/` | Coleta, planejamento e validação |
+| Documentação | `docs/` | Arquitetura, automação e UX |
+| Histórico | `legacy/` | Referências preservadas |
+
+**Desenvolvimento:** entre em `frontend/`, execute `npm install` e `npm run dev`. A preparação do backend e os testes estão detalhados abaixo.
+
+---
 
 Projeto unificado com **frontend React + TypeScript + Vite** e **backend Python**. O frontend e o backend são independentes; a integração futura entre eles é via Supabase.
 
