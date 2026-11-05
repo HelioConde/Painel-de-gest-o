@@ -1,3 +1,4 @@
+import '../styles/report-print.css'
 import {
   AlertTriangle,
   CheckCircle2,

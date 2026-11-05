@@ -1,3 +1,4 @@
+import '../styles/report-print.css'
 import { ArrowLeft, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DataStatusBanner from "../components/DataStatusBanner";

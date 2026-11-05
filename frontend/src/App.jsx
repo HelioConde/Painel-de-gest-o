@@ -1,16 +1,18 @@
+import { Suspense, lazy } from 'react'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import AppShell from './components/AppShell'
-import DailyPage from './pages/DailyPage'
-import MonthlyPage from './pages/MonthlyPage'
-import EventsPage from './pages/EventsPage'
-import LossesPage from './pages/LossesPage'
-import CartazesPage from './pages/CartazesPage'
-import CartazesLayoutAdminPage from './pages/CartazesLayoutAdminPage'
-import AiAnalysisPage from './pages/AiAnalysisPage'
-import SettingsPage from './pages/SettingsPage'
-import TabloidPage from './pages/TabloidPage'
-import LoginPage from './pages/LoginPage'
-import PosterVisualQaPage from './pages/PosterVisualQaPage'
+
+const DailyPage = lazy(() => import('./pages/DailyPage'))
+const MonthlyPage = lazy(() => import('./pages/MonthlyPage'))
+const EventsPage = lazy(() => import('./pages/EventsPage'))
+const LossesPage = lazy(() => import('./pages/LossesPage'))
+const CartazesPage = lazy(() => import('./pages/CartazesPage'))
+const CartazesLayoutAdminPage = lazy(() => import('./pages/CartazesLayoutAdminPage'))
+const AiAnalysisPage = lazy(() => import('./pages/AiAnalysisPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const TabloidPage = lazy(() => import('./pages/TabloidPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const PosterVisualQaPage = lazy(() => import('./pages/PosterVisualQaPage'))
 import { AuthProvider, useAuth } from './auth/AuthProvider'
 import ProtectedRoute from './auth/ProtectedRoute'
 import { defaultRouteForRole } from './auth/permissions'
@@ -33,6 +35,7 @@ const visualQaEnabled = import.meta.env.VITE_VISUAL_QA === '1'
 export default function App() {
   return (
     <AuthProvider>
+      <Suspense fallback={<div className="page" role="status">Carregando módulo...</div>}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         {visualQaEnabled ? <Route path="/visual-qa/cartazes" element={<PosterVisualQaPage />} /> : null}
@@ -51,6 +54,7 @@ export default function App() {
           <Route path="*" element={<RoleHome />} />
         </Route>
       </Routes>
+      </Suspense>
     </AuthProvider>
   )
 }

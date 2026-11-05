@@ -1,3 +1,4 @@
+import '../styles/event-print-chart.css'
 import { useMemo, useState } from "react";
 import { metricValue, percent } from "../utils/formatters";
 import {

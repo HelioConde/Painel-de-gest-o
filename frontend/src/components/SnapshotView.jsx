@@ -1,3 +1,4 @@
+import '../styles/report-print.css'
 import EventStoreComparison from './EventStoreComparison'
 import StoreTableCarousel from './StoreTableCarousel'
 

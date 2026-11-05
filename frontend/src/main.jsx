@@ -4,10 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import './styles.css'
 import './styles/report-layout.css'
-import './styles/report-print.css'
-import './styles/posters.css'
 import './styles/report-ui-polish.css'
-import './styles/event-print-chart.css'
 
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || 'dev'
 
@@ -47,7 +44,7 @@ function startVersionWatcher() {
     if (document.visibilityState === 'visible') checkVersion()
   })
 
-  window.setInterval(checkVersion, 15_000)
+  window.setInterval(checkVersion, 120_000)
   window.setTimeout(checkVersion, 1_000)
 }
 

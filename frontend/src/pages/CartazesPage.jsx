@@ -1,3 +1,4 @@
+import '../styles/posters.css'
 import { ChevronLeft, ChevronRight, ClipboardPaste, History, LayoutGrid, Maximize2, Pencil, Printer, Settings, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'

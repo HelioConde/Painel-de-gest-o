@@ -193,7 +193,8 @@ export default function StoreTableCarousel({
           style={{ transform: `translate3d(-${index * 100}%, 0, 0)` }}
         >
           {options.map((option, optionIndex) => {
-            const scope = getScope(snapshot, option.value);
+            // Evita montar hierarquias de lojas fora da tela.
+            const isActive = optionIndex === index;
             return (
               <div
                 className={`table-carousel-slide ${optionIndex === index ? "active" : ""}`}
@@ -201,12 +202,14 @@ export default function StoreTableCarousel({
                 aria-hidden={optionIndex !== index}
                 inert={optionIndex !== index}
               >
-                <HierarchyExplorer
-                  snapshot={snapshot}
-                  scope={scope}
-                  carouselMode
-                  enableManagementControls
-                />
+                {isActive ? (
+                  <HierarchyExplorer
+                    snapshot={snapshot}
+                    scope={activeScope}
+                    carouselMode
+                    enableManagementControls
+                  />
+                ) : null}
               </div>
             );
           })}
