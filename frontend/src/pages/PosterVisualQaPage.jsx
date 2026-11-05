@@ -1,3 +1,4 @@
+import '../styles/posters.css'
 import { useEffect, useMemo, useState } from 'react'
 import PosterPreview from '../components/posters/PosterPreview'
 import { getPosterFormat } from '../config/posterFormats'
