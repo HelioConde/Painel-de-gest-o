@@ -25,7 +25,7 @@ concurrency:
 jobs:
   capture:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: frontend
@@ -46,14 +46,11 @@ jobs:
       - name: Install app dependencies
         run: npm ci
 
-      - name: Install Playwright for visual capture
-        run: npm install --no-save playwright@1.55.0
-
       - name: Cache Playwright browser
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-poster-playwright-1.55.0
+          key: ${{ runner.os }}-poster-playwright-1.56.0
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
