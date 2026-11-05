@@ -1,4 +1,5 @@
 import { supabase, supabaseConfigured } from "../lib/supabase";
+import { collectPages } from "../utils/collectPages.js";
 
 function configured() {
   if (!supabaseConfigured || !supabase)
@@ -83,12 +84,17 @@ export async function getActiveTabloid() {
       awaitingUpdate: true,
     };
 
-  const { data: products, error: productsError } = await supabase
-    .from("tabloid_product_sales")
-    .select("*")
-    .eq("snapshot_id", snapshot.id)
-    .order("sales_value", { ascending: false });
-  if (productsError) throw productsError;
+  // Uma campanha pode exceder o limite padrao do PostgREST (1000 linhas).
+  // A ordem composta garante paginacao estavel mesmo com vendas iguais.
+  const products = await collectPages((from, to) =>
+    supabase
+      .from("tabloid_product_sales")
+      .select("id,store_code,store_name,product_code,product_name,family_key,family_name,package_size,variant_name,quantity,sales_value")
+      .eq("snapshot_id", snapshot.id)
+      .order("sales_value", { ascending: false })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
 
   const availableThrough = snapshot.period_end || snapshot.reference_date;
   return {
@@ -109,16 +115,26 @@ export async function getTabloidSettings() {
   if (error) throw error;
   const ids = (campaigns || []).map((campaign) => campaign.id);
   if (!ids.length) return { campaigns: [], snapshotsByCampaign: new Map() };
-  const { data: snapshots, error: snapshotsError } = await supabase
-    .from("tabloid_snapshots")
-    .select("*")
-    .in("campaign_id", ids)
-    .order("imported_at", { ascending: false });
-  if (snapshotsError) throw snapshotsError;
+
+  // Configuracoes precisam apenas do ultimo snapshot por campanha.
+  // Busca em pequenos lotes para nao transferir todo o historico.
   const snapshotsByCampaign = new Map();
-  for (const snapshot of snapshots || []) {
-    if (!snapshotsByCampaign.has(snapshot.campaign_id))
-      snapshotsByCampaign.set(snapshot.campaign_id, snapshot);
+  for (let index = 0; index < ids.length; index += 6) {
+    const page = await Promise.all(ids.slice(index, index + 6).map(async (campaignId) => {
+      const { data, error: snapshotError } = await supabase
+        .from("tabloid_snapshots")
+        .select("campaign_id,period_start,period_end,imported_at")
+        .eq("campaign_id", campaignId)
+        .order("imported_at", { ascending: false })
+        .order("reference_date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (snapshotError) throw snapshotError;
+      return data;
+    }));
+    for (const snapshot of page) {
+      if (snapshot) snapshotsByCampaign.set(snapshot.campaign_id, snapshot);
+    }
   }
   return { campaigns: campaigns || [], snapshotsByCampaign };
 }
