@@ -1,3 +1,4 @@
+import '../styles/posters.css'
 import { ArrowLeft, Copy, Image, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
