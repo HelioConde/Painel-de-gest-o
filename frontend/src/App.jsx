@@ -6,6 +6,7 @@ const DailyPage = lazy(() => import('./pages/DailyPage'))
 const MonthlyPage = lazy(() => import('./pages/MonthlyPage'))
 const EventsPage = lazy(() => import('./pages/EventsPage'))
 const LossesPage = lazy(() => import('./pages/LossesPage'))
+const StoreIntelligencePage = lazy(() => import('./pages/StoreIntelligencePage'))
 const CartazesPage = lazy(() => import('./pages/CartazesPage'))
 const CartazesLayoutAdminPage = lazy(() => import('./pages/CartazesLayoutAdminPage'))
 const AiAnalysisPage = lazy(() => import('./pages/AiAnalysisPage'))
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/fechamento-mensal" element={<ProtectedRoute permission="fechamentoMensal"><MonthlyPage monthlyClose /></ProtectedRoute>} />
           <Route path="/eventos" element={<ProtectedRoute permission="eventos"><EventsPage /></ProtectedRoute>} />
           <Route path="/perdas" element={<ProtectedRoute permission="perdas"><LossesPage /></ProtectedRoute>} />
+          <Route path="/comparativo" element={<ProtectedRoute permission="comparativoLojas"><StoreIntelligencePage /></ProtectedRoute>} />
           <Route path="/analise-ia" element={<ProtectedRoute permission="aiAccess"><AiAnalysisPage /></ProtectedRoute>} />
           <Route path="/cartazes" element={<ProtectedRoute permission="cartazes"><CartazesPage /></ProtectedRoute>} />
           <Route path="/cartazes/admin-layout" element={<ProtectedRoute permission="cartazesAdmin"><CartazesLayoutAdminPage /></ProtectedRoute>} />
