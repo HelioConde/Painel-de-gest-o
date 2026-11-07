@@ -64,7 +64,7 @@ export default function StoreIntelligencePage() {
       <header className="manager-header">
         <div>
           <span className="manager-eyebrow"><Store size={16} /> INTELIGÊNCIA OPERACIONAL</span>
-          <h1>Comparativo de lojas</h1>
+          <h1>Comparativo de lojas <b className="feature-new-badge">NOVO</b></h1>
           <p>Seis unidades, evolução comercial e perdas com sinalização de dados incompletos.</p>
         </div>
         <button type="button" onClick={refresh} disabled={refreshing} className="manager-refresh">
@@ -191,6 +191,28 @@ export default function StoreIntelligencePage() {
                 </div>
                 {!stores.length ? <p className="manager-empty">Nenhuma unidade corresponde aos filtros.</p> : null}
               </section>
+
+              {canSeeLosses && analysis.topLossProducts.length ? (
+                <section className="manager-panel">
+                  <div className="manager-panel-heading">
+                    <h2>Produtos mais perdidos <b className="feature-new-badge">NOVO</b></h2>
+                    <span>Somente a competência de Perdas exibida acima</span>
+                  </div>
+                  <p className="manager-explanation">Agrupamento por código do produto nas seis lojas. Os valores referem-se ao período selecionado, não à soma de snapshots acumulativos.</p>
+                  <div className="manager-table-scroll">
+                    <table className="manager-table">
+                      <thead><tr><th>Produto</th><th>Setor</th><th>Lojas afetadas</th><th>Perda total</th></tr></thead>
+                      <tbody>{analysis.topLossProducts.slice(0, 12).map((item) => (
+                        <tr key={item.code}>
+                          <th scope="row"><strong>{item.name}</strong><small>Código {item.code}</small></th>
+                          <td>{item.sector}</td><td>{item.storeCount} de 6</td>
+                          <td className="manager-negative">{money(item.lossValue)}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
+                </section>
+              ) : null}
 
               {canSeeLosses && analysis.hotspots.length ? (
                 <section className="manager-panel">
