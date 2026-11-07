@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildStoreIntelligence, rankLossProducts } from '../src/utils/storeIntelligence.js'
+import { buildStoreIntelligence, rankLossProducts, rankSalesSectorChanges } from '../src/utils/storeIntelligence.js'
 import { filterTabloidFamilies } from '../src/utils/tabloidSearch.js'
 import { canAccessRoute, hasPermission } from '../src/auth/permissions.js'
 
@@ -123,4 +123,16 @@ test('NOVO: agrupa perdas por código de produto sem misturar snapshots de perí
   assert.equal(ranked[0].code, '403')
   assert.equal(ranked[0].storeCount, 2)
   assert.equal(ranked[0].lossValue, 500)
+})
+
+test('NOVO: contribuição por setor soma dinheiro, não médias percentuais', () => {
+  const stores = [
+    { sectors: [{name: 'PADARIA', current_value: 90, previous_value: 200}] },
+    { sectors: [{name: 'PADARIA', current_value: 180, previous_value: 200}] },
+    { sectors: [{name: 'ACOU GUE', current_value: 100, previous_value: 90}] },
+  ]
+  const rankings = rankSalesSectorChanges(stores)
+  assert.equal(rankings[0].name, 'PADARIA')
+  assert.equal(rankings[0].difference, -130)
+  assert.equal(rankings[0].storeCount, 2)
 })
