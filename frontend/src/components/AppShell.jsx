@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Activity,
   ClipboardCheck,
+  History,
   UserRound,
   X,
 } from "lucide-react";
@@ -92,6 +93,15 @@ const NAV = [
     tone: "settings",
     icon: ClipboardCheck,
     permission: "planosAcao",
+    isNew: true,
+  },
+  {
+    to: "/historico-produtos",
+    label: "Histórico de Produtos",
+    initial: "H",
+    tone: "losses",
+    icon: History,
+    permission: "historicoProdutos",
     isNew: true,
   },
   {
