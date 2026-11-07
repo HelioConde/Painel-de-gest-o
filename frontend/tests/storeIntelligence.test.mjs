@@ -88,6 +88,11 @@ test('cada perfil lê apenas módulos permitidos no comparativo', () => {
   assert.equal(canAccessRoute('admin', '/comparativo'), true)
   assert.equal(hasPermission('gerencia', 'perdas'), false)
   assert.equal(hasPermission('prevencao', 'vendaMensal'), false)
+  assert.equal(canAccessRoute('gerencia', '/planos-acao'), true)
+  assert.equal(canAccessRoute('prevencao', '/planos-acao'), true)
+  assert.equal(canAccessRoute('atendimento', '/planos-acao'), false)
+  assert.equal(canAccessRoute('admin', '/saude-dados'), true)
+  assert.equal(canAccessRoute('prevencao', '/saude-dados'), false)
 })
 
 test('pesquisa de produtos localiza códigos, acentos e palavras em ordem livre', () => {
