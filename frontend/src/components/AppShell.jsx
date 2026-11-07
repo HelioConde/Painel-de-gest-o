@@ -13,6 +13,9 @@ import {
   Star,
   TrendingDown,
   TrendingUp,
+  Activity,
+  ClipboardCheck,
+  History,
   UserRound,
   X,
 } from "lucide-react";
@@ -21,6 +24,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import primorLogoWide from "../assets/primor-logo-wide.png";
 import primorLogoSquare from "../assets/primor-logo-square.png";
 import { useAuth } from "../auth/AuthProvider";
+import "../styles/new-features.css";
 
 const NAV = [
   {
@@ -50,6 +54,7 @@ const NAV = [
   {
     to: "/tabloide",
     label: "Tabloide",
+    isNew: false,
     initial: "T",
     tone: "monthly",
     icon: ShoppingCart,
@@ -66,10 +71,38 @@ const NAV = [
   {
     to: "/comparativo",
     label: "Comparativo de Lojas",
+    isNew: true,
     initial: "L",
     tone: "monthly",
     icon: Layers3,
     permission: "comparativoLojas",
+  },
+  {
+    to: "/saude-dados",
+    label: "Saúde dos Dados",
+    initial: "S",
+    tone: "settings",
+    icon: Activity,
+    permission: "saudeDados",
+    isNew: true,
+  },
+  {
+    to: "/planos-acao",
+    label: "Planos de Ação",
+    initial: "A",
+    tone: "settings",
+    icon: ClipboardCheck,
+    permission: "planosAcao",
+    isNew: true,
+  },
+  {
+    to: "/historico-produtos",
+    label: "Histórico de Produtos",
+    initial: "H",
+    tone: "losses",
+    icon: History,
+    permission: "historicoProdutos",
+    isNew: true,
   },
   {
     to: "/analise-ia",
@@ -278,7 +311,7 @@ export default function AppShell({ children }) {
 
         <nav className="nav-list" aria-label="Navegação principal">
           {navigation.map(
-            ({ to, label, initial, tone, icon: Icon }) => (
+            ({ to, label, initial, tone, icon: Icon, isNew }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -296,7 +329,7 @@ export default function AppShell({ children }) {
                   {initial}
                 </span>
                 <Icon className="nav-icon" size={18} />
-                <span className="nav-label">{label}</span>
+                <span className="nav-label">{label}{isNew ? <b className="feature-new-badge">NOVO</b> : null}</span>
               </NavLink>
             ),
           )}

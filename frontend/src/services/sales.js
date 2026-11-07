@@ -65,7 +65,7 @@ export async function getLatestMonthlySnapshot({ monthlyClose = false } = {}) {
     .order("updated_at", { ascending: false })
     .limit(1);
 
-  if (monthlyClose) query = query.eq("mode", "PREVIOUS_MONTH_CLOSE");
+  query = query.eq("mode", monthlyClose ? "PREVIOUS_MONTH_CLOSE" : "RUNNING_MONTH");
 
   const { data, error } = await query.maybeSingle();
 

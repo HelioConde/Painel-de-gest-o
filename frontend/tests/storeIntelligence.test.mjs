@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildStoreIntelligence } from '../src/utils/storeIntelligence.js'
+import { buildStoreIntelligence, rankLossProducts, rankSalesSectorChanges } from '../src/utils/storeIntelligence.js'
 import { filterTabloidFamilies } from '../src/utils/tabloidSearch.js'
 import { canAccessRoute, hasPermission } from '../src/auth/permissions.js'
 
@@ -88,6 +88,13 @@ test('cada perfil lê apenas módulos permitidos no comparativo', () => {
   assert.equal(canAccessRoute('admin', '/comparativo'), true)
   assert.equal(hasPermission('gerencia', 'perdas'), false)
   assert.equal(hasPermission('prevencao', 'vendaMensal'), false)
+  assert.equal(canAccessRoute('gerencia', '/planos-acao'), true)
+  assert.equal(canAccessRoute('prevencao', '/planos-acao'), true)
+  assert.equal(canAccessRoute('atendimento', '/planos-acao'), false)
+  assert.equal(canAccessRoute('admin', '/saude-dados'), true)
+  assert.equal(canAccessRoute('prevencao', '/saude-dados'), false)
+  assert.equal(canAccessRoute('prevencao', '/historico-produtos'), true)
+  assert.equal(canAccessRoute('gerencia', '/historico-produtos'), false)
 })
 
 test('pesquisa de produtos localiza códigos, acentos e palavras em ordem livre', () => {
@@ -102,4 +109,32 @@ test('pesquisa de produtos localiza códigos, acentos e palavras em ordem livre'
   assert.equal(filterTabloidFamilies(groups, 'cristal acucar')[0].name, 'Açúcar cristal')
   assert.equal(filterTabloidFamilies(groups, 'sem produto').length, 0)
   assert.equal(filterTabloidFamilies(groups, '').length, 2)
+})
+
+test('NOVO: agrupa perdas por código de produto sem misturar snapshots de períodos distintos', () => {
+  const rows = ['307','212'].map((store_code, i) => ({
+    store_code,
+    details: { current: { sectors: [{
+      name: 'PADARIA', mips: [{ products: [{
+        product_code: '403', product_name: 'BOLO MANDIOCA KG', total_value: i === 0 ? 300 : 200,
+      }] }],
+    }] } },
+  }))
+  const ranked = rankLossProducts(rows)
+  assert.equal(ranked.length, 1)
+  assert.equal(ranked[0].code, '403')
+  assert.equal(ranked[0].storeCount, 2)
+  assert.equal(ranked[0].lossValue, 500)
+})
+
+test('NOVO: contribuição por setor soma dinheiro, não médias percentuais', () => {
+  const stores = [
+    { sectors: [{name: 'PADARIA', current_value: 90, previous_value: 200}] },
+    { sectors: [{name: 'PADARIA', current_value: 180, previous_value: 200}] },
+    { sectors: [{name: 'ACOU GUE', current_value: 100, previous_value: 90}] },
+  ]
+  const rankings = rankSalesSectorChanges(stores)
+  assert.equal(rankings[0].name, 'PADARIA')
+  assert.equal(rankings[0].difference, -130)
+  assert.equal(rankings[0].storeCount, 2)
 })

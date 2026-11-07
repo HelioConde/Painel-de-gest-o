@@ -72,3 +72,18 @@
   .manager-table th, .manager-table td { white-space: normal; padding: 7px 8px; }
   .manager-page { display: block; }
 }
+
+/* NOVO: formulários responsivos do plano de ação. */
+.manager-action-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; margin-top: 14px; }
+.manager-action-form label { display: grid; gap: 6px; font-size: .81rem; font-weight: 700; color: #405268; }
+.manager-action-form input, .manager-action-form select, .manager-action-form textarea {
+  width: 100%; min-width: 0; border: 1px solid #d7dfe9; border-radius: 9px;
+  padding: 10px 11px; background: #fff; color: #23344b; font: inherit;
+}
+.manager-action-form .manager-action-wide { grid-column: 1 / -1; }
+.manager-action-form button { justify-self: start; }
+@media (max-width: 650px) { .manager-action-form { grid-template-columns: minmax(0, 1fr); } }
+
+.manager-small-button { border: 1px solid #c8d8ce; color: #225f49; background: #f0f8f4; border-radius: 8px; font-size: .76rem; font-weight: 700; padding: 8px 10px; cursor: pointer; margin: 3px; }
+.manager-small-button:hover { background: #e4f3eb; }
+.manager-action-form textarea { resize: vertical; }

@@ -64,7 +64,7 @@ export default function StoreIntelligencePage() {
       <header className="manager-header">
         <div>
           <span className="manager-eyebrow"><Store size={16} /> INTELIGÊNCIA OPERACIONAL</span>
-          <h1>Comparativo de lojas</h1>
+          <h1>Comparativo de lojas <b className="feature-new-badge">NOVO</b></h1>
           <p>Seis unidades, evolução comercial e perdas com sinalização de dados incompletos.</p>
         </div>
         <button type="button" onClick={refresh} disabled={refreshing} className="manager-refresh">
@@ -183,7 +183,7 @@ export default function StoreIntelligencePage() {
                           {canSeeLosses ? <td>{money(row.lossValue)}</td> : null}
                           {canSeeLosses ? <td>{percent(row.lossRate)}</td> : null}
                           {canSeeLosses ? <td>{row.missingLoss ? 'Sem coleta' : row.exceededTargets}</td> : null}
-                          <td>{row.missingSales || row.missingLoss ? 'Incompleto' : row.attention ? 'Investigar' : 'Sem alertas detectados'}</td>
+                          <td title={row.alerts.join(' · ')}>{row.missingSales || row.missingLoss ? 'Incompleto' : row.alerts.length ? row.alerts.join(' · ') : 'Sem alertas detectados'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -191,6 +191,52 @@ export default function StoreIntelligencePage() {
                 </div>
                 {!stores.length ? <p className="manager-empty">Nenhuma unidade corresponde aos filtros.</p> : null}
               </section>
+
+              {canSeeSales && analysis.decliningSectors.length ? (
+                <section className="manager-panel">
+                  <div className="manager-panel-heading">
+                    <h2>Setores que mais reduziram as vendas <b className="feature-new-badge">NOVO</b></h2>
+                    <span>Comparação com a competência anterior do SUPERUS</span>
+                  </div>
+                  <p className="manager-explanation">Variações em reais, somadas entre lojas. A comparação utiliza somente dados dos setores que apresentam valores atual e anterior válidos.</p>
+                  <div className="manager-table-scroll">
+                    <table className="manager-table">
+                      <thead><tr><th>Setor</th><th>Lojas na análise</th><th>Vendas atuais</th><th>Vendas anteriores</th><th>Diferença</th><th>Variação</th></tr></thead>
+                      <tbody>{analysis.decliningSectors.slice(0, 10).map((sector) => (
+                        <tr key={sector.name}>
+                          <th scope="row"><strong>{sector.name}</strong></th>
+                          <td>{sector.storeCount} de 6</td>
+                          <td>{money(sector.current)}</td><td>{money(sector.previous)}</td>
+                          <td className="manager-negative">{money(sector.difference)}</td>
+                          <td className="manager-negative">{percent(sector.variation)}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
+                </section>
+              ) : null}
+
+              {canSeeLosses && analysis.topLossProducts.length ? (
+                <section className="manager-panel">
+                  <div className="manager-panel-heading">
+                    <h2>Produtos mais perdidos <b className="feature-new-badge">NOVO</b></h2>
+                    <span>Somente a competência de Perdas exibida acima</span>
+                  </div>
+                  <p className="manager-explanation">Agrupamento por código do produto nas seis lojas. Os valores referem-se ao período selecionado, não à soma de snapshots acumulativos.</p>
+                  <div className="manager-table-scroll">
+                    <table className="manager-table">
+                      <thead><tr><th>Produto</th><th>Setor</th><th>Lojas afetadas</th><th>Perda total</th></tr></thead>
+                      <tbody>{analysis.topLossProducts.slice(0, 12).map((item) => (
+                        <tr key={item.code}>
+                          <th scope="row"><strong>{item.name}</strong><small>Código {item.code}</small></th>
+                          <td>{item.sector}</td><td>{item.storeCount} de 6</td>
+                          <td className="manager-negative">{money(item.lossValue)}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
+                </section>
+              ) : null}
 
               {canSeeLosses && analysis.hotspots.length ? (
                 <section className="manager-panel">
