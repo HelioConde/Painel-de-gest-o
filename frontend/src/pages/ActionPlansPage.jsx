@@ -1,5 +1,6 @@
 import { ClipboardCheck, Plus, RefreshCw, Save } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { supabase } from '../lib/supabase'
 import { EmptyState, LoadingState } from '../components/States'
@@ -20,6 +21,27 @@ const empty = {
   baseline_value: '', target_value: '',
 }
 
+function prefillFromRadar(params, department, isAdmin) {
+  const requested = params.get('department')
+  const selectedDepartment = isAdmin && ['VENDAS', 'PERDAS'].includes(requested) ? requested : department
+  const store = String(params.get('store_code') || '').padStart(3, '0')
+  const value = (name, max) => String(params.get(name) || '').trim().slice(0, max)
+  const numeric = (name) => {
+    const raw = value(name, 30)
+    return raw !== '' && Number.isFinite(Number(raw)) && Number(raw) >= 0 ? raw : ''
+  }
+  return {
+    ...empty,
+    department: selectedDepartment,
+    store_code: STORES.some(([code]) => code === store) ? store : '307',
+    sector: value('sector', 80),
+    title: value('title', 180),
+    description: value('description', 2000),
+    baseline_value: numeric('baseline_value'),
+    target_value: numeric('target_value'),
+  }
+}
+
 async function fetchPlans() {
   const { data, error } = await supabase.from('store_action_plans')
     .select('id,store_code,department,sector,product_code,title,description,owner_name,due_date,status,baseline_value,target_value,result_notes,created_at,updated_at')
@@ -32,8 +54,15 @@ export default function ActionPlansPage() {
   const { role, user } = useAuth()
   const isAdmin = role === 'admin'
   const department = role === 'prevencao' ? 'PERDAS' : 'VENDAS'
-  const [form, setForm] = useState({ ...empty, department })
-  const [showForm, setShowForm] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const suggested = useMemo(() => prefillFromRadar(searchParams, department, isAdmin), [searchParams, department, isAdmin])
+  const [form, setForm] = useState(suggested)
+  const [showForm, setShowForm] = useState(Boolean(searchParams.get('title')))
+  useEffect(() => {
+    if (!searchParams.get('title')) return
+    setForm(suggested)
+    setShowForm(true)
+  }, [searchParams, suggested])
   const [storeFilter, setStoreFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [message, setMessage] = useState('')
@@ -72,6 +101,7 @@ export default function ActionPlansPage() {
       setMessage('Plano de ação registrado.')
       setForm({ ...empty, department })
       setShowForm(false)
+      if (searchParams.get('title')) setSearchParams({}, { replace: true })
       await refresh()
     }
     setSaving(false)
