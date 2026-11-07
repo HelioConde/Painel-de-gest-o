@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-Cltr0gcK.js";import{i as t}from"./States-CJiz8aSE.js";var n=e();function r({error:e}){return e?(0,n.jsxs)(`div`,{className:`data-status-banner`,role:`status`,children:[(0,n.jsx)(t,{size:14}),(0,n.jsx)(`span`,{children:`Não foi possível atualizar agora. Exibindo o último dado carregado.`})]}):null}export{r as t};
