@@ -3,6 +3,7 @@ import {
   Bot,
   CalendarDays,
   ChevronLeft,
+  ChevronDown,
   Download,
   FileText,
   LogOut,
@@ -22,11 +23,13 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import primorLogoWide from "../assets/primor-logo-wide.png";
 import primorLogoSquare from "../assets/primor-logo-square.png";
 import { useAuth } from "../auth/AuthProvider";
 import "../styles/new-features.css";
+import "../styles/sidebar-groups.css";
+import { groupForPath, groupVisibleNavigation } from "../utils/navigationSections.js";
 
 const NAV = [
   {
@@ -159,6 +162,27 @@ const NAV = [
   },
 ];
 
+
+function SidebarNavItem({ item, onNavigate, nested = false }) {
+  const { to, label, initial, tone, icon: Icon } = item;
+  return (
+    <NavLink
+      to={to}
+      onClick={onNavigate}
+      className={({ isActive }) =>
+        ["nav-item", "nav-" + tone, nested ? "nav-subitem" : "", isActive ? "active" : ""]
+          .filter(Boolean).join(" ")
+      }
+      title={label}
+      aria-label={label}
+    >
+      <span className={"nav-initial nav-initial-" + tone} aria-hidden="true">{initial}</span>
+      <Icon className="nav-icon" size={18} aria-hidden="true" />
+      <span className="nav-label">{label}</span>
+    </NavLink>
+  );
+}
+
 export function isMonthlyCloseWindow(today = new Date()) {
   const day = today.getDate();
   return day >= 1 && day <= 7;
@@ -195,6 +219,11 @@ export default function AppShell({ children }) {
   const [iosInstallHelp, setIosInstallHelp] = useState(false);
   const installPromptRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [expandedSections, setExpandedSections] = useState(() => ({
+    intelligence: groupForPath(location.pathname) === "intelligence",
+    management: groupForPath(location.pathname) === "management",
+  }));
   const { profile, hasPermission, signOut } = useAuth();
   const visibleNavigation = NAV.filter((item) =>
     hasPermission(item.permission),
@@ -214,6 +243,24 @@ export default function AppShell({ children }) {
           ...visibleNavigation.slice(3),
         ]
       : visibleNavigation;
+
+  const sections = groupVisibleNavigation(navigation);
+  const currentGroup = groupForPath(location.pathname);
+  useEffect(() => {
+    if (currentGroup === "reports") return;
+    setExpandedSections((current) =>
+      current[currentGroup] ? current : { ...current, [currentGroup]: true }
+    );
+  }, [currentGroup]);
+
+  function toggleSection(key) {
+    if (collapsed) {
+      setCollapsed(false);
+      setExpandedSections((current) => ({ ...current, [key]: true }));
+      return;
+    }
+    setExpandedSections((current) => ({ ...current, [key]: !current[key] }));
+  }
 
   async function handleSignOut() {
     await signOut();
@@ -327,31 +374,52 @@ export default function AppShell({ children }) {
           </button>
         </div>
 
+
         <nav className="nav-list" aria-label="Navegação principal">
-          {navigation.map(
-            ({ to, label, initial, tone, icon: Icon, isNew }) => (
-              <NavLink
-                key={to}
-                to={to}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `nav-item nav-${tone} ${isActive ? "active" : ""}`
-                }
-                title={label}
-                aria-label={label}
-              >
-                <span
-                  className={`nav-initial nav-initial-${tone}`}
-                  aria-hidden="true"
+          {sections.reports.length ? (
+            <div className="nav-section nav-section-reports">
+              <span className="nav-section-title">RELATÓRIOS</span>
+              {sections.reports.map((item) => (
+                <SidebarNavItem key={item.to} item={item} onNavigate={() => setOpen(false)} />
+              ))}
+            </div>
+          ) : null}
+          {[
+            { key: "intelligence", label: "Inteligência", icon: Layers3 },
+            { key: "management", label: "Gestão", icon: ClipboardCheck },
+          ].filter((group) => sections[group.key].length).map((group) => {
+            const Icon = group.icon;
+            const expanded = Boolean(expandedSections[group.key]);
+            const active = group.key === currentGroup;
+            return (
+              <div className="nav-section nav-section-group" key={group.key}>
+                <button
+                  type="button"
+                  className={"nav-group-toggle" + (active ? " active" : "")}
+                  onClick={() => toggleSection(group.key)}
+                  aria-expanded={expanded}
+                  aria-controls={"nav-group-" + group.key}
+                  aria-label={group.label + (expanded ? " — recolher" : " — expandir")}
+                  title={group.label}
                 >
-                  {initial}
-                </span>
-                <Icon className="nav-icon" size={18} />
-                <span className="nav-label">{label}</span>
-                {isNew ? <span className="feature-new-badge nav-feature-new-badge" aria-hidden="true">NOVO</span> : null}
-              </NavLink>
-            ),
-          )}
+                  <Icon className="nav-group-icon" size={18} aria-hidden="true" />
+                  <span className="nav-group-label">{group.label}</span>
+                  {sections[group.key].some((item) => item.isNew) ?
+                    <span className="feature-new-badge nav-group-new" aria-hidden="true">NOVO</span> : null}
+                  <ChevronDown className={"nav-group-chevron" + (expanded ? " open" : "")} size={15} aria-hidden="true" />
+                </button>
+                <div
+                  id={"nav-group-" + group.key}
+                  className="nav-subitems"
+                  hidden={!expanded}
+                >
+                  {sections[group.key].map((item) => (
+                    <SidebarNavItem key={item.to} item={item} nested onNavigate={() => setOpen(false)} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </nav>
 
         <div className="sidebar-user-panel">
