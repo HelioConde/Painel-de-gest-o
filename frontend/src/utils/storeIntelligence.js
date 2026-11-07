@@ -26,6 +26,30 @@ function sumWhenComplete(stores, field) {
   return stores.reduce((total, row) => total + row[field], 0)
 }
 
+/** Ranking ponderado de setores por variação real em reais. */
+export function rankSalesSectorChanges(stores = []) {
+  const results = new Map()
+  for (const store of stores) {
+    for (const sector of store?.sectors || []) {
+      const current = numeric(sector?.current_value)
+      const previous = numeric(sector?.previous_value)
+      if (current === null || previous === null) continue
+      const name = String(sector.name || '').trim()
+      if (!name) continue
+      const key = name.toLocaleUpperCase('pt-BR')
+      const entry = results.get(key) || { name, current: 0, previous: 0, storeCount: 0 }
+      entry.current += current
+      entry.previous += previous
+      entry.storeCount += 1
+      results.set(key, entry)
+    }
+  }
+  return [...results.values()].map((item) => ({
+    ...item, difference: item.current - item.previous,
+    variation: variation(item.current, item.previous),
+  })).sort((a, b) => a.difference - b.difference)
+}
+
 /**
  * Consolida apenas leituras já autorizadas pela tela.
  * Vendas e perdas mantêm seus períodos independentes: jamais cruzar totais
@@ -99,6 +123,11 @@ export function buildStoreIntelligence({ salesSnapshot = null, lossRun = null } 
     const salesVariation = numeric(sale?.variation_percent) ?? variation(saleCurrent, salePrevious)
     const missingSales = Boolean(salesSnapshot && !sale)
     const missingLoss = Boolean(lossRun && !loss)
+    const alerts = [
+      ...(salesVariation !== null && salesVariation <= -10 ? ['Queda de vendas acima de 10%'] : []),
+      ...(lossRate !== null && lossRate >= 2 ? ['Perdas acima de 2% do faturamento'] : []),
+      ...(exceeded.length ? [`${exceeded.length} setor(es) acima da meta`] : []),
+    ]
     return {
       code,
       label: `Loja ${String(index + 1).padStart(2, '0')} · ${code}`,
@@ -109,6 +138,7 @@ export function buildStoreIntelligence({ salesSnapshot = null, lossRun = null } 
       lossRate,
       lossSalesValue,
       exceededTargets: exceeded.length,
+      alerts,
       missingSales,
       missingLoss,
       attention: missingSales || missingLoss || exceeded.length > 0 || (salesVariation !== null && salesVariation < 0),
@@ -138,6 +168,7 @@ export function buildStoreIntelligence({ salesSnapshot = null, lossRun = null } 
       lossRate: ratio(totalLoss, totalLossSales),
     },
     topLossProducts: rankLossProducts(lossRun?.rows || []),
+    decliningSectors: rankSalesSectorChanges(salesSnapshot?.details?.stores || []).filter((item) => item.difference < 0),
     hotspots: hotspots.sort((a, b) =>
       (b.theoreticalExcess ?? -1) - (a.theoreticalExcess ?? -1) ||
       (b.current - b.target) - (a.current - a.target)
