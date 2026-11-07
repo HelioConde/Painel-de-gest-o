@@ -10,31 +10,6 @@ function requireAiService() {
   return supabase
 }
 
-function logContextSummary(analysisType, context) {
-  if (analysisType === 'sales') {
-    console.log('[AI][SALES] Context summary', {
-      loja: context?.loja,
-      periodo: context?.periodoAtual,
-      vendaAtual: context?.resumoVendas?.vendaAtual,
-      vendaAnterior: context?.resumoVendas?.vendaAnterior,
-      quantidadeSetores: context?.setores?.length || 0,
-      quantidadeSubgrupos: context?.subgrupos?.length || 0,
-      quantidadeEventos: context?.eventos?.length || 0,
-    })
-    return
-  }
-
-  console.log('[AI][LOSSES] Context summary', {
-    loja: context?.loja,
-    periodo: context?.periodoAtual,
-    vendaTotal: context?.resumo?.vendaTotal,
-    perdaTotal: context?.resumo?.perdaTotal,
-    percentualPerda: context?.resumo?.percentualPerda,
-    quantidadeSetores: context?.setores?.length || 0,
-    quantidadeProdutos: context?.topPerdas?.length || 0,
-  })
-}
-
 function getFriendlyAiMessage(error, data) {
   const code =
     data?.error ||
@@ -112,10 +87,6 @@ export async function requestAiAnalysis(
   context,
   { force = false, analysisType = 'losses' } = {}
 ) {
-  console.log('[AI] analysisType:', analysisType)
-  console.log('[AI] context enviado:', context)
-  console.log('[AI] context JSON:', JSON.stringify(context))
-  logContextSummary(analysisType, context)
 
   const { data, error } = await requireAiService().functions.invoke(
     'ai-analysis',
@@ -131,10 +102,6 @@ export async function requestAiAnalysis(
   if (error) {
     const details = await readFunctionError(error)
 
-    console.error('[AI] Edge Function error:', {
-      error,
-      details,
-    })
 
     throw new Error(
       getFriendlyAiMessage(error, details)
@@ -142,10 +109,6 @@ export async function requestAiAnalysis(
   }
 
   if (!data?.success) {
-    console.error(
-      '[AI] Resposta inválida da Edge Function:',
-      data
-    )
 
     throw new Error(
       getFriendlyAiMessage(null, data)
@@ -176,10 +139,6 @@ export async function askAiQuestion(
   if (error) {
     const details = await readFunctionError(error)
 
-    console.error('[AI] Edge Function question error:', {
-      error,
-      details,
-    })
 
     throw new Error(
       getFriendlyAiMessage(error, details)
