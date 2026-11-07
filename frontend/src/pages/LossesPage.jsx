@@ -1,4 +1,5 @@
 import '../styles/report-print.css'
+import '../styles/management-intelligence.css'
 import { ArrowLeft, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DataStatusBanner from "../components/DataStatusBanner";
@@ -11,7 +12,8 @@ import CompactReportHeader from "../components/CompactReportHeader";
 import PrintReportHeader from "../components/PrintReportHeader";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
-import { getLatestLossRun } from "../services/losses";
+import { getAvailableLossPeriods, getLatestLossRun } from "../services/losses";
+import { periodLabel } from "../utils/formatters";
 import { LOSS_STORE_ORDER, LOSS_STORE_SEQUENCE } from "../utils/losses";
 import { groupLossProductsByStore } from "../utils/lossProducts";
 import { buildSectorSummary } from "../utils/lossDashboard";
@@ -25,10 +27,20 @@ function sortRows(rows = []) {
 }
 
 export default function LossesPage() {
-  const { data, loading, refreshing, error, refresh } = useAsyncData(
-    getLatestLossRun,
-    [],
+  const [selectedPeriod, setSelectedPeriod] = useState("latest");
+  const {
+    data: periods,
+    loading: periodsLoading,
+    error: periodsError,
+    refresh: refreshPeriods,
+  } = useAsyncData(getAvailableLossPeriods, []);
+  const { data: loadedData, loading, refreshing, error, refresh } = useAsyncData(
+    () => getLatestLossRun(selectedPeriod === "latest" ? null : selectedPeriod),
+    [selectedPeriod],
   );
+  // Não exibir uma competência anterior enquanto a nova seleção carrega.
+  const data = loadedData?.requested_period === selectedPeriod ? loadedData : null;
+  const pendingSelection = Boolean(loadedData && !data && !error);
   const [selectedStore, setSelectedStore] = useState("307");
   const [view, setView] = useState("perdas");
   const [selectedSector, setSelectedSector] = useState(null);
@@ -104,17 +116,53 @@ export default function LossesPage() {
 
   return (
     <div className={`page losses-page losses-view-${view} page-tight page-view-enter`}>
-      {loading && !data && <LoadingState />}
-      {!loading && error && !data && (
+      <section className="loss-history-toolbar no-print" aria-label="Histórico de perdas">
+        <label htmlFor="loss-history-period">Período da análise</label>
+        <select
+          id="loss-history-period"
+          value={selectedPeriod}
+          onChange={(event) => {
+            setSelectedPeriod(event.target.value);
+            setSelectedSector(null);
+          }}
+        >
+          <option value="latest">Período mais recente</option>
+          {(periods || []).map((period) => (
+            <option key={period.key} value={period.key}>
+              {periodLabel(period.current_start, period.current_end)}
+            </option>
+          ))}
+        </select>
+        <small role="status">
+          {periodsLoading ? "Buscando períodos…" : `${periods?.length || 0} períodos disponíveis (até 100 recentes)`}
+        </small>
+        {periodsError ? (
+          <button type="button" onClick={refreshPeriods}>Atualizar períodos</button>
+        ) : null}
+      </section>
+      {(loading || pendingSelection) && !data && <LoadingState />}
+      {!loading && !pendingSelection && error && !data && (
         <ErrorState error={error} onRetry={refresh} />
       )}
-      {!loading && !error && !data && (
+      {!loading && !pendingSelection && !error && !data && (
         <EmptyState message="Ainda não existe um período de perdas sincronizado." />
       )}
 
       {data && selectedRow && (
         <>
           <DataStatusBanner error={error} />
+          {data.missing_stores?.length ? (
+            <p className="manager-notice manager-notice--warning" role="alert">
+              Período incompleto: faltam as lojas {data.missing_stores.join(", ")}.
+              Os totais e rankings incluem apenas as lojas com coleta disponível.
+            </p>
+          ) : null}
+          {data.run_ids?.length > 1 ? (
+            <p className="manager-notice" role="status">
+              As lojas deste período foram sincronizadas em execuções diferentes;
+              confira a data de cada registro antes de comparar.
+            </p>
+          ) : null}
 
           <CompactReportHeader
             title={pageTitle}
