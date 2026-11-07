@@ -52,7 +52,6 @@ const NAV = [
     initial: "T",
     tone: "monthly",
     icon: ShoppingCart,
-    isNew: true,
     permission: "tabloide",
   },
   {
@@ -69,7 +68,6 @@ const NAV = [
     initial: "IA",
     tone: "ai",
     icon: Bot,
-    isNew: true,
     permission: "aiAccess",
   },
   {
@@ -78,7 +76,6 @@ const NAV = [
     initial: "C",
     tone: "posters",
     icon: FileText,
-    isNew: true,
     permission: "cartazes",
   },
   {
@@ -141,7 +138,6 @@ export default function AppShell({ children }) {
             initial: "F",
             tone: "monthly",
             icon: Star,
-            isNew: true,
             permission: "fechamentoMensal",
           },
           ...visibleNavigation.slice(3),
@@ -273,7 +269,7 @@ export default function AppShell({ children }) {
 
         <nav className="nav-list" aria-label="Navegação principal">
           {navigation.map(
-            ({ to, label, initial, tone, icon: Icon, isNew = false }) => (
+            ({ to, label, initial, tone, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -281,14 +277,8 @@ export default function AppShell({ children }) {
                 className={({ isActive }) =>
                   `nav-item nav-${tone} ${isActive ? "active" : ""}`
                 }
-                title={
-                  collapsed
-                    ? isNew
-                      ? `${label}: nova funcionalidade`
-                      : label
-                    : undefined
-                }
-                aria-label={isNew ? `${label}, nova funcionalidade` : label}
+                title={collapsed ? label : undefined}
+                aria-label={label}
               >
                 <span
                   className={`nav-initial nav-initial-${tone}`}
@@ -298,15 +288,6 @@ export default function AppShell({ children }) {
                 </span>
                 <Icon className="nav-icon" size={18} />
                 <span className="nav-label">{label}</span>
-                {isNew ? (
-                  <span
-                    className="nav-new-badge"
-                    title="Nova ferramenta para criação e impressão de cartazes"
-                    aria-hidden="true"
-                  >
-                    Novo
-                  </span>
-                ) : null}
               </NavLink>
             ),
           )}
