@@ -22,6 +22,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import primorLogoWide from "../assets/primor-logo-wide.png";
 import primorLogoSquare from "../assets/primor-logo-square.png";
 import { useAuth } from "../auth/AuthProvider";
+import "../styles/new-features.css";
 
 const NAV = [
   {
@@ -51,6 +52,7 @@ const NAV = [
   {
     to: "/tabloide",
     label: "Tabloide",
+    isNew: false,
     initial: "T",
     tone: "monthly",
     icon: ShoppingCart,
