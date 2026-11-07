@@ -28,6 +28,7 @@ import primorLogoWide from "../assets/primor-logo-wide.png";
 import primorLogoSquare from "../assets/primor-logo-square.png";
 import { useAuth } from "../auth/AuthProvider";
 import "../styles/new-features.css";
+import "../styles/sidebar-groups.css";
 import { groupForPath, groupVisibleNavigation } from "../utils/navigationSections.js";
 
 const NAV = [
