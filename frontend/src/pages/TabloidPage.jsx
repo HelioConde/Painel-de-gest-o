@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
 import { getActiveTabloid, tabloidCampaignName } from "../services/tabloid";
 import { filterTabloidFamilies } from "../utils/tabloidSearch";
+import { detectProductPriceAnomalies } from "../utils/dataHealth";
 
 const money = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -325,6 +326,7 @@ export default function TabloidPage() {
   const [expanded, setExpanded] = useState(null);
   const [sort, setSort] = useState({ key: "total", direction: 1 });
   const groups = useMemo(() => aggregate(data?.products || []), [data]);
+  const anomalies = useMemo(() => detectProductPriceAnomalies(data?.products || []), [data]);
   const filtered = useMemo(() => filterTabloidFamilies(groups, query), [groups, query]);
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} onRetry={refresh} />;
@@ -391,6 +393,17 @@ export default function TabloidPage() {
         </div>
         <ShoppingCart size={28} />
       </header>
+      {anomalies.length ? (
+        <div className="manager-notice manager-notice--warning" role="alert" style={{ marginBottom: 14 }}>
+          <strong>Verificação financeira <b className="feature-new-badge">NOVO</b></strong>
+          <p>{anomalies.length} registro(s) com preço unitário implícito muito diferente das outras lojas. Os valores da coleta original permanecem visíveis, sem correção automática. Solicite conferência da origem antes de tomar decisões.</p>
+          <details><summary>Ver produtos sinalizados</summary>
+            <ul>{anomalies.slice(0, 15).map((row) => <li key={`${row.product_code}-${row.store_code}`}>
+              Loja {row.store_code} · {row.product_name} (cód. {row.product_code}) · valor implícito {money.format(row.unit)} por unidade · referência {money.format(row.benchmark)}
+            </li>)}</ul>
+          </details>
+        </div>
+      ) : null}
       <section className="tabloid-kpi-grid">
         <article>
           <TrendingUp size={20} />
