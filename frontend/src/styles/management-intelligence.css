@@ -83,3 +83,7 @@
 .manager-action-form .manager-action-wide { grid-column: 1 / -1; }
 .manager-action-form button { justify-self: start; }
 @media (max-width: 650px) { .manager-action-form { grid-template-columns: minmax(0, 1fr); } }
+
+.manager-small-button { border: 1px solid #c8d8ce; color: #225f49; background: #f0f8f4; border-radius: 8px; font-size: .76rem; font-weight: 700; padding: 8px 10px; cursor: pointer; margin: 3px; }
+.manager-small-button:hover { background: #e4f3eb; }
+.manager-action-form textarea { resize: vertical; }
