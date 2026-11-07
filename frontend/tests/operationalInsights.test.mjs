@@ -33,10 +33,10 @@ test('diagnóstico comercial mede queda em dinheiro, ganho e contribuição sobr
   assert.equal(result.storeCount, 2)
   assert.equal(result.declines[0].name, 'PADARIA')
   assert.equal(result.declines[0].difference, -120)
-  assert.equal(result.totalDecline, 130)
+  assert.equal(result.totalDecline, 120)
   assert.equal(result.totalGrowth, 10)
-  assert.equal(result.netDifference, -120)
-  assert.ok(Math.abs(result.declines[0].declineContribution - 120 / 130 * 100) < 1e-6)
+  assert.equal(result.netDifference, -110)
+  assert.equal(result.declines[0].declineContribution, 100)
 })
 
 test('detalhamento não soma setor e grupos duas vezes e diferencia grupos de setores distintos', () => {
