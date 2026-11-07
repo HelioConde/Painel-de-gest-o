@@ -12,7 +12,7 @@
     "qa:reports": "node scripts/qa-report-mobile.cjs",
     "qa:print-events": "node scripts/qa-event-print.cjs",
     "test:performance": "node --test tests/collectPages.test.mjs",
-    "test:insights": "node --test tests/storeIntelligence.test.mjs tests/dataHealth.test.mjs"
+    "test:insights": "node --test tests/storeIntelligence.test.mjs tests/dataHealth.test.mjs tests/printTopLosses.test.mjs"
   },
   "dependencies": {
     "@e965/xlsx": "^0.20.3",
