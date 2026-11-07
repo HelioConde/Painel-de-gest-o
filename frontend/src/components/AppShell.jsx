@@ -289,17 +289,6 @@ export default function AppShell({ children }) {
           </div>
 
           <button
-            className="sidebar-toggle desktop-only"
-            onClick={() => setCollapsed((current) => !current)}
-            aria-label={
-              collapsed ? "Expandir barra lateral" : "Recolher barra lateral"
-            }
-            type="button"
-          >
-            <ChevronLeft size={18} />
-          </button>
-
-          <button
             className="sidebar-close"
             onClick={() => setOpen(false)}
             aria-label="Fechar menu"
@@ -367,6 +356,18 @@ export default function AppShell({ children }) {
           </span>
         </div>
       </aside>
+
+      {/* Fora da sidebar: overflow: hidden não pode recortar a seta. */}
+      <button
+        className="sidebar-toggle desktop-only"
+        onClick={() => setCollapsed((current) => !current)}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
+        title={collapsed ? "Expandir menu" : "Recolher menu"}
+        type="button"
+      >
+        <ChevronLeft size={18} aria-hidden="true" />
+      </button>
 
       {open && (
         <button
