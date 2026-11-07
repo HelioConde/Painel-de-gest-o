@@ -25,5 +25,7 @@ jobs:
         run: npm ci
       - name: Testar paginacao Supabase
         run: npm run test:performance
+      - name: Testar comparativo e integridade de dados
+        run: npm run test:insights
       - name: Verificar build Vite
         run: npm run build
