@@ -7,6 +7,9 @@ const MonthlyPage = lazy(() => import('./pages/MonthlyPage'))
 const EventsPage = lazy(() => import('./pages/EventsPage'))
 const LossesPage = lazy(() => import('./pages/LossesPage'))
 const StoreIntelligencePage = lazy(() => import('./pages/StoreIntelligencePage'))
+const OpportunityRadarPage = lazy(() => import('./pages/OpportunityRadarPage'))
+const SalesDiagnosisPage = lazy(() => import('./pages/SalesDiagnosisPage'))
+const LossParetoPage = lazy(() => import('./pages/LossParetoPage'))
 const DataHealthPage = lazy(() => import('./pages/DataHealthPage'))
 const ActionPlansPage = lazy(() => import('./pages/ActionPlansPage'))
 const ProductLossHistoryPage = lazy(() => import('./pages/ProductLossHistoryPage'))
@@ -50,6 +53,9 @@ export default function App() {
           <Route path="/fechamento-mensal" element={<ProtectedRoute permission="fechamentoMensal"><MonthlyPage monthlyClose /></ProtectedRoute>} />
           <Route path="/eventos" element={<ProtectedRoute permission="eventos"><EventsPage /></ProtectedRoute>} />
           <Route path="/perdas" element={<ProtectedRoute permission="perdas"><LossesPage /></ProtectedRoute>} />
+          <Route path="/radar" element={<ProtectedRoute permission="radarOportunidades"><OpportunityRadarPage /></ProtectedRoute>} />
+          <Route path="/diagnostico-vendas" element={<ProtectedRoute permission="diagnosticoVendas"><SalesDiagnosisPage /></ProtectedRoute>} />
+          <Route path="/pareto-perdas" element={<ProtectedRoute permission="paretoPerdas"><LossParetoPage /></ProtectedRoute>} />
           <Route path="/comparativo" element={<ProtectedRoute permission="comparativoLojas"><StoreIntelligencePage /></ProtectedRoute>} />
           <Route path="/analise-ia" element={<ProtectedRoute permission="aiAccess"><AiAnalysisPage /></ProtectedRoute>} />
           <Route path="/cartazes" element={<ProtectedRoute permission="cartazes"><CartazesPage /></ProtectedRoute>} />
