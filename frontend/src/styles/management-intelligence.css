@@ -1,0 +1,74 @@
+/* Inteligência operacional: layout independente, sem afetar relatórios existentes. */
+.manager-page { display: grid; gap: 16px; }
+.manager-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  border-radius: 16px; background: #ffffff; padding: 20px 22px; border: 1px solid var(--line, #e5eaf2);
+}
+.manager-header h1 { font-size: clamp(1.35rem, 2.5vw, 1.85rem); margin: 8px 0; letter-spacing: -.025em; color: #172033; }
+.manager-header p { color: #5b6475; font-size: .93rem; margin: 0; }
+.manager-eyebrow { display: inline-flex; align-items: center; gap: 7px; color: #275f53; font-size: .73rem; letter-spacing: .085em; font-weight: 800; }
+.manager-refresh { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #235a48; border: 0; border-radius: 10px; color: white; font-weight: 650; padding: 11px 15px; white-space: nowrap; }
+.manager-refresh:disabled { opacity: .6; cursor: wait; }
+.manager-source-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.manager-source { flex: 1 1 220px; display: flex; gap: 11px; align-items: center; border: 1px solid #e5eaf2; background: #fff; border-radius: 12px; padding: 12px 16px; }
+.manager-source > svg { color: #28745c; flex-shrink: 0; }
+.manager-source span { display: grid; gap: 3px; }
+.manager-source strong { font-size: .82rem; }
+.manager-source small { font-size: .81rem; color: #5b6475; }
+.manager-notice { margin: 0; background: #f0f5fa; border: 1px solid #d9e5f1; color: #37516b; border-radius: 10px; padding: 11px 14px; font-size: .85rem; line-height: 1.55; }
+.manager-notice--warning { background: #fff7eb; border-color: #f5d9a9; color: #7a4f10; }
+.manager-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 12px; }
+.manager-kpis article { min-height: 116px; display: flex; flex-direction: column; justify-content: space-between; gap: 7px; border-radius: 14px; background: #fff; border: 1px solid #e5eaf2; padding: 17px; }
+.manager-kpis small { font-weight: 700; color: #516070; font-size: .8rem; }
+.manager-kpis strong { color: #18352f; font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-variant-numeric: tabular-nums; }
+.manager-kpis span { color: #697588; font-size: .75rem; }
+.manager-panel { background: #fff; border: 1px solid #e5eaf2; border-radius: 14px; overflow: hidden; }
+.manager-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 18px 20px 12px; }
+.manager-panel-heading h2 { display: inline-flex; align-items: center; gap: 9px; font-size: 1rem; line-height: 1.4; margin: 0; }
+.manager-panel-heading span { font-size: .75rem; color: #667085; }
+.manager-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 0 20px 15px; }
+.manager-search, .manager-select { display: flex; gap: 8px; align-items: center; background: #f8fafc; border: 1px solid #e1e8f0; border-radius: 9px; padding: 7px 11px; min-height: 41px; color: #667085; }
+.manager-search { flex: 1 1 210px; }
+.manager-search input, .manager-select select { width: 100%; border: 0; background: transparent; outline-offset: 5px; color: #253348; font-size: .85rem; }
+.manager-select { flex: 0 1 230px; }
+.manager-checkbox { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: #475467; cursor: pointer; min-height: 41px; }
+.manager-checkbox input { accent-color: #235a48; width: 16px; height: 16px; }
+.manager-table-scroll { overflow-x: auto; }
+.manager-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .84rem; font-variant-numeric: tabular-nums; }
+.manager-table th, .manager-table td { padding: 15px 18px; border-top: 1px solid #edf0f5; vertical-align: middle; white-space: nowrap; }
+.manager-table thead th { background: #f8fafc; color: #546176; font-weight: 700; font-size: .75rem; }
+.manager-table tbody th strong { display: block; color: #223146; font-size: .86rem; }
+.manager-table tbody th small { display: block; color: #788291; font-weight: 400; font-size: .71rem; margin-top: 4px; max-width: 230px; text-overflow: ellipsis; overflow: hidden; }
+.manager-table tbody tr:hover { background: #f9fbfd; }
+.manager-negative { color: #ba3745; font-weight: 700; }
+.manager-positive { color: #257d55; font-weight: 700; }
+.manager-empty { padding: 15px 20px; color: #667085; }
+.manager-explanation { margin: 0 20px 13px; font-size: .78rem; color: #667085; line-height: 1.55; }
+.manager-hotspots { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; padding: 4px 20px 20px; }
+.manager-hotspots article { display: grid; gap: 10px; padding: 14px; border-radius: 11px; border: 1px solid #f3e1ca; background: #fffcf6; }
+.manager-hotspots article span { color: #684c26; font-size: .8rem; font-weight: 650; }
+.manager-hotspots article strong { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; color: #93562b; font-size: 1.22rem; }
+.manager-hotspots article strong small { font-size: .74rem; color: #806b52; font-weight: 500; }
+.manager-hotspots article em { color: #6b5c46; font-style: normal; font-size: .79rem; }
+.loss-history-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-radius: 11px; border: 1px solid #e5eaf2; background: #fff; padding: 10px 14px; margin-bottom: 12px; }
+.loss-history-toolbar label { color: #44556a; font-size: .83rem; font-weight: 750; }
+.loss-history-toolbar select { border: 1px solid #d7dfe9; border-radius: 8px; color: #24374c; background: #fff; padding: 9px 11px; min-width: 190px; max-width: 100%; }
+.loss-history-toolbar small { color: #667085; font-size: .78rem; }
+.loss-history-toolbar button { border: 1px solid #e5ac79; border-radius: 8px; padding: 7px 9px; color: #8e4b23; background: #fff9ef; font-size: .8rem; }
+@media (max-width: 650px) {
+  .manager-header { flex-direction: column; padding: 16px; }
+  .manager-refresh { width: 100%; }
+  .manager-panel-heading { align-items: flex-start; }
+  .manager-controls { padding-inline: 14px; }
+  .manager-select { flex: 1 1 190px; }
+  .manager-table th, .manager-table td { padding: 12px; }
+  .manager-kpis { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .manager-kpis article { padding: 12px; }
+  .manager-kpis strong { font-size: 1.3rem; overflow-wrap: anywhere; }
+}
+@media print {
+  .manager-refresh, .manager-controls { display: none !important; }
+  .manager-table-scroll { overflow: visible; }
+  .manager-table th, .manager-table td { white-space: normal; padding: 7px 8px; }
+  .manager-page { display: block; }
+}

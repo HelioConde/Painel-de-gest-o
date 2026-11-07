@@ -6,6 +6,7 @@ import {
   Download,
   FileText,
   LogOut,
+  Layers3,
   Menu,
   Settings,
   ShoppingCart,
@@ -61,6 +62,14 @@ const NAV = [
     tone: "losses",
     icon: TrendingDown,
     permission: "perdas",
+  },
+  {
+    to: "/comparativo",
+    label: "Comparativo de Lojas",
+    initial: "L",
+    tone: "monthly",
+    icon: Layers3,
+    permission: "comparativoLojas",
   },
   {
     to: "/analise-ia",

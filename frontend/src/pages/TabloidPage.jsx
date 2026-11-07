@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { EmptyState, ErrorState, LoadingState } from "../components/States";
 import useAsyncData from "../hooks/useAsyncData";
 import { getActiveTabloid, tabloidCampaignName } from "../services/tabloid";
+import { filterTabloidFamilies } from "../utils/tabloidSearch";
 
 const money = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -324,16 +325,7 @@ export default function TabloidPage() {
   const [expanded, setExpanded] = useState(null);
   const [sort, setSort] = useState({ key: "total", direction: 1 });
   const groups = useMemo(() => aggregate(data?.products || []), [data]);
-  const filtered = useMemo(() => {
-    const term = query.trim().toLocaleLowerCase("pt-BR");
-    return term
-      ? groups.filter((group) =>
-          `${group.name} ${group.rows.map((row) => `${row.product_name} ${row.variant_name} ${row.product_code}`).join(" ")}`
-            .toLocaleLowerCase("pt-BR")
-            .includes(term),
-        )
-      : groups;
-  }, [groups, query]);
+  const filtered = useMemo(() => filterTabloidFamilies(groups, query), [groups, query]);
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} onRetry={refresh} />;
   if (!data?.campaign)
