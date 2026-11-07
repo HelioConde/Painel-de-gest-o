@@ -1,6 +1,13 @@
 import { getEventMetricFields, getScope } from './snapshot'
 
-const number = (value) => Number.isFinite(Number(value)) ? Number(value) : null
+const number = (value) => {
+  if (value === null || value === undefined || (typeof value === 'string' && !value.trim())) return null
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : null
+}
+
+const difference = (current, previous) =>
+  current !== null && previous !== null ? current - previous : null
 
 function value(scope, snapshot, field) {
   return number(scope?.[field] ?? snapshot?.[field])
@@ -9,8 +16,8 @@ function value(scope, snapshot, field) {
 function variation(current, previous, provided) {
   const direct = number(provided)
   if (direct !== null) return direct
-  if (!previous) return null
-  return ((number(current) || 0) - previous) / previous * 100
+  if (current === null || previous === null || previous === 0) return null
+  return (current - previous) / previous * 100
 }
 
 function buildSectorData(scope) {
@@ -18,12 +25,12 @@ function buildSectorData(scope) {
   const setores = (scope?.sectors || []).map((sector) => {
     const vendaAtual = number(sector.current_value)
     const vendaAnterior = number(sector.previous_value)
-    const diferenca = number(sector.difference_value) ?? ((vendaAtual || 0) - (vendaAnterior || 0))
+    const diferenca = number(sector.difference_value) ?? difference(vendaAtual, vendaAnterior)
     const sectorSubgroups = (sector.subgroups || sector.groups || []).map((subgroup) => ({
       nome: subgroup.name || subgroup.nome || 'Subgrupo sem identificação',
       vendaAtual: number(subgroup.current_value),
       vendaAnterior: number(subgroup.previous_value),
-      diferenca: number(subgroup.difference_value) ?? ((number(subgroup.current_value) || 0) - (number(subgroup.previous_value) || 0)),
+      diferenca: number(subgroup.difference_value) ?? difference(number(subgroup.current_value), number(subgroup.previous_value)),
       variacaoPercentual: variation(subgroup.current_value, subgroup.previous_value, subgroup.variation_percent),
     })).filter((subgroup) => subgroup.vendaAtual !== null || subgroup.vendaAnterior !== null)
 
@@ -61,7 +68,7 @@ function buildEvents(events, storeCode) {
       periodoAtual: { inicio: snapshot.current_start, fim: snapshot.current_end },
       vendaAtual,
       vendaAnterior,
-      diferenca: number(scope[fields.difference]) ?? ((vendaAtual || 0) - (vendaAnterior || 0)),
+      diferenca: number(scope[fields.difference]) ?? difference(vendaAtual, vendaAnterior),
       variacaoPercentual: variation(vendaAtual, vendaAnterior, scope[fields.variation]),
     }]
   })
@@ -76,7 +83,7 @@ export function buildSalesAnalysisContext({ monthly, daily, events }, storeCode)
 
   const vendaAtual = value(scope, snapshot, 'current_value')
   const vendaAnterior = value(scope, snapshot, 'previous_value')
-  const diferenca = value(scope, snapshot, 'difference_value') ?? ((vendaAtual || 0) - (vendaAnterior || 0))
+  const diferenca = value(scope, snapshot, 'difference_value') ?? difference(vendaAtual, vendaAnterior)
 
   const sectorData = buildSectorData(scope)
   const contagemSetores = sectorData.setores.reduce((counts, sector) => {
