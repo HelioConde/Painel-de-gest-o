@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { buildStoreIntelligence } from '../src/utils/storeIntelligence.js'
+import { filterTabloidFamilies } from '../src/utils/tabloidSearch.js'
 import { canAccessRoute, hasPermission } from '../src/auth/permissions.js'
 
 const store = (store_code, current_value, previous_value) => ({
@@ -87,4 +88,18 @@ test('cada perfil lê apenas módulos permitidos no comparativo', () => {
   assert.equal(canAccessRoute('admin', '/comparativo'), true)
   assert.equal(hasPermission('gerencia', 'perdas'), false)
   assert.equal(hasPermission('prevencao', 'vendaMensal'), false)
+})
+
+test('pesquisa de produtos localiza códigos, acentos e palavras em ordem livre', () => {
+  const groups = [
+    {
+      name: 'Pão francês',
+      rows: [{ product_code: '00123', product_name: 'PÃO FRANCÊS 50G', variant_name: '50g' }],
+    },
+    { name: 'Açúcar cristal', rows: [{ product_code: '0098', product_name: 'AÇÚCAR CRISTAL' }] },
+  ]
+  assert.equal(filterTabloidFamilies(groups, 'pao 00123')[0].name, 'Pão francês')
+  assert.equal(filterTabloidFamilies(groups, 'cristal acucar')[0].name, 'Açúcar cristal')
+  assert.equal(filterTabloidFamilies(groups, 'sem produto').length, 0)
+  assert.equal(filterTabloidFamilies(groups, '').length, 2)
 })
