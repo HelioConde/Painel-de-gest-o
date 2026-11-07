@@ -8,6 +8,7 @@ const EventsPage = lazy(() => import('./pages/EventsPage'))
 const LossesPage = lazy(() => import('./pages/LossesPage'))
 const StoreIntelligencePage = lazy(() => import('./pages/StoreIntelligencePage'))
 const DataHealthPage = lazy(() => import('./pages/DataHealthPage'))
+const ActionPlansPage = lazy(() => import('./pages/ActionPlansPage'))
 const CartazesPage = lazy(() => import('./pages/CartazesPage'))
 const CartazesLayoutAdminPage = lazy(() => import('./pages/CartazesLayoutAdminPage'))
 const AiAnalysisPage = lazy(() => import('./pages/AiAnalysisPage'))
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/cartazes" element={<ProtectedRoute permission="cartazes"><CartazesPage /></ProtectedRoute>} />
           <Route path="/cartazes/admin-layout" element={<ProtectedRoute permission="cartazesAdmin"><CartazesLayoutAdminPage /></ProtectedRoute>} />
           <Route path="/configuracoes" element={<ProtectedRoute permission="configuracoes"><SettingsPage /></ProtectedRoute>} />
+          <Route path="/planos-acao" element={<ProtectedRoute permission="planosAcao"><ActionPlansPage /></ProtectedRoute>} />
           <Route path="/saude-dados" element={<ProtectedRoute permission="saudeDados"><DataHealthPage /></ProtectedRoute>} />
           <Route path="/tabloide" element={<ProtectedRoute permission="tabloide"><TabloidPage /></ProtectedRoute>} />
           <Route path="*" element={<RoleHome />} />
