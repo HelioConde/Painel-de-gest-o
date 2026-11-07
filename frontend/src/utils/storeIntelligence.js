@@ -31,6 +31,32 @@ function sumWhenComplete(stores, field) {
  * Vendas e perdas mantêm seus períodos independentes: jamais cruzar totais
  * de competências diferentes nem tratar ausência de coleta como valor zero.
  */
+export function rankLossProducts(rows = []) {
+  const products = new Map()
+  for (const row of rows) {
+    const code = codeOf(row.store_code)
+    for (const sector of row.details?.current?.sectors || []) {
+      for (const mip of sector.mips || []) {
+        for (const product of mip.products || []) {
+          const key = String(product.product_code || '').trim()
+          const value = numeric(product.total_value)
+          if (!key || value === null || value <= 0) continue
+          const current = products.get(key) || {
+            code: key, name: product.product_name || key, sector: sector.name || 'Sem setor',
+            lossValue: 0, stores: new Set(),
+          }
+          current.lossValue += value
+          current.stores.add(code)
+          products.set(key, current)
+        }
+      }
+    }
+  }
+  return [...products.values()]
+    .map(({ stores, ...item }) => ({ ...item, storeCount: stores.size }))
+    .sort((a, b) => b.lossValue - a.lossValue)
+}
+
 export function buildStoreIntelligence({ salesSnapshot = null, lossRun = null } = {}) {
   const salesStores = new Map((salesSnapshot?.details?.stores || []).map(
     (row) => [codeOf(row.store_code), row],
@@ -111,6 +137,7 @@ export function buildStoreIntelligence({ salesSnapshot = null, lossRun = null } 
       loss: totalLoss,
       lossRate: ratio(totalLoss, totalLossSales),
     },
+    topLossProducts: rankLossProducts(lossRun?.rows || []),
     hotspots: hotspots.sort((a, b) =>
       (b.theoreticalExcess ?? -1) - (a.theoreticalExcess ?? -1) ||
       (b.current - b.target) - (a.current - a.target)
