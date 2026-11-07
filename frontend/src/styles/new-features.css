@@ -5,7 +5,54 @@
   font-size: 10px; line-height: 1.2; font-weight: 800;
   letter-spacing: .045em; vertical-align: middle; white-space: nowrap;
 }
-.nav-label .feature-new-badge { margin-left: 8px; }
+
+/* A etiqueta NOVO é um elemento separado para não quebrar o título em duas linhas. */
+.app-shell .sidebar .nav-list > .nav-item .nav-label {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-shell .sidebar .nav-list > .nav-item .nav-icon {
+  flex: 0 0 auto;
+}
+.app-shell .sidebar .nav-list > .nav-item .nav-feature-new-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 3px 5px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+/* Reservar espaço suficiente para o título completo e a etiqueta no desktop. */
+@media screen and (min-width: 821px) {
+  .app-shell:not(.sidebar-is-collapsed) .sidebar { width: 290px; }
+  .app-shell:not(.sidebar-is-collapsed) .main-area { margin-left: 290px; }
+  .app-shell .sidebar.sidebar-collapsed .nav-list > .nav-item .nav-feature-new-badge {
+    display: none !important;
+  }
+}
+
+/* Drawer mobile: texto e selo permanecem na mesma linha e dentro da tela. */
+@media screen and (max-width: 820px) {
+  .app-shell .sidebar:not(.sidebar-collapsed),
+  .app-shell .sidebar.sidebar-collapsed {
+    width: min(290px, 92vw);
+    min-width: 0;
+  }
+  .app-shell .main-area,
+  .app-shell.sidebar-is-collapsed .main-area { margin-left: 0; }
+  .app-shell .sidebar.sidebar-collapsed .nav-list > .nav-item .nav-label {
+    display: block !important;
+  }
+  .app-shell .sidebar.sidebar-collapsed .nav-list > .nav-item .nav-feature-new-badge {
+    display: inline-flex !important;
+  }
+}
+
 .manager-page .manager-panel-heading h2 { flex-wrap: wrap; }
 .manager-page .manager-kpis small svg { vertical-align: middle; margin-right: 4px; }
 @media print { .feature-new-badge { display: none; } }

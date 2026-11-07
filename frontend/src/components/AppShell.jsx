@@ -319,7 +319,7 @@ export default function AppShell({ children }) {
                 className={({ isActive }) =>
                   `nav-item nav-${tone} ${isActive ? "active" : ""}`
                 }
-                title={collapsed ? label : undefined}
+                title={label}
                 aria-label={label}
               >
                 <span
@@ -329,7 +329,8 @@ export default function AppShell({ children }) {
                   {initial}
                 </span>
                 <Icon className="nav-icon" size={18} />
-                <span className="nav-label">{label}{isNew ? <b className="feature-new-badge">NOVO</b> : null}</span>
+                <span className="nav-label">{label}</span>
+                {isNew ? <span className="feature-new-badge nav-feature-new-badge" aria-hidden="true">NOVO</span> : null}
               </NavLink>
             ),
           )}
