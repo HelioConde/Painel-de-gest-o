@@ -12,6 +12,7 @@ const STORE_NAMES = {
 }
 
 async function getProductHistory({ term, storeCode }) {
+  if (!term.trim()) return []
   let query = supabase.from('loss_product_monthly_history')
     .select('month_start,current_start,current_end,store_code,sector,product_code,product_name,loss_value,loss_quantity')
     .order('month_start', { ascending: false })
@@ -107,7 +108,7 @@ export default function ProductLossHistoryPage() {
                 </table>
                 {!showAll && products.length > 25 ? <button type="button" className="manager-small-button" onClick={() => setShowAll(true)}>Mostrar mais produtos</button> : null}
               </div>
-            ) : <div className="manager-empty"><EmptyState message="Nenhum produto encontrado para os filtros." /></div>}
+            ) : <div className="manager-empty"><EmptyState message="Digite um nome ou código e clique em Buscar para consultar o histórico do produto." /></div>}
           </section>
           {selected ? (
             <section className="manager-panel">
