@@ -2227,3 +2227,152 @@
     margin-top: 0 !important;
   }
 }
+
+/* PRINT V4.4 — Top Perdas: fonte legível em A4 horizontal.
+ * Substitui o mosaico de 2 colunas da V4.0, que reduzia os dados a 5pt.
+ * Prioriza leitura no papel: um setor por faixa, sem descartar colunas.
+ */
+@media print {
+  .losses-page.losses-view-top {
+    page: losses-top !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-masonry {
+    display: block !important;
+    width: 100% !important;
+    columns: auto !important;
+    column-count: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-column {
+    display: contents !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-card {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 4mm !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    border-radius: 1.6mm !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-card > header {
+    padding: 2mm 2.5mm !important;
+    row-gap: 1mm !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-card .loss-top-sector-button span,
+  .losses-page.losses-view-top .loss-top-card .loss-ranking-title,
+  .losses-page.losses-view-top .loss-top-card .loss-ranking-title span {
+    font-size: 9.2pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-card .loss-ranking-card-stats span,
+  .losses-page.losses-view-top .loss-top-card .loss-ranking-card-stats strong {
+    font-size: 8pt !important;
+    min-height: 5mm !important;
+    padding: .8mm 1.6mm !important;
+    line-height: 1.1 !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-card .loss-ranking-print-center {
+    font-size: 8.1pt !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    text-align: center !important;
+    text-overflow: clip !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-table-wrap {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .losses-page.losses-view-top .loss-top-table th,
+  .losses-page.losses-view-top .loss-top-table td {
+    display: table-cell !important;
+    height: auto !important;
+    min-height: 6.3mm !important;
+    padding: 1.6mm 1.5mm !important;
+    font-size: 9pt !important;
+    line-height: 1.23 !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-table thead th {
+    font-size: 8.3pt !important;
+    line-height: 1.16 !important;
+    padding: 1.6mm 1.2mm !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    height: auto !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-table .loss-top-product-name,
+  .losses-page.losses-view-top .loss-top-table th:nth-child(3) {
+    font-size: 9.4pt !important;
+    line-height: 1.24 !important;
+    text-align: left !important;
+    font-weight: 800 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+
+  .losses-page.losses-view-top .loss-top-product-scroll {
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    line-height: 1.24 !important;
+  }
+
+  .losses-page.losses-view-top .loss-comparison {
+    font-size: 8.6pt !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+
+  /* O nome do produto recebe quase um terço da largura em A4 paisagem. */
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-pos { width: 4.5% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-code { width: 8% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-name { width: 29.5% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-loss { width: 11% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-sold { width: 10% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-percent { width: 9% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-value { width: 12% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-share { width: 8% !important; }
+  .losses-page.losses-view-top .loss-top-table.has-ranking-metrics col.loss-col-comparison { width: 8% !important; }
+
+  .losses-page.losses-view-top .print-report-title {
+    font-size: 12pt !important;
+  }
+  .losses-page.losses-view-top .print-report-store {
+    font-size: 9pt !important;
+  }
+  .losses-page.losses-view-top .print-report-period,
+  .losses-page.losses-view-top .print-report-comparison {
+    font-size: 8.2pt !important;
+  }
+}
