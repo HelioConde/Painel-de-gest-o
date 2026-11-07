@@ -75,27 +75,67 @@ function aggregate(rows) {
   }
 }
 
-export async function getLatestLossRun() {
+// A mesma competência pode reunir coletas executadas em momentos diferentes.
+// Não filtramos por run_id: cada loja possui sua própria linha e pode ter sido
+// reprocessada isoladamente. A integridade é exposta, nunca disfarçada.
+const PERIOD_FIELDS = 'current_start,current_end,previous_start,previous_end,updated_at'
+
+export function lossPeriodKey(period) {
+  return [period?.current_start, period?.current_end, period?.previous_start, period?.previous_end].join('|')
+}
+
+function parsePeriodKey(key) {
+  const parts = String(key || '').split('|')
+  if (parts.length !== 4 || !parts.every((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))) {
+    throw new Error('Período de perdas inválido.')
+  }
+  const [current_start, current_end, previous_start, previous_end] = parts
+  return { current_start, current_end, previous_start, previous_end }
+}
+
+export async function getAvailableLossPeriods() {
   ensureConfigured()
-
-  const { data: latest, error: latestError } = await supabase
+  // Metadados apenas: não transporta o JSONB pesado ao abrir o seletor.
+  const { data, error } = await supabase
     .from(TABLE)
-    .select('run_id,current_start,current_end,previous_start,previous_end,updated_at')
+    .select(PERIOD_FIELDS)
+    .order('current_end', { ascending: false })
     .order('updated_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+    .limit(600)
+  if (error) throw error
+  const unique = new Map()
+  for (const row of data || []) {
+    const key = lossPeriodKey(row)
+    if (!unique.has(key)) unique.set(key, { ...row, key })
+  }
+  return [...unique.values()]
+}
 
-  if (latestError) throw latestError
-  if (!latest) return null
+export async function getLatestLossRun(periodKey = null) {
+  ensureConfigured()
+  let period
+  if (periodKey) {
+    period = parsePeriodKey(periodKey)
+  } else {
+    const { data: latest, error: latestError } = await supabase
+      .from(TABLE)
+      .select(PERIOD_FIELDS)
+      .order('current_end', { ascending: false })
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (latestError) throw latestError
+    if (!latest) return null
+    period = latest
+  }
 
   const { data, error } = await supabase
     .from(TABLE)
     .select(COLUMNS)
-    .eq('run_id', latest.run_id)
-    .eq('current_start', latest.current_start)
-    .eq('current_end', latest.current_end)
-    .eq('previous_start', latest.previous_start)
-    .eq('previous_end', latest.previous_end)
+    .eq('current_start', period.current_start)
+    .eq('current_end', period.current_end)
+    .eq('previous_start', period.previous_start)
+    .eq('previous_end', period.previous_end)
     .limit(20)
 
   if (error) throw error
@@ -106,14 +146,23 @@ export async function getLatestLossRun() {
     const bi = STORE_ORDER.indexOf(String(b.store_code).padStart(3, '0'))
     return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
   })
+  const presentStores = new Set(rows.map((row) => String(row.store_code).padStart(3, '0')))
+  const missingStores = STORE_ORDER.filter((code) => !presentStores.has(code))
+  const runIds = [...new Set(rows.map((row) => row.run_id).filter(Boolean))]
+  const updatedAt = rows.map((row) => row.updated_at).filter(Boolean).sort().at(-1) || null
 
   return {
-    run_id: latest.run_id,
-    current_start: latest.current_start,
-    current_end: latest.current_end,
-    previous_start: latest.previous_start,
-    previous_end: latest.previous_end,
-    updated_at: latest.updated_at,
+    run_id: runIds.length === 1 ? runIds[0] : null,
+    run_ids: runIds,
+    current_start: period.current_start,
+    current_end: period.current_end,
+    previous_start: period.previous_start,
+    previous_end: period.previous_end,
+    period_key: lossPeriodKey(period),
+    requested_period: periodKey || 'latest',
+    missing_stores: missingStores,
+    complete: missingStores.length === 0 && rows.length === STORE_ORDER.length,
+    updated_at: updatedAt,
     rows,
     totals: aggregate(rows),
   }
