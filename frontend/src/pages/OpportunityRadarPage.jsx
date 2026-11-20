@@ -1,7 +1,6 @@
 
-import { AlertTriangle, ClipboardPlus, Radar, RefreshCw, TrendingDown } from 'lucide-react'
+import { AlertTriangle, Radar, RefreshCw, TrendingDown } from 'lucide-react'
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { LoadingState, EmptyState } from '../components/States'
 import DataStatusBanner from '../components/DataStatusBanner'
@@ -9,7 +8,7 @@ import useAsyncData from '../hooks/useAsyncData'
 import { getLatestMonthlySnapshot } from '../services/sales'
 import { getLatestLossRun } from '../services/losses'
 import { money, percent, periodLabel } from '../utils/formatters'
-import { actionPlanLink, buildOpportunityRadar } from '../utils/operationalInsights'
+import { buildOpportunityRadar } from '../utils/operationalInsights'
 import '../styles/management-intelligence.css'
 import '../styles/operational-insights.css'
 
@@ -36,9 +35,6 @@ function OpportunitySection({ heading, description, items, department, empty }) 
               <p>{department === 'VENDAS'
                 ? 'Variação: ' + percent(item.variation) + '. Consulte os setores com maior queda no diagnóstico comercial.'
                 : 'Perda: ' + percent(item.currentRate) + ' · Meta: ' + percent(item.targetRate) + '.'}</p>
-              <Link className="manager-small-button opportunity-action" to={actionPlanLink(item)}>
-                <ClipboardPlus size={15} /> Criar plano de ação
-              </Link>
             </article>
           ))}
         </div>
@@ -71,7 +67,7 @@ export default function OpportunityRadarPage() {
         <div>
           <span className="manager-eyebrow"><Radar size={17} /> INTELIGÊNCIA OPERACIONAL <b className="feature-new-badge">NOVO</b></span>
           <h1>Radar de oportunidades</h1>
-          <p>Identifique onde investigar e abra um plano de ação com o contexto preenchido automaticamente.</p>
+          <p>Identifique lojas e setores que precisam de investigação preventiva.</p>
         </div>
         <button type="button" className="manager-refresh" disabled={refreshing} onClick={refresh}>
           <RefreshCw size={16} /> {refreshing ? 'Atualizando…' : 'Atualizar'}
