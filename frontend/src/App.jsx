@@ -11,7 +11,6 @@ const OpportunityRadarPage = lazy(() => import('./pages/OpportunityRadarPage'))
 const SalesDiagnosisPage = lazy(() => import('./pages/SalesDiagnosisPage'))
 const LossParetoPage = lazy(() => import('./pages/LossParetoPage'))
 const DataHealthPage = lazy(() => import('./pages/DataHealthPage'))
-const ActionPlansPage = lazy(() => import('./pages/ActionPlansPage'))
 const ProductLossHistoryPage = lazy(() => import('./pages/ProductLossHistoryPage'))
 const CartazesPage = lazy(() => import('./pages/CartazesPage'))
 const CartazesLayoutAdminPage = lazy(() => import('./pages/CartazesLayoutAdminPage'))
@@ -62,7 +61,6 @@ export default function App() {
           <Route path="/cartazes/admin-layout" element={<ProtectedRoute permission="cartazesAdmin"><CartazesLayoutAdminPage /></ProtectedRoute>} />
           <Route path="/configuracoes" element={<ProtectedRoute permission="configuracoes"><SettingsPage /></ProtectedRoute>} />
           <Route path="/historico-produtos" element={<ProtectedRoute permission="historicoProdutos"><ProductLossHistoryPage /></ProtectedRoute>} />
-          <Route path="/planos-acao" element={<ProtectedRoute permission="planosAcao"><ActionPlansPage /></ProtectedRoute>} />
           <Route path="/saude-dados" element={<ProtectedRoute permission="saudeDados"><DataHealthPage /></ProtectedRoute>} />
           <Route path="/tabloide" element={<ProtectedRoute permission="tabloide"><TabloidPage /></ProtectedRoute>} />
           <Route path="*" element={<RoleHome />} />
