@@ -15,7 +15,6 @@ import {
   TrendingDown,
   TrendingUp,
   Activity,
-  ClipboardCheck,
   History,
   Radar,
   ChartPie,
@@ -116,15 +115,6 @@ const NAV = [
     tone: "settings",
     icon: Activity,
     permission: "saudeDados",
-    isNew: true,
-  },
-  {
-    to: "/planos-acao",
-    label: "Planos de Ação",
-    initial: "A",
-    tone: "settings",
-    icon: ClipboardCheck,
-    permission: "planosAcao",
     isNew: true,
   },
   {
