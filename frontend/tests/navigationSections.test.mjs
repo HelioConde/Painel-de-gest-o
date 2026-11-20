@@ -14,7 +14,6 @@ const items = [
   { to: '/diagnostico-vendas', label: 'Diagnóstico de Vendas', isNew: true },
   { to: '/pareto-perdas', label: 'Curva ABC / Pareto', isNew: true },
   { to: '/saude-dados', label: 'Saúde dos Dados', isNew: true },
-  { to: '/planos-acao', label: 'Planos de Ação', isNew: true },
   { to: '/historico-produtos', label: 'Histórico de Produtos', isNew: true },
   { to: '/analise-ia', label: 'Análise com IA' },
   { to: '/cartazes', label: 'Cartazes' },

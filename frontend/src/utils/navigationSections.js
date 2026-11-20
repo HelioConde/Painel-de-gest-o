@@ -4,7 +4,7 @@ const ANALYSIS_ROUTES = new Set([
   '/pareto-perdas', '/historico-produtos', '/analise-ia',
 ])
 const MANAGEMENT_ROUTES = new Set([
-  '/planos-acao', '/saude-dados', '/configuracoes',
+  '/saude-dados', '/configuracoes',
 ])
 
 export function groupVisibleNavigation(items = []) {
