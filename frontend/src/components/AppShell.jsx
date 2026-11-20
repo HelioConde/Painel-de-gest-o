@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Activity,
   History,
+  ClipboardCheck,
   Radar,
   ChartPie,
   UserRound,
