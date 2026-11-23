@@ -252,7 +252,7 @@ function createContentLines(product, template, contentBox, measure) {
 
   // Se houver altura sobrando, distribui por prioridade apenas entre descrição e subdescrição.
   // Complemento mantém o tamanho configurado (mas pode diminuir se precisar).
-  // A gramatura permanece sempre no tamanho configurado.
+  // Se estiver separada do complemento, a gramatura mantém o tamanho configurado.
   fittedLines = growStackByPriority(fittedLines, contentBox.height, gapMm, measure)
 
   const totalHeight = stackHeight(fittedLines, gapMm)
