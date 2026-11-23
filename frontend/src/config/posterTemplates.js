@@ -49,7 +49,8 @@ const APP_LAYOUT = {
   // Tuned for readability in preview, print and mobile inspection.
   // Product copy gets more breathing room; validity is intentionally quieter;
   // the outside-app comparison is larger so the price difference is obvious.
-  appTitleBox: appBox(7, 39, 86, 29),
+  // O título começa dentro da faixa amarela, sem tocar a imagem superior.
+  appTitleBox: appBox(7, 42, 86, 25.3),
   appPriceBox: appBox(8, 67.5, 84, 9.5),
   appValidityBox: appBox(19, 76.5, 58, 3.8),
   appRegularLabelBox: appBox(10, 81, 45, 11),
