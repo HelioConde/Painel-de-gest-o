@@ -50,7 +50,7 @@ const APP_LAYOUT = {
   // Product copy gets more breathing room; validity is intentionally quieter;
   // the outside-app comparison is larger so the price difference is obvious.
   // O título começa dentro da faixa amarela, sem tocar a imagem superior.
-  appTitleBox: appBox(7, 42, 86, 25.3),
+  appTitleBox: appBox(7, 46, 86, 21),
   appPriceBox: appBox(8, 67.5, 84, 9.5),
   appValidityBox: appBox(19, 76.5, 58, 3.8),
   appRegularLabelBox: appBox(10, 81, 45, 11),
