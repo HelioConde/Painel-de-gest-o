@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { createAppTitleLayout } from './appTitleLayout.js'
+import { createAppTitleLayout, fitAppRegularPrice, migrateAppTitleBox } from './appTitleLayout.js'
 import { resolveActivePosterTemplate } from './resolveActivePosterTemplate.js'
 import { estimateTextMeasure } from './textMeasure.js'
 
@@ -72,4 +72,41 @@ test('troca App → A4 → App sempre usa as caixas corretas, sem estado interme
   assert.equal(resolveActivePosterTemplate(appFormat, {
     format: 'A4X2_APP', textStyles: { appTitle: {} },
   }, fallback), appTemplate, 'modelo App incompleto também deve ser recuperado')
+})
+
+test('desloca para dentro da faixa amarela apenas a posição original App', () => {
+  const defaults = { x: 7, y: 42, width: 86, height: 25.3 }
+  assert.deepEqual(migrateAppTitleBox({ x: 7, y: 39, width: 86, height: 29 }, defaults), defaults)
+  const custom = { x: 9, y: 44, width: 83, height: 20 }
+  assert.equal(migrateAppTitleBox(custom, defaults), custom)
+})
+
+test('preço fora App cabe inteiro, inclusive R$, em valores de 2 a 4 dígitos', () => {
+  const template = {
+    ...appTemplate,
+    appRegularPriceBox: { x: 54, y: 81, width: 35, height: 11 },
+    textStyles: {
+      ...appTemplate.textStyles,
+      appRegularPrice: {
+        fontMin: 5.2, fontMax: 13.5, fontWeight: 900,
+        fontFamily: '"Futura Price"', lineHeight: 0.84, scale: 1.18,
+      },
+    },
+  }
+  for (const regularPrice of ['16,99', '116,99', '1.169,99']) {
+    const fontSizeMm = fitAppRegularPrice({
+      product: { ...product, regularPrice },
+      template, format: appFormat, measure: estimateTextMeasure,
+    })
+    assert.ok(fontSizeMm > 2.5 && fontSizeMm <= 10.8, regularPrice)
+    const text = `R$ ${regularPrice}`
+    const widthMm = appFormat.widthMm / appFormat.columns *
+      template.appRegularPriceBox.width / 100 * 0.79
+    assert.ok(estimateTextMeasure(text, { fontSizeMm }).widthMm <= widthMm + 0.01,
+      `preço ${text} ultrapassou área segura`)
+  }
+  assert.equal(fitAppRegularPrice({
+    product: { ...product, regularPrice: '' },
+    template, format: appFormat, measure: estimateTextMeasure,
+  }), null)
 })
