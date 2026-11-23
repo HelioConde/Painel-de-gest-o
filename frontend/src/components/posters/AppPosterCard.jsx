@@ -8,7 +8,7 @@ const APP_BOXES = [
   ['appRegularPriceBox', 'appRegularPrice', 'regularPrice'],
 ]
 
-function styleFor(box, textStyle) {
+function styleFor(box, textStyle, fontSizeMm) {
   const alignX = { left: 'flex-start', center: 'center', right: 'flex-end' }[box.alignX] || 'center'
   const alignY = { top: 'flex-start', center: 'center', bottom: 'flex-end' }[box.alignY] || 'center'
   return {
@@ -16,6 +16,7 @@ function styleFor(box, textStyle) {
     '--app-font-min': `${textStyle.fontMin}mm`, '--app-font-max': `${textStyle.fontMax}mm`,
     '--app-scale': textStyle.scale || 1, '--app-align-x': alignX, '--app-align-y': alignY,
     '--app-font-family': textStyle.fontFamily || '"Burbank Big Cd Bk"',
+    ...(Number.isFinite(fontSizeMm) ? { '--app-computed-price-size': `${fontSizeMm}mm` } : {}),
   }
 }
 
@@ -33,7 +34,7 @@ export default function AppPosterCard({ product, template, format, layoutPlan, e
       {APP_BOXES.map(([boxName, styleName, valueName]) => {
         const box = template[boxName]
         const textStyle = template.textStyles[styleName]
-        return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
+        return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle, valueName === 'regularPrice' ? titlePlan.regularPriceFontSizeMm : null)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
           {valueName === 'title' ? (
             <div className="poster-app-title-stack">
               {titlePlan.lines.map((line) => (
