@@ -28,6 +28,6 @@ jobs:
       - name: Testar comparativo e integridade de dados
         run: npm run test:insights
       - name: Testar planejamento de cartazes
-        run: node --test src/poster-engine/posterEngine.test.js
+        run: node --test src/poster-engine/posterEngine.test.js src/poster-engine/appTitleLayout.test.js
       - name: Verificar build Vite
         run: npm run build

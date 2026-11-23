@@ -18,6 +18,8 @@ import { countProductLines, parseProducts } from '../utils/posterParser'
 import { deletePosterJob, listPosterJobs, savePosterJob } from '../utils/posterHistoryStorage'
 import { loadPosterTemplate } from '../utils/posterTemplateStorage'
 import { createPosterLayouts } from '../poster-engine/layoutPlan'
+import { createAppTitleLayouts } from '../poster-engine/appTitleLayout.js'
+import { resolveActivePosterTemplate } from '../poster-engine/resolveActivePosterTemplate.js'
 import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 import { useAuth } from '../auth/AuthProvider'
 
@@ -135,10 +137,19 @@ export default function CartazesPage() {
 
   const hasFormat = Boolean(formatId)
   const formatConfig = getPosterFormat(formatId)
+  // A troca de formato deve usar as caixas e estilos certos no mesmo render.
+  // Não depende do useEffect que recarrega o modelo salvo após a atualização.
+  const activeTemplate = useMemo(
+    () => resolveActivePosterTemplate(formatConfig, templateConfig,
+      (id) => loadPosterTemplate(getDefaultTemplateForFormat(id).id)),
+    [formatConfig, templateConfig],
+  )
   const posterTextMeasure = useMemo(() => createBrowserTextMeasure(), [fontAvailable])
   const layoutPlans = useMemo(
-    () => createPosterLayouts(productData, templateConfig, formatConfig, posterTextMeasure),
-    [formatConfig, posterTextMeasure, productData, templateConfig],
+    () => formatConfig.specialLayout === 'app-offer'
+      ? createAppTitleLayouts(productData, activeTemplate, formatConfig, posterTextMeasure)
+      : createPosterLayouts(productData, activeTemplate, formatConfig, posterTextMeasure),
+    [activeTemplate, formatConfig, posterTextMeasure, productData],
   )
   const inputCount = countProductLines(sourceText)
   const pages = useMemo(
@@ -315,8 +326,10 @@ export default function CartazesPage() {
     setSourceText(job.sourceText || '')
     setProductData(job.products || [])
     const historyFormat = getPosterFormat(job.formatId)
+    const historyTemplateId = getDefaultTemplateForFormat(historyFormat.id).id
     setFormatId(historyFormat.id)
-    setTemplateId(getDefaultTemplateForFormat(historyFormat.id).id)
+    setTemplateId(historyTemplateId)
+    setTemplateConfig(loadPosterTemplate(historyTemplateId))
     setCurrentJobId(cloned.id)
     setCurrentPage(0)
     setSelectedProductId(job.products?.[0]?.id || null)
@@ -333,9 +346,13 @@ export default function CartazesPage() {
   const closePrintDialog = useCallback(() => setPrintDialogOpen(false), [])
   const closeFormatPicker = () => setFormatPickerOpen(false)
   const selectFormat = (nextFormat) => {
+    const nextTemplateId = getDefaultTemplateForFormat(nextFormat).id
     setFormatId(nextFormat)
-    setTemplateId(getDefaultTemplateForFormat(nextFormat).id)
+    setTemplateId(nextTemplateId)
+    setTemplateConfig(loadPosterTemplate(nextTemplateId))
     setCurrentPage(0)
+    setPreviewDialogOpen(false)
+    setPrintDialogOpen(false)
     if (nextFormat === 'A4X2_APP') {
       const appTemplate = getDefaultTemplateForFormat('A4X2_APP')
       setProductData((products) => products.map((product) => ({
@@ -521,7 +538,7 @@ export default function CartazesPage() {
               <PosterPreview
                 format={formatConfig}
                 products={pageProducts}
-                template={templateConfig}
+                template={activeTemplate}
                 layoutPlans={layoutPlans}
                 showBackground
                 startIndex={currentPage * formatConfig.postersPerSheet}
@@ -596,7 +613,7 @@ export default function CartazesPage() {
             className="poster-print-sheet"
             format={formatConfig}
             products={products}
-            template={templateConfig}
+            template={activeTemplate}
             layoutPlans={layoutPlans}
             showBackground
           />
@@ -624,7 +641,7 @@ export default function CartazesPage() {
         <div className="poster-modal-backdrop poster-preview-dialog-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setPreviewDialogOpen(false)}>
           <section className="poster-modal poster-preview-dialog" role="dialog" aria-modal="true" aria-label="Visualização ampliada da folha">
             <header><div><span className="poster-modal-kicker">Visualização · {formatConfig.label}</span><h2>{productDisplayName(pageProducts[0])}</h2></div><button type="button" className="poster-icon-button" onClick={() => setPreviewDialogOpen(false)} aria-label="Fechar visualização"><X size={18} /></button></header>
-            <div className="poster-preview-dialog-canvas"><PosterPreview fitViewport format={formatConfig} products={pageProducts} template={templateConfig} layoutPlans={layoutPlans} showBackground startIndex={currentPage * formatConfig.postersPerSheet} selectedProductId={selectedProductId} onSelectProduct={selectProduct} /></div>
+            <div className="poster-preview-dialog-canvas"><PosterPreview fitViewport format={formatConfig} products={pageProducts} template={activeTemplate} layoutPlans={layoutPlans} showBackground startIndex={currentPage * formatConfig.postersPerSheet} selectedProductId={selectedProductId} onSelectProduct={selectProduct} /></div>
             <div className="poster-preview-nav"><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} aria-label="Folha anterior"><ChevronLeft size={18} /></button><span><strong>{currentPage + 1}</strong> / {pageCount}</span><button type="button" className="poster-icon-button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage >= pageCount - 1} aria-label="Próxima folha"><ChevronRight size={18} /></button></div>
             <footer><button type="button" className="poster-button poster-button-secondary" onClick={editPreviewProduct}><Pencil size={16} /> Editar</button><button type="button" className="poster-button poster-button-secondary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir esta folha</button><button type="button" className="poster-button poster-button-primary" onClick={printCurrentSheet}><Printer size={16} /> Imprimir / Salvar PDF</button></footer>
           </section>

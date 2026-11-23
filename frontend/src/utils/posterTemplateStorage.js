@@ -46,7 +46,16 @@ export function mergePosterTemplate(defaultTemplate, saved = {}) {
     merged.contentBox.y = 18
     merged.contentBox.height = Math.max(10, previousBottom - 18)
   }
-  if (defaultTemplate.specialLayout === 'app-offer') ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => { merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false) })
+  if (defaultTemplate.specialLayout === 'app-offer') {
+    ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => {
+      merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false)
+    })
+    // A versão anterior limitava a fonte App a 13,5 mm. Migra somente esse
+    // limite antigo, preservando caixas e personalizações dos demais cartazes.
+    if (Number(saved.textStyles?.appTitle?.fontMax) === 13.5) {
+      merged.textStyles.appTitle.fontMax = defaultTemplate.textStyles.appTitle.fontMax
+    }
+  }
   return merged
 }
 export function loadPosterTemplate(templateId) {

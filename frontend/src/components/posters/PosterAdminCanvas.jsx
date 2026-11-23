@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import PosterSheet from './PosterSheet'
 import { createPosterLayouts } from '../../poster-engine/layoutPlan.js'
+import { createAppTitleLayouts } from '../../poster-engine/appTitleLayout.js'
 import { createBrowserTextMeasure } from '../../utils/posterBrowserMeasure.js'
 
 const PX_PER_MM = 96 / 25.4
@@ -33,7 +34,9 @@ export default function PosterAdminCanvas({
     [format.postersPerSheet, product],
   )
   const layoutPlans = useMemo(
-    () => createPosterLayouts(previewProducts, template, format, measure),
+    () => format.specialLayout === 'app-offer'
+      ? createAppTitleLayouts(previewProducts, template, format, measure)
+      : createPosterLayouts(previewProducts, template, format, measure),
     [format, measure, previewProducts, template],
   )
 
