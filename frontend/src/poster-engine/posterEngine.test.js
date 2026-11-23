@@ -112,18 +112,56 @@ test('mantém o complemento menor que a subdescrição', () => {
   assert.ok(complement.fontSizeMm <= subdescription.fontSizeMm * 0.6)
 })
 
-test('usa o máximo válido para o stack superior e mantém a gramatura logo abaixo', () => {
+test('usa o máximo físico disponível com gramatura unida ao complemento curto', () => {
   const template = createTestTemplate()
   template.contentBox = { ...template.contentBox, width: 82, height: 52 }
   const product = parseProductLine('Cerveja Heineken Long Neck 300ml 5,99')
   const plan = createPosterLayout({ product, template, format: POSTER_FORMATS.A4, measure: estimateTextMeasure })
   const copy = plan.content.lines.filter((line) => line.field !== 'unit')
   assert.ok(copy.every((line) => line.fontSizeMm >= template.textStyles[line.field].fontMin))
-  assert.ok(copy.every((line) => line.fontSizeMm <= template.textStyles[line.field].fontMax * 1.42 + 0.01))
-  assert.ok(plan.content.lines.at(-1).field === 'unit')
-  assert.ok(plan.content.lines.at(-1).y > copy.at(-1).y + copy.at(-1).height)
+  assert.ok(copy.every((line) => line.fontSizeMm <= template.textStyles[line.field].fontMax * 1.62 + 0.01))
+  assert.equal(plan.content.lines.at(-1).field, 'complement')
+  assert.equal(plan.content.lines.at(-1).text, 'LONG NECK - 300ML')
+  assert.ok(plan.content.lines.every((line) => line.field !== 'unit'))
   assert.ok(plan.price.width <= 100)
   assert.ok(plan.price.height <= 100)
+})
+
+test('junta complemento curto e gramatura na mesma linha, inclusive em formatos compactos', () => {
+  const template = createTestTemplate()
+  const product = parseProductLine('Panettone Festtone Chocolate 400g 15,99')
+  assert.deepEqual([product.description, product.subdescription, product.complement, product.unit],
+    ['PANETTONE', 'FESTTONE', 'CHOCOLATE', '400G'])
+
+  for (const format of [POSTER_FORMATS.A4, POSTER_FORMATS.A5, POSTER_FORMATS.A4X4]) {
+    const plan = createPosterLayout({ product, template, format, measure: estimateTextMeasure })
+    assert.equal(plan.content.lines.find((line) => line.field === 'complement')?.text, 'CHOCOLATE - 400G', format.id)
+    assert.ok(!plan.content.lines.some((line) => line.field === 'unit'), format.id)
+    assert.ok(plan.content.lines.every((line) => line.x >= -0.01 && line.x + line.width <= 100.01), format.id)
+  }
+
+  // A informação original continua separada para edição e importação.
+  assert.equal(product.complement, 'CHOCOLATE')
+  assert.equal(product.unit, '400G')
+})
+
+test('mantém gramatura separada quando complemento é extenso ou falta largura física', () => {
+  const template = createTestTemplate()
+  const base = {
+    description: 'PANETTONE', subdescription: 'FESTTONE',
+    complement: 'RECHEIO DE CHOCOLATE EXTRA CREMOSO', unit: '400G', price: '15,99',
+  }
+  const longPlan = createPosterLayout({ product: base, template, format: POSTER_FORMATS.A4, measure: estimateTextMeasure })
+  assert.equal(longPlan.content.lines.at(-2).text, base.complement)
+  assert.equal(longPlan.content.lines.at(-1).text, '400G')
+
+  const narrowTemplate = { ...template, contentBox: { ...template.contentBox, width: 25 } }
+  const narrowPlan = createPosterLayout({
+    product: { ...base, complement: 'CHOCOLATE' },
+    template: narrowTemplate, format: POSTER_FORMATS.A4, measure: estimateTextMeasure,
+  })
+  assert.equal(narrowPlan.content.lines.at(-2).text, 'CHOCOLATE')
+  assert.equal(narrowPlan.content.lines.at(-1).text, '400G')
 })
 
 test('não para no teto visual antigo quando a caixa ainda possui espaço físico', () => {
