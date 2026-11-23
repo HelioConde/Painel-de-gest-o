@@ -20,7 +20,7 @@ export default function PosterSheet({ format, products, template, layoutPlans, s
       {slots.map((product, index) => (
         <div className={`poster-slot ${product ? '' : 'poster-slot-empty'}`} key={product?.id || `empty-${index}`}>
           {product ? format.specialLayout === 'app-offer' ? (
-            <AppPosterCard product={product} template={template} editable={editable} showLayoutDebug={showLayoutDebug} onBoxPointerDown={onBoxPointerDown} badgeLabel={showBadges ? startIndex + index + 1 : null} selected={product.id === selectedProductId} onSelect={onSelectProduct ? () => onSelectProduct(product.id) : undefined} />
+            <AppPosterCard product={product} template={template} format={format} layoutPlan={layoutPlans?.[product.id]} editable={editable} showLayoutDebug={showLayoutDebug} onBoxPointerDown={onBoxPointerDown} badgeLabel={showBadges ? startIndex + index + 1 : null} selected={product.id === selectedProductId} onSelect={onSelectProduct ? () => onSelectProduct(product.id) : undefined} />
           ) : (
             <PosterCard
               product={product}
