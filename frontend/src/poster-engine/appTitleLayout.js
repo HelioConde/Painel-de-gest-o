@@ -88,5 +88,7 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
   const fitted = fitSingleLine({
     text, style, maxWidthMm: widthMm, maxHeightMm: heightMm, measure,
   })
-  return fitted.fontSizeMm
+  // fitSingleLine arredonda a 0,001 mm; a folga evita estourar a medida
+  // por arredondamento e dá segurança extra para as variações de fonte.
+  return Math.max(2.5, Number((fitted.fontSizeMm - 0.03).toFixed(3)))
 }
