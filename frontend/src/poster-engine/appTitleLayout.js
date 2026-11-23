@@ -47,6 +47,7 @@ export function createAppTitleLayout({ product, template, format, measure = esti
       field, text, fontSizeMm: Number((fontSizeMm * factor).toFixed(3)),
     })),
     combinedUnit: inline,
+    regularPriceFontSizeMm: fitAppRegularPrice({ product, template, format, measure }),
   }
 }
 
@@ -54,4 +55,38 @@ export function createAppTitleLayouts(products, template, format, measure) {
   return Object.fromEntries(products.map((product) => [
     product.id, createAppTitleLayout({ product, template, format, measure }),
   ]))
+}
+
+// Migra só a posição exata do modelo anterior. Caixas personalizadas continuam
+// intactas, inclusive quando o usuário as ajustou pelo editor visual.
+export function migrateAppTitleBox(savedBox, defaultBox) {
+  if (Math.abs(Number(savedBox?.y) - 39) < 0.01 &&
+      Math.abs(Number(savedBox?.height) - 29) < 0.01) {
+    return { ...savedBox, y: defaultBox.y, height: defaultBox.height }
+  }
+  return savedBox
+}
+
+// O preço fora do App tem menos largura que o preço principal. Dimensionamos
+// pelo texto completo, inclusive R$, e reservamos uma margem para a fonte
+// estilizada e as diferentes larguras de glyphs no navegador.
+export function fitAppRegularPrice({ product, template, format, measure = estimateTextMeasure }) {
+  const raw = String(product.regularPrice || '').trim()
+  if (!raw) return null
+  const box = template.appRegularPriceBox
+  const config = template.textStyles.appRegularPrice
+  const style = {
+    ...config,
+    fontFamily: config.fontFamily || '"Futura Price"',
+    fontMin: 2.5,
+    fontMax: Math.min(10.8, Number(config.fontMax || 10.8)),
+    scale: 1,
+  }
+  const text = `R$ ${raw.replace(/^R\\$\\s*/i, '')}`
+  const widthMm = (format.widthMm / format.columns) * box.width / 100 * 0.79
+  const heightMm = (format.heightMm / format.rows) * box.height / 100 * 0.8
+  const fitted = fitSingleLine({
+    text, style, maxWidthMm: widthMm, maxHeightMm: heightMm, measure,
+  })
+  return fitted.fontSizeMm
 }
