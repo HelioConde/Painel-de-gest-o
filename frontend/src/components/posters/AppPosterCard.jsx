@@ -1,3 +1,5 @@
+import { createAppTitleLayout } from '../../poster-engine/appTitleLayout.js'
+
 const APP_BOXES = [
   ['appTitleBox', 'appTitle', 'title'],
   ['appPriceBox', 'appPrice', 'appPrice'],
@@ -17,9 +19,9 @@ function styleFor(box, textStyle) {
   }
 }
 
-export default function AppPosterCard({ product, template, editable, showLayoutDebug, onBoxPointerDown, badgeLabel, selected, onSelect }) {
+export default function AppPosterCard({ product, template, format, layoutPlan, editable, showLayoutDebug, onBoxPointerDown, badgeLabel, selected, onSelect }) {
+  const titlePlan = layoutPlan || createAppTitleLayout({ product, template, format })
   const values = {
-    title: [product.description, product.subdescription, product.complement, product.unit].filter(Boolean).join('\n'),
     appPrice: product.price ? `${template.showCurrency && !template.currencyFromBackground ? 'R$ ' : ''}${product.price}` : '',
     validity: product.validity ? (product.validity.toLocaleUpperCase('pt-BR').startsWith('OFERTA') ? product.validity : `OFERTA VÁLIDA ATÉ ${product.validity}`) : template.appValidityText,
     regularLabel: product.regularLabel || template.appRegularLabel,
@@ -32,7 +34,18 @@ export default function AppPosterCard({ product, template, editable, showLayoutD
         const box = template[boxName]
         const textStyle = template.textStyles[styleName]
         return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
-          <span>{['appPrice', 'regularPrice'].includes(valueName) ? <PriceValue value={values[valueName]} mode={template.priceDisplayMode || 'raised'} /> : (values[valueName] || '\u00a0')}</span>
+          {valueName === 'title' ? (
+            <div className="poster-app-title-stack">
+              {titlePlan.lines.map((line) => (
+                <span key={line.field} className={`poster-app-title-line poster-app-title-${line.field}`}
+                  style={{ fontSize: `${line.fontSizeMm}mm` }}>{line.text}</span>
+              ))}
+            </div>
+          ) : (
+            <span>{['appPrice', 'regularPrice'].includes(valueName)
+              ? <PriceValue value={values[valueName]} mode={template.priceDisplayMode || 'raised'} />
+              : (values[valueName] || '\u00a0')}</span>
+          )}
           {showLayoutDebug ? <small>{boxName}</small> : null}
           {editable ? <button type="button" className="poster-resize-handle" aria-label={`Redimensionar ${boxName}`} onPointerDown={(event) => onBoxPointerDown?.(boxName, 'resize', event)} /> : null}
         </div>
