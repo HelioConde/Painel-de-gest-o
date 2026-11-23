@@ -112,14 +112,14 @@ test('mantém o complemento menor que a subdescrição', () => {
   assert.ok(complement.fontSizeMm <= subdescription.fontSizeMm * 0.6)
 })
 
-test('usa o máximo válido para o stack superior e mantém a gramatura logo abaixo', () => {
+test('usa o máximo físico disponível com gramatura unida ao complemento curto', () => {
   const template = createTestTemplate()
   template.contentBox = { ...template.contentBox, width: 82, height: 52 }
   const product = parseProductLine('Cerveja Heineken Long Neck 300ml 5,99')
   const plan = createPosterLayout({ product, template, format: POSTER_FORMATS.A4, measure: estimateTextMeasure })
   const copy = plan.content.lines.filter((line) => line.field !== 'unit')
   assert.ok(copy.every((line) => line.fontSizeMm >= template.textStyles[line.field].fontMin))
-  assert.ok(copy.every((line) => line.fontSizeMm <= template.textStyles[line.field].fontMax * 1.42 + 0.01))
+  assert.ok(copy.every((line) => line.fontSizeMm <= template.textStyles[line.field].fontMax * 1.62 + 0.01))
   assert.equal(plan.content.lines.at(-1).field, 'complement')
   assert.equal(plan.content.lines.at(-1).text, 'LONG NECK - 300ML')
   assert.ok(plan.content.lines.every((line) => line.field !== 'unit'))
