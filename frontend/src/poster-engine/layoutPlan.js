@@ -219,11 +219,23 @@ function createContentLines(product, template, contentBox, measure) {
     width: copyWidth,
   }
 
+  // Complementos curtos podem dividir a linha com a gramatura. A decisão
+  // usa a largura física na fonte configurada, sem espremer o texto para caber.
+  // Assim, preview e impressão recebem exatamente o mesmo planejamento.
+  const complement = String(product.complement || '').trim()
+  const unit = String(product.unit || '').trim()
+  const inlineText = `${complement} - ${unit}`
+  const complementStyle = styleForContentField('complement', complement, product, template.textStyles.complement)
+  const inlineUnit = Boolean(
+    complement && unit && complement.length <= 14
+    && measure(inlineText, { ...complementStyle, fontSizeMm: effectiveMax(complementStyle) }).widthMm <= copyWidth + EPSILON,
+  )
+
   const sourceLines = CONTENT_FIELDS
-    .filter((field) => product[field])
+    .filter((field) => product[field] && !(field === 'unit' && inlineUnit))
     .map((field) => ({
       field,
-      text: product[field],
+      text: field === 'complement' && inlineUnit ? inlineText : product[field],
       style: styleForContentField(field, product[field], product, template.textStyles[field]),
       maxWidthMm: field === 'unit' ? contentBox.width : copyWidth,
     }))
