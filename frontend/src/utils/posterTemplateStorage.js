@@ -1,4 +1,5 @@
 import { getPosterTemplate } from '../config/posterTemplates'
+import { migrateAppTitleBox } from '../poster-engine/appTitleLayout.js'
 
 const KEY_PREFIX = 'poster-background-template:'
 const BOX_KEYS = ['x', 'y', 'width', 'height']
@@ -50,6 +51,7 @@ export function mergePosterTemplate(defaultTemplate, saved = {}) {
     ['appTitleBox', 'appPriceBox', 'appValidityBox', 'appRegularLabelBox', 'appRegularPriceBox'].forEach((key) => {
       merged[key] = sanitizeBox(saved[key], defaultTemplate[key], false)
     })
+    merged.appTitleBox = migrateAppTitleBox(merged.appTitleBox, defaultTemplate.appTitleBox)
     // A versão anterior limitava a fonte App a 13,5 mm. Migra somente esse
     // limite antigo, preservando caixas e personalizações dos demais cartazes.
     if (Number(saved.textStyles?.appTitle?.fontMax) === 13.5) {
