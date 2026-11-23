@@ -3,11 +3,26 @@ import { estimateTextMeasure } from './textMeasure.js'
 
 const TEXT_FIELDS = ['description', 'subdescription', 'complement', 'unit']
 const LINE_GAP_MM = 0.7
+const CONNECTORS = new Set(['DE', 'DA', 'DO', 'DAS', 'DOS', 'E', 'EM', 'COM', 'PARA', 'POR'])
+
+// Somente a apresentação no modelo App muda; os dados originais do produto
+// continuam intactos para edição, histórico e demais formatos de cartaz.
+export function normalizeAppTitleFields(product) {
+  const description = String(product.description || '').trim()
+  const subdescription = String(product.subdescription || '').trim()
+  const words = description.split(/\s+/).filter(Boolean)
+  if (!subdescription && words.length === 2 &&
+      !CONNECTORS.has(words[1].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleUpperCase('pt-BR'))) {
+    return { ...product, description: words[0], subdescription: words[1] }
+  }
+  return product
+}
 
 // O título é planejado em milímetros, para manter a mesma tipografia na
 // prévia, na edição do modelo e na impressão (sem depender de cqi/viewport).
 export function createAppTitleLayout({ product, template, format, measure = estimateTextMeasure }) {
   const box = template.appTitleBox
+  const displayProduct = normalizeAppTitleFields(product)
   const style = template.textStyles.appTitle
   const widthMm = (format.widthMm / format.columns) * (box.width / 100) * 0.96
   const heightMm = (format.heightMm / format.rows) * (box.height / 100) * 0.97
@@ -21,9 +36,9 @@ export function createAppTitleLayout({ product, template, format, measure = esti
     measure(together, { ...style, fontFamily, fontSizeMm: inlineSizeMm }).widthMm <= widthMm,
   )
 
-  const fields = TEXT_FIELDS.filter((field) => product[field] && !(inline && field === 'unit'))
+  const fields = TEXT_FIELDS.filter((field) => displayProduct[field] && !(inline && field === 'unit'))
   const draft = fields.map((field) => {
-    const text = field === 'complement' && inline ? together : String(product[field])
+    const text = field === 'complement' && inline ? together : String(displayProduct[field])
     const cap = field === 'complement' ? 17 : field === 'unit' ? 14 : 26
     const fontMax = Math.min(cap, Math.max(2, Number(style.fontMax || cap)))
     const measuredStyle = { ...style, fontFamily, scale: 1, fontMin: 2, fontMax }
@@ -60,8 +75,11 @@ export function createAppTitleLayouts(products, template, format, measure) {
 // Migra só a posição exata do modelo anterior. Caixas personalizadas continuam
 // intactas, inclusive quando o usuário as ajustou pelo editor visual.
 export function migrateAppTitleBox(savedBox, defaultBox) {
-  if (Math.abs(Number(savedBox?.y) - 39) < 0.01 &&
-      Math.abs(Number(savedBox?.height) - 29) < 0.01) {
+  const y = Number(savedBox?.y)
+  const height = Number(savedBox?.height)
+  const previousDefaults = [[39, 29], [42, 25.3]]
+  if (previousDefaults.some(([oldY, oldHeight]) =>
+    Math.abs(y - oldY) < 0.01 && Math.abs(height - oldHeight) < 0.01)) {
     return { ...savedBox, y: defaultBox.y, height: defaultBox.height }
   }
   return savedBox
