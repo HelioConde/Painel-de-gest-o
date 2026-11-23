@@ -82,7 +82,7 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
     fontMax: Math.min(10.8, Number(config.fontMax || 10.8)),
     scale: 1,
   }
-  const text = `R$ ${raw.replace(/^R\\$\\s*/i, '')}`
+  const text = `R$ ${raw.replace(/^R\$\s*/i, '')}`
   const widthMm = (format.widthMm / format.columns) * box.width / 100 * 0.79
   const heightMm = (format.heightMm / format.rows) * box.height / 100 * 0.8
   const fitted = fitSingleLine({
