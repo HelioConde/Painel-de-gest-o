@@ -67,7 +67,7 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
     template.appRegularLabel = 'Preço fora do aplicativo'
     template.textStyles = {
       ...template.textStyles,
-      appTitle: { ...baseTextStyles.description, fontMin: 3.4, fontMax: 13.5, scale: 1.08 },
+      appTitle: { ...baseTextStyles.description, fontMin: 3.4, fontMax: 26, scale: 1 },
       appPrice: { ...baseTextStyles.price, fontMin: 6.5, fontMax: 21, scale: 1.04 },
       appValidity: { ...baseTextStyles.unit, fontMin: 1.8, fontMax: 3.8, scale: 0.82 },
       appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 6.2, scale: 1.14 },
