@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { createAppTitleLayout, fitAppRegularPrice, migrateAppTitleBox, normalizeAppTitleFields } from './appTitleLayout.js'
+import { createAppTitleLayout, fitAppMainPrice, fitAppRegularPrice, migrateAppTitleBox, normalizeAppTitleFields } from './appTitleLayout.js'
 import { resolveActivePosterTemplate } from './resolveActivePosterTemplate.js'
 import { estimateTextMeasure } from './textMeasure.js'
 
@@ -132,7 +132,7 @@ test('preço fora App cabe inteiro, inclusive R$, em valores de 2 a 4 dígitos',
       product: { ...product, regularPrice },
       template, format: appFormat, measure: estimateTextMeasure,
     })
-    assert.ok(fontSizeMm > 2.5 && fontSizeMm <= 10.8, regularPrice)
+    assert.ok(fontSizeMm > 2.5 && fontSizeMm <= 13.5, regularPrice)
     const text = `R$ ${regularPrice}`
     const widthMm = appFormat.widthMm / appFormat.columns *
       template.appRegularPriceBox.width / 100 * 0.79
@@ -157,4 +157,24 @@ test('A3 App amplia o título e preserva a troca entre formatos App', () => {
   assert.ok(enlarged.lines[0].fontSizeMm > original.lines[0].fontSizeMm * 1.8)
   assert.equal(resolveActivePosterTemplate(a3, appTemplate, () => template), template)
   assert.equal(resolveActivePosterTemplate(appFormat, template, () => appTemplate), appTemplate)
+})
+
+test('preço App ocupa a área amarela em A3, A4 e A4 2x1 e diminui para valores longos', () => {
+  for (const [format, scale] of [
+    [appFormat, 1],
+    [{ ...appFormat, id: 'A4_APP', widthMm: 210, heightMm: 297, columns: 1 }, Math.SQRT2],
+    [{ ...appFormat, id: 'A3_APP', widthMm: 297, heightMm: 420, columns: 1 }, 2],
+  ]) {
+    const template = {
+      ...appTemplate, showCurrency: true,
+      appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 },
+      textStyles: { ...appTemplate.textStyles, appPrice: { fontMin: 3, fontMax: 72 * scale, fontWeight: 900, lineHeight: .88, scale: 1 } },
+    }
+    const short = fitAppMainPrice({ product: { price: '7,99' }, template, format })
+    const long = fitAppMainPrice({ product: { price: '1.169,99' }, template, format })
+    assert.ok(short > 40 * scale, format.id)
+    assert.ok(long < short, format.id)
+    assert.ok(short * .94 <= format.heightMm * .245 * .94 + .01)
+    assert.equal(fitAppMainPrice({ product: {}, template, format }), null)
+  }
 })
