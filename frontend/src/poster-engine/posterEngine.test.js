@@ -214,7 +214,9 @@ test('mantém somente a lista oficial de formatos de placa', () => {
   assert.equal(POSTER_FORMATS.A4X2_APP.orientation, 'landscape')
   const blackFriday = POSTER_FORMATS.A3_BLACK_FRIDAY
   assert.deepEqual([blackFriday.widthMm, blackFriday.heightMm, blackFriday.postersPerSheet, blackFriday.orientation], [297, 420, 1, 'portrait'])
-  assert.equal(blackFriday.requiresBackground, true)
+  for (const format of Object.values(POSTER_FORMATS)) {
+    assert.ok(!format.requiresBackground, `${format.id}: impressão do fundo deve ser opcional`)
+  }
   const appA4 = POSTER_FORMATS.A4_APP
   assert.deepEqual([appA4.widthMm, appA4.heightMm, appA4.postersPerSheet], [210, 297, 1])
   assert.equal(appA4.specialLayout, 'app-offer')
