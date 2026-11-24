@@ -276,7 +276,7 @@ export default function CartazesLayoutAdminPage() {
 
           <section className="poster-panel poster-admin-section">
             <div className="poster-admin-section-heading"><span>{template.specialLayout === 'app-offer' ? 'Modelo App' : 'Fundo oficial'}</span><Image size={16} /></div>
-            <div className="poster-admin-background-file"><strong>{template.backgroundFile}</strong><span>{template.specialLayout === 'app-offer' ? 'Layout branco exclusivo com duas ofertas lado a lado' : template.backgroundScope === 'sheet' ? 'Fundo da folha completa' : 'Fundo individual por placa'}</span></div>
+            <div className="poster-admin-background-file"><strong>{template.backgroundFile}</strong><span>{template.specialLayout === 'app-offer' ? (format.postersPerSheet === 1 ? 'Uma oferta A3 vertical · metade esquerda de app.png' : 'Duas ofertas lado a lado') : template.backgroundScope === 'sheet' ? 'Fundo da folha completa' : 'Fundo individual por placa'}</span></div>
             <p className="poster-admin-help">{template.specialLayout === 'app-offer' ? 'Ajuste as cinco áreas do cartaz de aplicativo independentemente.' : 'O arquivo é definido pela pasta Fundo. Ajuste apenas as caixas e a tipografia deste formato.'}</p>
             <NumberField label="Área segura" value={template.safeArea} onChange={(value) => setTemplate((current) => ({ ...current, safeArea: value }))} max={20} step={0.5} />
           </section>
