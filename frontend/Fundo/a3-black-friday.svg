@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="420mm" viewBox="0 0 1000 1414">
+  <!-- Vetorização do cartaz físico de referência: somente arte fixa, sem produto ou preço. -->
+  <defs>
+    <linearGradient id="dark" x2="1" y2="1"><stop stop-color="#1c1b1c"/><stop offset=".52" stop-color="#302627"/><stop offset="1" stop-color="#19181a"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#c92226"/><stop offset="1" stop-color="#282021" stop-opacity="0"/></radialGradient>
+    <linearGradient id="red" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#f54a3b"/><stop offset="1" stop-color="#8d1319"/></linearGradient>
+    <linearGradient id="gold" x2=".1" y2="1"><stop stop-color="#ffe274"/><stop offset="1" stop-color="#f4bc32"/></linearGradient>
+    <linearGradient id="badge" x2="0" y2="1"><stop stop-color="#595456"/><stop offset=".17" stop-color="#202022"/><stop offset="1" stop-color="#202022"/></linearGradient>
+  </defs>
+  <rect width="1000" height="1414" fill="#fff"/>
+  <svg x="40" y="88" width="920" height="242" viewBox="0 0 840 230" preserveAspectRatio="none">
+    <rect width="840" height="230" fill="url(#dark)"/>
+    <ellipse cx="300" cy="120" rx="260" ry="180" fill="url(#glow)"/>
+    <path d="M0 0H256Q132 28 0 105Z" fill="url(#red)"/>
+    <path d="M0 0H150L0 71Z" fill="#282023" opacity=".55"/>
+    <path d="M840 145V230H650Q749 196 840 145Z" fill="url(#red)"/>
+    <path d="M840 180V230H738Z" fill="#8f191d" opacity=".7"/>
+    <path d="M263 30L641 21Q676 22 669 49L628 214Q622 230 589 230H205Q183 229 191 198L233 65Q241 35 263 30Z" fill="url(#red)"/>
+    <path d="M263 23L635 17Q658 16 649 43L621 123H216L237 52Q244 26 263 23Z" fill="url(#badge)" stroke="#696366" stroke-width="2"/>
+    <path d="M226 116Q203 115 195 139L181 182Q169 219 201 220H611Q629 220 638 201L667 132Q676 111 651 111Z" fill="url(#gold)" stroke="#ffe492" stroke-width="2"/>
+    <path fill="#fff" fill-rule="evenodd" d="M288,40 275,107 322,108 336,103 343,94 344,84 334,73 346,63 347,53 345,49 333,41Z M300,92 303,80 317,80 322,84 322,89 317,93Z M305,66 308,55 318,55 325,59 325,64 321,67 307,68Z M361,41 348,108 399,107 402,91 373,90 382,41Z M465,38 442,38 403,107 425,106 431,95 448,94 455,95 457,105 478,104Z M450,58 453,77 441,80 439,77Z M535,37 513,35 496,43 487,53 481,64 480,82 482,90 490,99 504,105 515,105 529,100 541,89 529,80 526,80 519,87 509,88 501,79 503,63 511,54 523,52 531,60 547,51 544,44Z M620,31 598,32 576,56 578,33 558,34 545,102 566,101 569,84 574,79 588,100 610,99 590,65Z"/>
+    <path fill="#171619" fill-rule="evenodd" d="M304,131 244,130 229,203 253,203 257,179 261,176 293,177 296,160 263,159 262,152 265,147 300,148Z M314,131 300,204 323,205 329,181 344,205 371,205 355,179 366,173 375,163 377,149 374,142 368,136 353,131Z M333,149 350,149 353,152 352,160 346,164 332,164Z M413,131 391,131 377,205 400,205Z M427,130 413,205 454,205 475,196 487,183 492,169 492,153 487,142 470,131Z M462,149 470,160 466,176 457,184 440,185 446,149Z M550,129 525,130 485,204 508,204 512,195 520,192 539,192 542,203 566,202Z M534,152 538,173 524,175 523,172Z M641,126 616,127 599,151 589,128 565,129 584,171 580,201 602,200 607,172Z"/>
+  </svg>
+  <path fill="#ffe45b" d="M125 962 Q151 947 187 949 L876 944 Q905 946 913 958 L902 973 931 984 914 998 921 1014 901 1024 927 1037 912 1052 932 1065 916 1085 929 1104 908 1120 929 1135 912 1152 922 1171 900 1185 920 1203 898 1218 914 1231 892 1249 909 1265 881 1284 184 1290 Q130 1293 110 1277 L122 1255 107 1244 119 1225 98 1211 117 1190 100 1175 119 1157 100 1143 115 1126 98 1110 117 1094 100 1078 123 1060 104 1046 124 1027 105 1013 130 996 110 983 134 970Z"/>
+  <path d="M143 932H857" stroke="#222" stroke-width="2"/>
+</svg>
