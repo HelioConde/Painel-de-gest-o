@@ -65,6 +65,32 @@ const metrics = await desktop.locator('.poster-visual-qa-card').evaluateAll((car
   }
 }))
 
+// Verifica a regra de impressão real, inclusive fundos aplicados à folha inteira.
+const printBackgroundChecks = []
+await desktop.emulateMedia({ media: 'print' })
+try {
+  for (const includeBackground of [false, true]) {
+    await desktop.evaluate((enabled) => {
+      document.body.classList.add('poster-printing')
+      document.body.classList.toggle('poster-print-with-background', enabled)
+    }, includeBackground)
+    const checks = await desktop.locator('.poster-visual-qa-card').evaluateAll((cards) => cards.map((card) => {
+      const sheet = card.querySelector('.poster-sheet')
+      const backgrounds = [...card.querySelectorAll('.poster-sheet-background, .poster-background-layer')]
+      return { format: sheet?.dataset.posterFormat, count: backgrounds.length, visible: backgrounds.filter((layer) => getComputedStyle(layer).display !== 'none').length }
+    }))
+    printBackgroundChecks.push({ includeBackground, checks })
+  }
+} finally {
+  await desktop.evaluate(() => document.body.classList.remove('poster-printing', 'poster-print-with-background'))
+  await desktop.emulateMedia({ media: 'screen' })
+}
+const requiredSamples = ['A3_APP', 'A4_APP', 'A4X2_APP', 'A3_BLACK_FRIDAY', 'A4', 'A3', 'SRA3']
+const printBackgroundRegression = printBackgroundChecks.some(({ includeBackground, checks }) =>
+  requiredSamples.some((id) => !checks.some((check) => check.format === id && check.count > 0)) ||
+  checks.some(({ count, visible }) => visible !== (includeBackground ? count : 0))
+)
+
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 })
 const mobileErrors = await openQaPage(mobile)
 await mobile.screenshot({ path: path.join(outDir, 'latest-mobile-full.png'), fullPage: true })
@@ -78,6 +104,7 @@ await fs.writeFile(
     mobileErrors,
     samples,
     metrics,
+    printBackgroundChecks,
   }, null, 2),
 )
 
@@ -104,8 +131,8 @@ const largePaperRegression = !a3Sample || !sra3Sample ||
   largePaperMetrics.sra3PriceFontPx <= largePaperMetrics.a3PriceFontPx * 1.10
 
 const overflow = metrics.filter((item) => item.overflow)
-if (desktopErrors.length || mobileErrors.length || largePaperRegression) {
-  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow, largePaperRegression, largePaperMetrics }, null, 2))
+if (desktopErrors.length || mobileErrors.length || largePaperRegression || printBackgroundRegression) {
+  console.error(JSON.stringify({ desktopErrors, mobileErrors, overflow, largePaperRegression, largePaperMetrics, printBackgroundRegression, printBackgroundChecks }, null, 2))
   process.exit(1)
 }
 
