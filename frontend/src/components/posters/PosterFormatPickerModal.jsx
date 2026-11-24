@@ -33,7 +33,9 @@ export default function PosterFormatPickerModal({ open, currentFormatId, formats
             return (
               <button type="button" key={format.id} className={`poster-format-picker-card ${selected ? 'selected' : ''}`} onClick={() => onSelect(format.id)} aria-label={`Selecionar ${format.label}: ${format.description}`}>
                 <span className={`poster-format-picker-thumbnail scope-${template.backgroundScope}`}>
-                  <img src={template.backgroundImage} alt={`Fundo ${format.label}`} />
+                  {template.backgroundCrop === 'left-half' ? (
+                    <span className="poster-format-picker-cropped"><img src={template.backgroundImage} alt={`Fundo ${format.label}`} /></span>
+                  ) : <img src={template.backgroundImage} alt={`Fundo ${format.label}`} />}
                 </span>
                 <span className="poster-format-picker-copy"><strong>{format.label}</strong><small>{format.description}</small><em>{format.pickerBadge}</em></span>
                 {selected ? <span className="poster-format-picker-selected"><Check size={14} /> Atual</span> : null}

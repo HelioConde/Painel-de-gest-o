@@ -30,7 +30,8 @@ export function createAppTitleLayout({ product, template, format, measure = esti
   const complement = String(product.complement || '').trim()
   const unit = String(product.unit || '').trim()
   const together = `${complement} - ${unit}`
-  const inlineSizeMm = Math.min(15.5, Number(style.fontMax || 26))
+  const sizeScale = format.id === 'A3_APP' ? 2 : 1
+  const inlineSizeMm = Math.min(15.5 * sizeScale, Number(style.fontMax || 26 * sizeScale))
   const inline = Boolean(
     complement && unit && complement.length <= 14 &&
     measure(together, { ...style, fontFamily, fontSizeMm: inlineSizeMm }).widthMm <= widthMm,
@@ -39,7 +40,7 @@ export function createAppTitleLayout({ product, template, format, measure = esti
   const fields = TEXT_FIELDS.filter((field) => displayProduct[field] && !(inline && field === 'unit'))
   const draft = fields.map((field) => {
     const text = field === 'complement' && inline ? together : String(displayProduct[field])
-    const cap = field === 'complement' ? 17 : field === 'unit' ? 14 : 26
+    const cap = (field === 'complement' ? 17 : field === 'unit' ? 14 : 26) * sizeScale
     const fontMax = Math.min(cap, Math.max(2, Number(style.fontMax || cap)))
     const measuredStyle = { ...style, fontFamily, scale: 1, fontMin: 2, fontMax }
     const fitted = fitSingleLine({
@@ -97,7 +98,7 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
     ...config,
     fontFamily: config.fontFamily || '"Futura Price"',
     fontMin: 2.5,
-    fontMax: Math.min(10.8, Number(config.fontMax || 10.8)),
+    fontMax: Math.min(10.8 * (format.id === 'A3_APP' ? 2 : 1), Number(config.fontMax || 10.8)),
     scale: 1,
   }
   const text = `R$ ${raw.replace(/^R\$\s*/i, '')}`

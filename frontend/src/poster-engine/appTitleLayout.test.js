@@ -144,3 +144,17 @@ test('preço fora App cabe inteiro, inclusive R$, em valores de 2 a 4 dígitos',
     template, format: appFormat, measure: estimateTextMeasure,
   }), null)
 })
+
+test('A3 App amplia o título e preserva a troca entre formatos App', () => {
+  const a3 = { ...appFormat, id: 'A3_APP', widthMm: 297, heightMm: 420, columns: 1 }
+  const template = {
+    ...appTemplate, format: 'A3_APP',
+    textStyles: { appTitle: { ...appTemplate.textStyles.appTitle, fontMin: 6.8, fontMax: 52 } },
+  }
+  const original = createAppTitleLayout({ product, template: appTemplate, format: appFormat })
+  const enlarged = createAppTitleLayout({ product, template, format: a3 })
+  assert.deepEqual(enlarged.lines.map(line => line.text), original.lines.map(line => line.text))
+  assert.ok(enlarged.lines[0].fontSizeMm > original.lines[0].fontSizeMm * 1.8)
+  assert.equal(resolveActivePosterTemplate(a3, appTemplate, () => template), template)
+  assert.equal(resolveActivePosterTemplate(appFormat, template, () => appTemplate), appTemplate)
+})

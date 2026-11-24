@@ -213,8 +213,8 @@ export default function CartazesPage() {
 
   const applyProductSource = (nextSource) => {
     if (!hasFormat) { setFormatPickerOpen(true); return }
-    const appTemplate = getDefaultTemplateForFormat('A4X2_APP')
-    const products = parseProducts(nextSource).map((product) => formatId === 'A4X2_APP' ? ({
+    const appTemplate = getDefaultTemplateForFormat(formatConfig.id)
+    const products = parseProducts(nextSource).map((product) => formatConfig.specialLayout === 'app-offer' ? ({
       ...product,
       validity: appTemplate.appValidityText.replace(/^OFERTA VÁLIDA ATÉ\s*/i, ''),
       regularLabel: appTemplate.appRegularLabel,
@@ -353,8 +353,8 @@ export default function CartazesPage() {
     setCurrentPage(0)
     setPreviewDialogOpen(false)
     setPrintDialogOpen(false)
-    if (nextFormat === 'A4X2_APP') {
-      const appTemplate = getDefaultTemplateForFormat('A4X2_APP')
+    if (getPosterFormat(nextFormat).specialLayout === 'app-offer') {
+      const appTemplate = getDefaultTemplateForFormat(nextFormat)
       setProductData((products) => products.map((product) => ({
         ...product,
         validity: product.validity || appTemplate.appValidityText.replace(/^OFERTA VÁLIDA ATÉ\s*/i, ''),
@@ -434,7 +434,7 @@ export default function CartazesPage() {
                 </div>
               ) : null}
 
-              {formatId === 'A4X2_APP' ? (
+              {formatConfig.specialLayout === 'app-offer' ? (
                 <div className="poster-app-format-hint">
                   <strong>Modelo App</strong>
                   <span>Este formato adiciona preço App, validade e preço fora do App na revisão.</span>
@@ -484,15 +484,15 @@ export default function CartazesPage() {
 
               {productData.length ? (
                 <div className="poster-table-wrap">
-                  <table className={`poster-product-table ${formatId === 'A4X2_APP' ? 'poster-product-table-app' : ''}`}>
-                    <thead><tr><th className="poster-select-column"><span className="sr-only">Selecionar</span></th>{(formatId === 'A4X2_APP' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([, label]) => <th key={label}>{label}</th>)}</tr></thead>
+                  <table className={`poster-product-table ${formatConfig.specialLayout === 'app-offer' ? 'poster-product-table-app' : ''}`}>
+                    <thead><tr><th className="poster-select-column"><span className="sr-only">Selecionar</span></th>{(formatConfig.specialLayout === 'app-offer' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([, label]) => <th key={label}>{label}</th>)}</tr></thead>
                     <tbody>
                       {productData.map((product) => (
                         <tr key={product.id} data-product-id={product.id} className={selectedProductId === product.id ? 'selected' : ''} onClick={() => selectProduct(product.id)}>
                           <td className="poster-select-column" data-label="Selecionar">
                             <input type="checkbox" aria-label={`Selecionar ${product.description || 'produto'}`} checked={checkedProductIds.includes(product.id)} onClick={(event) => event.stopPropagation()} onChange={() => toggleCheckedProduct(product.id)} />
                           </td>
-                          {(formatId === 'A4X2_APP' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([field, label]) => (
+                          {(formatConfig.specialLayout === 'app-offer' ? APP_FIELD_COLUMNS : FIELD_COLUMNS).map(([field, label]) => (
                             <td key={field} data-label={label}>
                               <input
                                 aria-label={`${label} de ${product.description || 'produto'}`}

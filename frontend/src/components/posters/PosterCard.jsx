@@ -62,6 +62,13 @@ function PriceBox({ plan, box, priceDisplayMode, showDebug, editable, onBoxPoint
 
 export function PosterBackground({ template, widthMm, heightMm, className = 'poster-background-layer' }) {
   if (!template.backgroundImage || !template.backgroundVisible) return null
+  if (template.backgroundCrop === 'left-half') {
+    return (
+      <div className={className} aria-hidden="true">
+        <img src={template.backgroundImage} alt="" style={{ left: 0, top: 0, width: '200%', height: '100%', opacity: template.backgroundOpacity, objectFit: 'fill', transform: 'none' }} />
+      </div>
+    )
+  }
   const aspect = widthMm / heightMm
   const quarterTurn = template.backgroundRotation === 90 || template.backgroundRotation === 270
   const dimensions = quarterTurn ? { width: `${100 / aspect}%`, height: `${100 * aspect}%` } : { width: '100%', height: '100%' }

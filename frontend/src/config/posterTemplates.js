@@ -37,6 +37,7 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A4X2_CIMA_BAIXO: { contentBox: content(6, 26, 43, 65), priceBox: price(50, 13, 46, 78), textScale: 1 },
   A4X2_INVERTIDO: { contentBox: content(7, 4, 86, 54), priceBox: price(8, 59, 84, 36), textScale: 1.08, textScales: { description: 1.88, subdescription: 1.9, complement: 1.12 } },
   A4X2_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 1 },
+  A3_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 2 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
   // A3 mantém a calibração original; SRA3 expande a área útil e deixa texto/preço maiores,
@@ -74,6 +75,16 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
       appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 6.2, scale: 1.14 },
       appRegularPrice: { ...baseTextStyles.price, fontMin: 5.2, fontMax: 13.5, scale: 1.18 },
     }
+    if (format === 'A3_APP') {
+      // Reutiliza exclusivamente a metade esquerda da arte original.
+      template.backgroundCrop = 'left-half'
+      template.appRegularLabelBox = appBox(12, 82.5, 42, 9)
+      template.appRegularPriceBox = appBox(54, 82.5, 30, 9)
+      for (const field of ['appTitle', 'appPrice', 'appValidity', 'appRegularLabel', 'appRegularPrice']) {
+        template.textStyles[field].fontMin *= 2
+        template.textStyles[field].fontMax *= 2
+      }
+    }
   }
   return template
 }
@@ -86,6 +97,7 @@ export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a4', name: 'A4', format: 'A4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
+  createTemplate({ id: 'fundo-a3-app', name: 'A3 App', format: 'A3_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
   // SRA3 utiliza a própria arte A3, dimensionada para a folha maior; não duplicar a imagem.
   createTemplate({ id: 'fundo-sra3', name: 'SRA3', format: 'SRA3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
 ]
