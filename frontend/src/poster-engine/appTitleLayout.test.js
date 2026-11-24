@@ -189,9 +189,12 @@ test('preço App ampliado mantém a descrição e a faixa de validade livres', (
   }
   const format = { ...appFormat, id: 'A4_APP', widthMm: 210, heightMm: 297, columns: 1 }
   const value = { price: '3,99' }
-  const newSize = fitAppMainPrice({ product: value, template, format })
-  const oldSize = fitAppMainPrice({ product: value, template: { ...template, appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 } }, format })
+  // Fonte condensada: reproduz o cenário em que a altura limita o preço.
+  const measure = (text, style) => { const size = estimateTextMeasure(text, style); return { ...size, widthMm: size.widthMm * 0.72 } }
+  const newSize = fitAppMainPrice({ product: value, template, format, measure })
+  const oldSize = fitAppMainPrice({ product: value, template: { ...template, appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 } }, format, measure })
   assert.ok(newSize > oldSize * 1.08)
+  assert.ok(fitAppMainPrice({ product: value, template, format }) >= fitAppMainPrice({ product: value, template: { ...template, appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 } }, format }))
   assert.ok(template.appTitleBox.y + template.appTitleBox.height <= template.appPriceBox.y)
   assert.ok(template.appPriceBox.y + template.appPriceBox.height <= template.appValidityBox.y)
   assert.ok(template.appValidityBox.y + template.appValidityBox.height < 80)
