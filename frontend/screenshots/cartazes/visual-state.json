@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-24T08:48:28.488Z",
-  "commit": "fdf66e55731557268dfd335d68430b6bb14ce0c9",
+  "generatedAt": "2026-11-24T08:52:49.398Z",
+  "commit": "d62d3a59b8b59e65cd0dff5936a4121fd65d6398",
   "desktopErrors": [],
   "mobileErrors": [],
   "samples": [
@@ -11,7 +11,11 @@
     "manga-palmer",
     "manga-tommy",
     "cerveja-a3",
-    "cerveja-sra3"
+    "cerveja-sra3",
+    "cerveja-a3_black_friday",
+    "cerveja-a3_app",
+    "cerveja-a4_app",
+    "cerveja-a4x2_app"
   ],
   "metrics": [
     {
@@ -363,6 +367,82 @@
         "fontPx": 633.199
       },
       "overflow": true
+    },
+    {
+      "sample": "cerveja-a3_black_friday",
+      "contentBox": {
+        "x": 7,
+        "y": 23,
+        "width": 86,
+        "height": 42.5,
+        "fontPx": 16
+      },
+      "priceBox": {
+        "x": 9,
+        "y": 70,
+        "width": 82,
+        "height": 27,
+        "fontPx": 16
+      },
+      "description": {
+        "x": 17.84,
+        "y": 23,
+        "width": 64.32,
+        "height": 14.24,
+        "fontPx": 245.692
+      },
+      "subdescription": {
+        "x": 17.3,
+        "y": 38.09,
+        "width": 65.39,
+        "height": 13.31,
+        "fontPx": 229.727
+      },
+      "unit": {
+        "x": 39.31,
+        "y": 59.63,
+        "width": 21.38,
+        "height": 5.87,
+        "fontPx": 99.0992
+      },
+      "price": {
+        "x": 9,
+        "y": 70,
+        "width": 82,
+        "height": 27,
+        "fontPx": 467.38
+      },
+      "overflow": true
+    },
+    {
+      "sample": "cerveja-a3_app",
+      "contentBox": null,
+      "priceBox": null,
+      "description": null,
+      "subdescription": null,
+      "unit": null,
+      "price": null,
+      "overflow": false
+    },
+    {
+      "sample": "cerveja-a4_app",
+      "contentBox": null,
+      "priceBox": null,
+      "description": null,
+      "subdescription": null,
+      "unit": null,
+      "price": null,
+      "overflow": false
+    },
+    {
+      "sample": "cerveja-a4x2_app",
+      "contentBox": null,
+      "priceBox": null,
+      "description": null,
+      "subdescription": null,
+      "unit": null,
+      "price": null,
+      "overflow": false
     }
   ]
 }
