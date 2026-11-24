@@ -8,6 +8,7 @@ export const POSTER_FORMATS = {
   A5: { id: 'A5', label: 'A5', description: '1 placa A5', pickerBadge: 'A5', paper: 'A5', widthMm: 148, heightMm: 210, postersPerSheet: 1, columns: 1, rows: 1, orientation: 'portrait', backgroundScope: 'card', invertedSlots: [] },
   A3: { id: 'A3', label: 'A3', description: '1 placa A3', pickerBadge: 'A3', paper: 'A3', widthMm: 297, heightMm: 420, postersPerSheet: 1, columns: 1, rows: 1, orientation: 'portrait', backgroundScope: 'card', invertedSlots: [] },
   A3_APP: { id: 'A3_APP', label: 'A3 App', description: '1 oferta de aplicativo por folha A3 vertical', pickerBadge: '297 × 420 mm', paper: 'A3', widthMm: 297, heightMm: 420, postersPerSheet: 1, columns: 1, rows: 1, orientation: 'portrait', backgroundScope: 'sheet', specialLayout: 'app-offer', invertedSlots: [] },
+  A3_BLACK_FRIDAY: { id: 'A3_BLACK_FRIDAY', label: 'A3 Black Friday', description: '1 cartaz Black Friday por folha A3 vertical', pickerBadge: '297 × 420 mm', paper: 'A3', widthMm: 297, heightMm: 420, postersPerSheet: 1, columns: 1, rows: 1, orientation: 'portrait', backgroundScope: 'card', requiresBackground: true, invertedSlots: [] },
   SRA3: { id: 'SRA3', label: 'SRA3', description: '1 placa · 32 × 45 cm · mesmo fundo A3', pickerBadge: '320 × 450 mm', paper: 'SRA3', widthMm: 320, heightMm: 450, postersPerSheet: 1, columns: 1, rows: 1, orientation: 'portrait', backgroundScope: 'card', invertedSlots: [] },
 }
 

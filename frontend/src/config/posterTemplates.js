@@ -5,6 +5,7 @@ import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
 import backgroundApp from '../../Fundo/app-duplo.jpg'
 import backgroundAppVertical from '../../Fundo/app-vertical.jpg'
+import backgroundBlackFriday from '../../Fundo/a3-black-friday.png'
 
 export const LAYOUT_CONFIG_VERSION = 9
 
@@ -42,6 +43,7 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A3_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 2 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
+  A3_BLACK_FRIDAY: { contentBox: content(7, 23, 86, 42.5, 2), priceBox: price(9, 70, 82, 27), textScale: 2.3 },
   // A3 mantém a calibração original; SRA3 expande a área útil e deixa texto/preço maiores,
   // respeitando a moldura e o cabeçalho do mesmo fundo "a3.png".
   SRA3: { contentBox: content(4, 16, 92, 49, 0.7), priceBox: price(4, 63, 92, 34), textScale: 2.5 },
@@ -53,9 +55,9 @@ const APP_LAYOUT = {
   // Product copy gets more breathing room; validity is intentionally quieter;
   // the outside-app comparison is larger so the price difference is obvious.
   // O título começa dentro da faixa amarela, sem tocar a imagem superior.
-  appTitleBox: appBox(7, 36.5, 86, 16.5),
-  appPriceBox: appBox(8, 53.5, 84, 24.5),
-  appValidityBox: appBox(19, 78, 62, 1.8),
+  appTitleBox: appBox(7, 36.5, 86, 15),
+  appPriceBox: appBox(7, 51.5, 86, 27.2),
+  appValidityBox: appBox(19, 78.8, 62, 1.1),
   appRegularLabelBox: appBox(14, 81, 40, 9),
   appRegularPriceBox: appBox(55, 81, 31, 9),
 }
@@ -66,7 +68,7 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
   const template = { id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundVisible: backgroundVisible ?? Boolean(backgroundImage), backgroundOpacity: 1, backgroundRotation, backgroundFit: 'fill', backgroundPositionX: 'center', backgroundPositionY: 'center', safeArea: 3, showCurrency: !currencyFromBackground, currencyFromBackground, priceDisplayMode: 'raised', contentBox: layout.contentBox, priceBox: layout.priceBox, textStyles: textStyles(layout.textScale, layout.textScales), configVersion: LAYOUT_CONFIG_VERSION }
   if (specialLayout === 'app-offer') {
     template.specialLayout = specialLayout
-    template.configVersion = LAYOUT_CONFIG_VERSION + 2
+    template.configVersion = LAYOUT_CONFIG_VERSION + 3
     template.priceDisplayMode = 'inline'
     Object.assign(template, structuredClone(APP_LAYOUT))
     template.appValidityText = 'OFERTA VÁLIDA ATÉ 22/09/26'
@@ -98,6 +100,7 @@ export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3-app', name: 'A3 App', format: 'A3_APP', backgroundImage: backgroundAppVertical, backgroundFile: 'app-vertical.jpg', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
+  createTemplate({ id: 'fundo-a3-black-friday', name: 'A3 Black Friday', format: 'A3_BLACK_FRIDAY', backgroundImage: backgroundBlackFriday, backgroundFile: 'a3-black-friday.png', backgroundScope: 'card', backgroundVisible: true }),
   // SRA3 utiliza a própria arte A3, dimensionada para a folha maior; não duplicar a imagem.
   createTemplate({ id: 'fundo-sra3', name: 'SRA3', format: 'SRA3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
 ]
