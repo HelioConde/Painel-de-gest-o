@@ -53,11 +53,11 @@ const APP_LAYOUT = {
   // Product copy gets more breathing room; validity is intentionally quieter;
   // the outside-app comparison is larger so the price difference is obvious.
   // O título começa dentro da faixa amarela, sem tocar a imagem superior.
-  appTitleBox: appBox(7, 39, 86, 27),
-  appPriceBox: appBox(8, 66.5, 84, 10),
-  appValidityBox: appBox(19, 76.5, 62, 3.1),
-  appRegularLabelBox: appBox(13, 81, 42, 9),
-  appRegularPriceBox: appBox(55, 81, 32, 9),
+  appTitleBox: appBox(7, 36.5, 86, 16.5),
+  appPriceBox: appBox(8, 53.5, 84, 24.5),
+  appValidityBox: appBox(19, 78, 62, 1.8),
+  appRegularLabelBox: appBox(14, 81, 40, 9),
+  appRegularPriceBox: appBox(55, 81, 31, 9),
 }
 
 function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0, specialLayout, backgroundVisible }) {
@@ -66,17 +66,18 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
   const template = { id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundVisible: backgroundVisible ?? Boolean(backgroundImage), backgroundOpacity: 1, backgroundRotation, backgroundFit: 'fill', backgroundPositionX: 'center', backgroundPositionY: 'center', safeArea: 3, showCurrency: !currencyFromBackground, currencyFromBackground, priceDisplayMode: 'raised', contentBox: layout.contentBox, priceBox: layout.priceBox, textStyles: textStyles(layout.textScale, layout.textScales), configVersion: LAYOUT_CONFIG_VERSION }
   if (specialLayout === 'app-offer') {
     template.specialLayout = specialLayout
-    template.configVersion = LAYOUT_CONFIG_VERSION + 1
+    template.configVersion = LAYOUT_CONFIG_VERSION + 2
+    template.priceDisplayMode = 'inline'
     Object.assign(template, structuredClone(APP_LAYOUT))
     template.appValidityText = 'OFERTA VÁLIDA ATÉ 22/09/26'
-    template.appRegularLabel = 'Preço fora do aplicativo'
+    template.appRegularLabel = 'PREÇO FORA DO APLICATIVO'
     template.textStyles = {
       ...template.textStyles,
       appTitle: { ...baseTextStyles.description, fontMin: 3.4, fontMax: 26, scale: 1 },
-      appPrice: { ...baseTextStyles.price, fontMin: 6.5, fontMax: 21, scale: 1.04 },
+      appPrice: { ...baseTextStyles.price, fontFamily: '"Burbank Big Cd Bk"', fontMin: 3, fontMax: 72, lineHeight: 0.88, scale: 1 },
       appValidity: { ...baseTextStyles.unit, fontMin: 1.8, fontMax: 3.8, scale: 0.82 },
-      appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 6.2, scale: 1.14 },
-      appRegularPrice: { ...baseTextStyles.price, fontMin: 5.2, fontMax: 13.5, scale: 1.18 },
+      appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 7.5, scale: 1 },
+      appRegularPrice: { ...baseTextStyles.price, fontFamily: '"Burbank Big Cd Bk"', fontMin: 2.5, fontMax: 20, lineHeight: 0.88, scale: 1 },
     }
     const appScale = format === 'A3_APP' ? 2 : format === 'A4_APP' ? Math.SQRT2 : 1
     for (const field of ['appTitle', 'appPrice', 'appValidity', 'appRegularLabel', 'appRegularPrice']) {
