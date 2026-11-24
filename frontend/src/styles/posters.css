@@ -361,13 +361,14 @@
 .poster-app-box.poster-layout-box-debug small { z-index: 10; }
 .poster-app-box > span { width: 100%; max-height: 100%; overflow: hidden; font-family: var(--app-font-family, "Burbank Big Cd Bk"); font-weight: 900; line-height: .94; letter-spacing: 0; }
 .poster-app-appTitle > .poster-app-title-stack { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .7mm; width: 100%; height: 100%; max-height: 100%; overflow: hidden; white-space: normal; }
-.poster-app-appTitle .poster-app-title-line { display: block; flex: 0 0 auto; width: 100%; max-width: 100%; overflow: hidden; white-space: nowrap; font-size: 16mm; font-family: var(--app-font-family, "Burbank Big Cd Bk"); font-weight: 900; line-height: .92; text-align: center; }
-.poster-app-appPrice > span { color: #df1725; font-size: var(--app-computed-price-size, var(--app-font-max)); line-height: .94; -webkit-text-stroke: 0; }
-.poster-app-appValidity > span { color: #1769c2; font-family: Inter, sans-serif; font-size: min(clamp(var(--app-font-min), calc(2.7cqi * var(--app-scale)), var(--app-font-max)), 1.4cqi); font-weight: 850; line-height: 1; }
-.poster-app-appRegularLabel > span { font-family: var(--app-font-family, "Burbank Big Cd Bk"); font-size: clamp(var(--app-font-min), calc(5.1cqi * var(--app-scale)), var(--app-font-max)); font-weight: 900; text-transform: uppercase; line-height: 1.02; }
-.poster-app-appRegularPrice > span { color: #df1725; font-size: var(--app-computed-price-size, 10.5mm); line-height: .94; }
-.poster-app-appPrice .poster-price-value, .poster-app-appRegularPrice .poster-price-value { font-style: normal; line-height: .94; }
-.poster-app-appPrice .poster-price-value-inline :is(.poster-price-major, .poster-price-separator, .poster-price-decimal), .poster-app-appRegularPrice .poster-price-value-inline :is(.poster-price-major, .poster-price-separator, .poster-price-decimal) { line-height: .94; }
+.poster-app-appTitle .poster-app-title-line { display: block; flex: 0 0 auto; width: max-content; max-width: none; overflow: visible; white-space: nowrap; font-size: 16mm; font-family: var(--app-font-family, "Burbank Big Cd Bk"); font-weight: 900; line-height: .92; text-align: center; }
+.poster-app-appPrice > span { color: #df1725; font-size: var(--app-computed-price-size, var(--app-font-max)); line-height: .84; -webkit-text-stroke: 0; overflow: visible; }
+.poster-app-appValidity > span { color: #202020; font-family: Inter, sans-serif; font-size: min(var(--app-font-max), 2.5cqi); font-weight: 850; line-height: 1; }
+.poster-app-appRegularLabel > span { font-family: var(--app-font-family, "Burbank Big Cd Bk"); font-size: clamp(var(--app-font-min), calc(6.4cqi * var(--app-scale)), var(--app-font-max)); font-weight: 900; text-transform: uppercase; line-height: 1.02; white-space: pre-line; color: #171717; }
+.poster-app-appRegularPrice > span { color: #df1725; font-size: var(--app-computed-price-size, 10.5mm); line-height: .84; overflow: visible; }
+.poster-app-appPrice .poster-price-value, .poster-app-appRegularPrice .poster-price-value { font-style: normal; line-height: .84; }
+.poster-app-appPrice .poster-price-value-inline :is(.poster-price-major, .poster-price-separator, .poster-price-decimal), .poster-app-appRegularPrice .poster-price-value-inline :is(.poster-price-major, .poster-price-separator, .poster-price-decimal) { line-height: .84; }
+.poster-app-appRegularPrice .poster-price-value-inline .poster-price-currency { font-size: .32em; align-self: flex-end; margin-bottom: .1em; }
 .poster-app-appPrice .poster-price-value-inline { transform: scaleX(1.10); transform-origin: center; }
 .poster-app-box small { position: absolute; top: 0; left: 0; padding: 1mm; background: #172033; color: #fff; font: 700 2.2mm/1 Inter, sans-serif; }
 

@@ -40,7 +40,7 @@ export function createAppTitleLayout({ product, template, format, measure = esti
   const fields = TEXT_FIELDS.filter((field) => displayProduct[field] && !(inline && field === 'unit'))
   const draft = fields.map((field) => {
     const text = field === 'complement' && inline ? together : String(displayProduct[field])
-    const cap = (field === 'complement' ? 17 : field === 'unit' ? 14 : 26) * sizeScale
+    const cap = (field === 'description' ? 36 : field === 'subdescription' ? 29 : field === 'complement' ? 17 : 14) * sizeScale
     const fontMax = Math.min(cap, Math.max(2, Number(style.fontMax || cap)))
     const measuredStyle = { ...style, fontFamily, scale: 1, fontMin: 2, fontMax }
     const fitted = fitSingleLine({
@@ -59,10 +59,14 @@ export function createAppTitleLayout({ product, template, format, measure = esti
     : 1
 
   return {
-    lines: draft.map(({ field, text, fontSizeMm }) => ({
-      field, text, fontSizeMm: Number((fontSizeMm * factor).toFixed(3)),
-    })),
+    lines: draft.map(({ field, text, fontSizeMm, style: lineStyle }) => {
+      const size = Number((fontSizeMm * factor).toFixed(3))
+      const measuredWidth = measure(text, { ...lineStyle, fontSizeMm: size }).widthMm
+      const scaleX = Math.max(1, Math.min(field === 'description' ? 1.35 : field === 'subdescription' ? 1.22 : 1, widthMm / Math.max(1, measuredWidth)))
+      return { field, text, fontSizeMm: size, scaleX: Math.floor(scaleX * 1000) / 1000 }
+    }),
     combinedUnit: inline,
+    appPriceBox: getAppPriceBox(product, template),
     appPriceFontSizeMm: fitAppMainPrice({ product, template, format, measure }),
     regularPriceFontSizeMm: fitAppRegularPrice({ product, template, format, measure }),
   }
@@ -102,15 +106,45 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
     fontMax: Number(config.fontMax || 10.8),
     scale: 1,
   }
-  const text = `R$ ${raw.replace(/^R\$\s*/i, '')}`
-  const widthMm = (format.widthMm / format.columns) * box.width / 100 * 0.79
-  const heightMm = (format.heightMm / format.rows) * box.height / 100 * 0.8
+  const text = raw.replace(/^R\$\s*/i, '')
+  const widthMm = (format.widthMm / format.columns) * box.width / 100 * 0.94
+  const heightMm = (format.heightMm / format.rows) * box.height / 100 * 0.88
   const fitted = fitSingleLine({
-    text, style, maxWidthMm: widthMm, maxHeightMm: heightMm, measure,
+    text, style, maxWidthMm: widthMm, maxHeightMm: heightMm,
+    measure: (value, candidate) => measureAppPrice(value, candidate, measure, true, 0.32),
   })
   // fitSingleLine arredonda a 0,001 mm; a folga evita estourar a medida
   // por arredondamento e dá segurança extra para as variações de fonte.
   return Math.max(2.5, Number((fitted.fontSizeMm - 0.03).toFixed(3)))
+}
+
+// Sem validade informada, o preço usa a altura completa da área amarela.
+export function getAppPriceBox(product, template) {
+  const box = template.appPriceBox
+  if (!box || !template.appValidityBox || !String(product.validity || template.appValidityText || '').trim()) return box
+  const end = Math.min(box.y + box.height, template.appValidityBox.y - 0.3)
+  return { ...box, height: Math.max(1, end - box.y) }
+}
+
+function measureAppPrice(text, candidate, measure, currency, currencyScale = 0.29) {
+  const digits = measure(text, candidate)
+  const prefix = currency ? measure('R os algarismos no tamanho integral e R$ reduzido,
+// como no cartaz físico. Usa a área real em mm em todos os formatos.
+export function fitAppMainPrice({ product, template, format, measure = estimateTextMeasure }) {
+  const raw = String(product.price || '').trim().replace(/^R\$\s*/i, '')
+  const box = getAppPriceBox(product, template)
+  const config = template.textStyles.appPrice
+  if (!raw || !box || !config) return null
+  const currency = template.showCurrency && !template.currencyFromBackground
+  const style = { ...config, fontFamily: config.fontFamily || '"Burbank Big Cd Bk"', fontMin: 0.6, scale: config.scale || 1 }
+  const widthMm = format.widthMm / format.columns * box.width / 100 * 0.94 / (template.priceDisplayMode === 'raised' ? 1 : 1.10)
+  const heightMm = format.heightMm / format.rows * box.height / 100 * 0.94
+  const measurePrice = (text, candidate) => measureAppPrice(text, candidate, measure, currency)
+  const fitted = fitSingleLine({ text: raw, style, maxWidthMm: widthMm, maxHeightMm: heightMm, measure: measurePrice })
+  return Math.max(0.6, Number((fitted.fontSizeMm - 0.03).toFixed(3)))
+}
+, { ...candidate, fontSizeMm: candidate.fontSizeMm * currencyScale }).widthMm + candidate.fontSizeMm * 0.12 : 0
+  return { widthMm: digits.widthMm + prefix + candidate.fontSizeMm * 0.04, heightMm: Math.max(digits.heightMm, candidate.fontSizeMm * (candidate.lineHeight || .84)) }
 }
 
 // Preço principal: mede os algarismos no tamanho integral e R$ reduzido,
