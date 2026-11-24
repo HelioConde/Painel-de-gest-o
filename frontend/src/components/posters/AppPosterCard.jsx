@@ -23,28 +23,28 @@ function styleFor(box, textStyle, fontSizeMm) {
 export default function AppPosterCard({ product, template, format, layoutPlan, editable, showLayoutDebug, onBoxPointerDown, badgeLabel, selected, onSelect }) {
   const titlePlan = layoutPlan || createAppTitleLayout({ product, template, format })
   const values = {
-    appPrice: product.price ? `${template.showCurrency && !template.currencyFromBackground ? 'R$ ' : ''}${product.price}` : '',
+    appPrice: product.price ? `${template.showCurrency && !template.currencyFromBackground ? 'R$ ' : ''}${String(product.price).replace(/^R\$\s*/i, '')}` : '',
     validity: product.validity ? (product.validity.toLocaleUpperCase('pt-BR').startsWith('OFERTA') ? product.validity : `OFERTA VÁLIDA ATÉ ${product.validity}`) : template.appValidityText,
-    regularLabel: product.regularLabel || template.appRegularLabel,
+    regularLabel: (product.regularLabel || template.appRegularLabel || '').replace(/^pre[çc]o fora do aplicativo$/i, 'PREÇO FORA\nDO APLICATIVO'),
     regularPrice: product.regularPrice ? `R$ ${String(product.regularPrice).replace(/^R\$\s*/i, '')}` : '',
   }
   return (
     <article className={`poster-card poster-app-card ${selected ? 'poster-card-selected' : ''}`} data-product-id={product.id} onClick={onSelect}>
       {badgeLabel ? <span className="poster-preview-badge">{badgeLabel}</span> : null}
       {APP_BOXES.map(([boxName, styleName, valueName]) => {
-        const box = template[boxName]
+        const box = boxName === 'appPriceBox' && !editable ? (titlePlan.appPriceBox || template[boxName]) : template[boxName]
         const textStyle = template.textStyles[styleName]
         return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle, valueName === 'regularPrice' ? titlePlan.regularPriceFontSizeMm : valueName === 'appPrice' ? titlePlan.appPriceFontSizeMm : null)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
           {valueName === 'title' ? (
             <div className="poster-app-title-stack">
               {titlePlan.lines.map((line) => (
                 <span key={line.field} className={`poster-app-title-line poster-app-title-${line.field}`}
-                  style={{ fontSize: `${line.fontSizeMm}mm` }}>{line.text}</span>
+                  style={{ fontSize: `${line.fontSizeMm}mm`, transform: `scaleX(${line.scaleX || 1})` }}>{line.text}</span>
               ))}
             </div>
           ) : (
             <span>{['appPrice', 'regularPrice'].includes(valueName)
-              ? <PriceValue value={values[valueName]} mode={template.priceDisplayMode || 'raised'} />
+              ? <PriceValue value={values[valueName]} mode={template.priceDisplayMode || 'inline'} />
               : (values[valueName] || '\u00a0')}</span>
           )}
           {showLayoutDebug ? <small>{boxName}</small> : null}

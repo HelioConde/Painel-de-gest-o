@@ -9,7 +9,8 @@ import { createBrowserTextMeasure } from '../utils/posterBrowserMeasure'
 
 const LARGE_PAPER_SAMPLE = { id: 'cerveja-sra3-comparativo', description: 'CERVEJA', subdescription: 'HEINEKEN', complement: 'LONG NECK', unit: '300ML', price: '5,99' }
 
-const APP_SAMPLE = { id: 'pao-forma-app', description: 'PAO DE FORMA', subdescription: 'GUARANY TRADICIONAL', unit: '450G', price: '3,99', regularPrice: '4,99', validity: '27/11/26' }
+const APP_SAMPLE = { id: 'pao-forma-app', description: 'PÃO DE FORMA', subdescription: 'GUARANY TRADIC. 450G', unit: '', price: '3,99', regularPrice: '4,49', validity: '' }
+const APP_JUICE_SAMPLE = { id: 'suco-uva-app', description: 'SUCO DE UVA', subdescription: 'SABOR UVA 1,35L', price: '7,99', regularPrice: '8,99', validity: '' }
 const SAMPLES = [
   { id: 'banana-nanica', description: 'BANANA', subdescription: 'NANICA', complement: '', unit: 'KG', price: '3,99' },
   { id: 'banana-prata', description: 'BANANA', subdescription: 'PRATA', complement: '', unit: 'KG', price: '4,99' },
@@ -32,7 +33,7 @@ export default function PosterVisualQaPage() {
     const formatOption = getPosterFormat(formatId)
     const templateOption = getDefaultTemplateForFormat(formatId)
     const isApp = formatOption.specialLayout === 'app-offer'
-    const product = isApp ? APP_SAMPLE : LARGE_PAPER_SAMPLE
+    const product = isApp ? (formatId === 'A3_APP' ? APP_JUICE_SAMPLE : APP_SAMPLE) : LARGE_PAPER_SAMPLE
     return {
       format: formatOption,
       template: templateOption,
