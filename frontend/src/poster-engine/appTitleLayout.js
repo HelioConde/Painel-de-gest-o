@@ -30,7 +30,7 @@ export function createAppTitleLayout({ product, template, format, measure = esti
   const complement = String(product.complement || '').trim()
   const unit = String(product.unit || '').trim()
   const together = `${complement} - ${unit}`
-  const sizeScale = format.id === 'A3_APP' ? 2 : 1
+  const sizeScale = format.id === 'A3_APP' ? 2 : format.id === 'A4_APP' ? Math.SQRT2 : 1
   const inlineSizeMm = Math.min(15.5 * sizeScale, Number(style.fontMax || 26 * sizeScale))
   const inline = Boolean(
     complement && unit && complement.length <= 14 &&
@@ -98,7 +98,7 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
     ...config,
     fontFamily: config.fontFamily || '"Futura Price"',
     fontMin: 2.5,
-    fontMax: Math.min(10.8 * (format.id === 'A3_APP' ? 2 : 1), Number(config.fontMax || 10.8)),
+    fontMax: Math.min(10.8 * (format.id === 'A3_APP' ? 2 : format.id === 'A4_APP' ? Math.SQRT2 : 1), Number(config.fontMax || 10.8)),
     scale: 1,
   }
   const text = `R$ ${raw.replace(/^R\$\s*/i, '')}`

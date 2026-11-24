@@ -3,7 +3,8 @@ import backgroundA4 from '../../Fundo/a4.png'
 import backgroundA4X2 from '../../Fundo/a4x2.png'
 import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
-import backgroundApp from '../../Fundo/app.png'
+import backgroundApp from '../../Fundo/app-duplo.jpg'
+import backgroundAppVertical from '../../Fundo/app-vertical.jpg'
 
 export const LAYOUT_CONFIG_VERSION = 9
 
@@ -37,6 +38,7 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A4X2_CIMA_BAIXO: { contentBox: content(6, 26, 43, 65), priceBox: price(50, 13, 46, 78), textScale: 1 },
   A4X2_INVERTIDO: { contentBox: content(7, 4, 86, 54), priceBox: price(8, 59, 84, 36), textScale: 1.08, textScales: { description: 1.88, subdescription: 1.9, complement: 1.12 } },
   A4X2_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 1 },
+  A4_APP: { contentBox: content(6, 39, 88, 28, 1.5), priceBox: price(10, 82, 76, 9), textScale: 1.414 },
   A3_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 2 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
@@ -51,11 +53,11 @@ const APP_LAYOUT = {
   // Product copy gets more breathing room; validity is intentionally quieter;
   // the outside-app comparison is larger so the price difference is obvious.
   // O título começa dentro da faixa amarela, sem tocar a imagem superior.
-  appTitleBox: appBox(7, 46, 86, 21),
-  appPriceBox: appBox(8, 67.5, 84, 9.5),
-  appValidityBox: appBox(19, 76.5, 58, 3.8),
-  appRegularLabelBox: appBox(10, 81, 45, 11),
-  appRegularPriceBox: appBox(54, 81, 35, 11),
+  appTitleBox: appBox(7, 39, 86, 27),
+  appPriceBox: appBox(8, 66.5, 84, 10),
+  appValidityBox: appBox(19, 76.5, 62, 3.1),
+  appRegularLabelBox: appBox(13, 81, 42, 9),
+  appRegularPriceBox: appBox(55, 81, 32, 9),
 }
 
 function createTemplate({ id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundRotation = 0, specialLayout, backgroundVisible }) {
@@ -64,6 +66,7 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
   const template = { id, name, format, backgroundImage, backgroundFile, backgroundScope, backgroundVisible: backgroundVisible ?? Boolean(backgroundImage), backgroundOpacity: 1, backgroundRotation, backgroundFit: 'fill', backgroundPositionX: 'center', backgroundPositionY: 'center', safeArea: 3, showCurrency: !currencyFromBackground, currencyFromBackground, priceDisplayMode: 'raised', contentBox: layout.contentBox, priceBox: layout.priceBox, textStyles: textStyles(layout.textScale, layout.textScales), configVersion: LAYOUT_CONFIG_VERSION }
   if (specialLayout === 'app-offer') {
     template.specialLayout = specialLayout
+    template.configVersion = LAYOUT_CONFIG_VERSION + 1
     Object.assign(template, structuredClone(APP_LAYOUT))
     template.appValidityText = 'OFERTA VÁLIDA ATÉ 22/09/26'
     template.appRegularLabel = 'Preço fora do aplicativo'
@@ -75,15 +78,10 @@ function createTemplate({ id, name, format, backgroundImage, backgroundFile, bac
       appRegularLabel: { ...baseTextStyles.unit, fontMin: 2.8, fontMax: 6.2, scale: 1.14 },
       appRegularPrice: { ...baseTextStyles.price, fontMin: 5.2, fontMax: 13.5, scale: 1.18 },
     }
-    if (format === 'A3_APP') {
-      // Reutiliza exclusivamente a metade esquerda da arte original.
-      template.backgroundCrop = 'left-half'
-      template.appRegularLabelBox = appBox(12, 82.5, 42, 9)
-      template.appRegularPriceBox = appBox(54, 82.5, 30, 9)
-      for (const field of ['appTitle', 'appPrice', 'appValidity', 'appRegularLabel', 'appRegularPrice']) {
-        template.textStyles[field].fontMin *= 2
-        template.textStyles[field].fontMax *= 2
-      }
+    const appScale = format === 'A3_APP' ? 2 : format === 'A4_APP' ? Math.SQRT2 : 1
+    for (const field of ['appTitle', 'appPrice', 'appValidity', 'appRegularLabel', 'appRegularPrice']) {
+      template.textStyles[field].fontMin *= appScale
+      template.textStyles[field].fontMax *= appScale
     }
   }
   return template
@@ -93,11 +91,12 @@ export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a4x4', name: 'A4 4x1', format: 'A4X4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a4x2-cima-baixo', name: 'A4 2x1', format: 'A4X2_CIMA_BAIXO', backgroundImage: backgroundA4X2, backgroundFile: 'a4x2.png', backgroundScope: 'sheet' }),
   createTemplate({ id: 'fundo-a4x2-invertido', name: 'A4 2x1 Invertido', format: 'A4X2_INVERTIDO', backgroundImage: backgroundA4X2Inverted, backgroundFile: 'a4x2 invertido.png', backgroundScope: 'sheet' }),
-  createTemplate({ id: 'fundo-a4x2-app', name: 'A4 2x1 App', format: 'A4X2_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
+  createTemplate({ id: 'fundo-a4x2-app', name: 'A4 2x1 App', format: 'A4X2_APP', backgroundImage: backgroundApp, backgroundFile: 'app-duplo.jpg', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
+  createTemplate({ id: 'fundo-a4-app', name: 'A4 App', format: 'A4_APP', backgroundImage: backgroundAppVertical, backgroundFile: 'app-vertical.jpg', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
   createTemplate({ id: 'fundo-a4', name: 'A4', format: 'A4', backgroundImage: backgroundA4, backgroundFile: 'a4.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
-  createTemplate({ id: 'fundo-a3-app', name: 'A3 App', format: 'A3_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
+  createTemplate({ id: 'fundo-a3-app', name: 'A3 App', format: 'A3_APP', backgroundImage: backgroundAppVertical, backgroundFile: 'app-vertical.jpg', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
   // SRA3 utiliza a própria arte A3, dimensionada para a folha maior; não duplicar a imagem.
   createTemplate({ id: 'fundo-sra3', name: 'SRA3', format: 'SRA3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
 ]
