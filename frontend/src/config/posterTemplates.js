@@ -4,6 +4,7 @@ import backgroundA4X2 from '../../Fundo/a4x2.png'
 import backgroundA4X2Inverted from '../../Fundo/a4x2 invertido.png'
 import backgroundA5 from '../../Fundo/a5.png'
 import backgroundApp from '../../Fundo/app.png'
+import backgroundBlackFriday from '../../Fundo/a3-black-friday.svg'
 
 export const LAYOUT_CONFIG_VERSION = 9
 
@@ -40,6 +41,7 @@ export const DEFAULT_POSTER_LAYOUTS = {
   A3_APP: { contentBox: content(6, 44, 84, 36, 1.5), priceBox: price(10, 82, 76, 10), textScale: 2 },
   A4: { contentBox: content(8, 18, 84, 46), priceBox: price(9, 64, 86, 31), textScale: 1.38 },
   A3: { contentBox: content(6, 16, 88, 49), priceBox: price(9, 64, 86, 31), textScale: 2.02 },
+  A3_BLACK_FRIDAY: { contentBox: content(7, 27, 86, 38, 2), priceBox: price(13, 68, 74, 22), textScale: 2.3, textScales: { description: 1.3, subdescription: 1, complement: 1 } },
   // A3 mantém a calibração original; SRA3 expande a área útil e deixa texto/preço maiores,
   // respeitando a moldura e o cabeçalho do mesmo fundo "a3.png".
   SRA3: { contentBox: content(4, 16, 92, 49, 0.7), priceBox: price(4, 63, 92, 34), textScale: 2.5 },
@@ -98,6 +100,7 @@ export const POSTER_TEMPLATES = [
   createTemplate({ id: 'fundo-a5', name: 'A5', format: 'A5', backgroundImage: backgroundA5, backgroundFile: 'a5.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3', name: 'A3', format: 'A3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
   createTemplate({ id: 'fundo-a3-app', name: 'A3 App', format: 'A3_APP', backgroundImage: backgroundApp, backgroundFile: 'app.png', backgroundScope: 'sheet', specialLayout: 'app-offer', backgroundVisible: true }),
+  createTemplate({ id: 'fundo-a3-black-friday', name: 'A3 Black Friday', format: 'A3_BLACK_FRIDAY', backgroundImage: backgroundBlackFriday, backgroundFile: 'a3-black-friday.svg', backgroundScope: 'card' }),
   // SRA3 utiliza a própria arte A3, dimensionada para a folha maior; não duplicar a imagem.
   createTemplate({ id: 'fundo-sra3', name: 'SRA3', format: 'SRA3', backgroundImage: backgroundA3, backgroundFile: 'a3.png', backgroundScope: 'card' }),
 ]
