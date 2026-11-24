@@ -26,7 +26,7 @@ export default function AppPosterCard({ product, template, format, layoutPlan, e
     appPrice: product.price ? `${template.showCurrency && !template.currencyFromBackground ? 'R$ ' : ''}${product.price}` : '',
     validity: product.validity ? (product.validity.toLocaleUpperCase('pt-BR').startsWith('OFERTA') ? product.validity : `OFERTA VÁLIDA ATÉ ${product.validity}`) : template.appValidityText,
     regularLabel: product.regularLabel || template.appRegularLabel,
-    regularPrice: product.regularPrice ? `R$ ${product.regularPrice}` : '',
+    regularPrice: product.regularPrice ? `R$ ${String(product.regularPrice).replace(/^R\$\s*/i, '')}` : '',
   }
   return (
     <article className={`poster-card poster-app-card ${selected ? 'poster-card-selected' : ''}`} data-product-id={product.id} onClick={onSelect}>
@@ -34,7 +34,7 @@ export default function AppPosterCard({ product, template, format, layoutPlan, e
       {APP_BOXES.map(([boxName, styleName, valueName]) => {
         const box = template[boxName]
         const textStyle = template.textStyles[styleName]
-        return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle, valueName === 'regularPrice' ? titlePlan.regularPriceFontSizeMm : null)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
+        return <div key={boxName} className={`poster-app-box poster-app-${styleName} ${showLayoutDebug ? 'poster-layout-box-debug' : ''}`} data-layout-box={boxName} style={styleFor(box, textStyle, valueName === 'regularPrice' ? titlePlan.regularPriceFontSizeMm : valueName === 'appPrice' ? titlePlan.appPriceFontSizeMm : null)} onPointerDown={editable ? (event) => onBoxPointerDown?.(boxName, 'move', event) : undefined}>
           {valueName === 'title' ? (
             <div className="poster-app-title-stack">
               {titlePlan.lines.map((line) => (
