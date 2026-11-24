@@ -63,6 +63,7 @@ export function createAppTitleLayout({ product, template, format, measure = esti
       field, text, fontSizeMm: Number((fontSizeMm * factor).toFixed(3)),
     })),
     combinedUnit: inline,
+    appPriceFontSizeMm: fitAppMainPrice({ product, template, format, measure }),
     regularPriceFontSizeMm: fitAppRegularPrice({ product, template, format, measure }),
   }
 }
@@ -98,7 +99,7 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
     ...config,
     fontFamily: config.fontFamily || '"Futura Price"',
     fontMin: 2.5,
-    fontMax: Math.min(10.8 * (format.id === 'A3_APP' ? 2 : format.id === 'A4_APP' ? Math.SQRT2 : 1), Number(config.fontMax || 10.8)),
+    fontMax: Number(config.fontMax || 10.8),
     scale: 1,
   }
   const text = `R$ ${raw.replace(/^R\$\s*/i, '')}`
@@ -110,4 +111,24 @@ export function fitAppRegularPrice({ product, template, format, measure = estima
   // fitSingleLine arredonda a 0,001 mm; a folga evita estourar a medida
   // por arredondamento e dá segurança extra para as variações de fonte.
   return Math.max(2.5, Number((fitted.fontSizeMm - 0.03).toFixed(3)))
+}
+
+// Preço principal: mede os algarismos no tamanho integral e R$ reduzido,
+// como no cartaz físico. Usa a área real em mm em todos os formatos.
+export function fitAppMainPrice({ product, template, format, measure = estimateTextMeasure }) {
+  const raw = String(product.price || '').trim().replace(/^R\$\s*/i, '')
+  const box = template.appPriceBox
+  const config = template.textStyles.appPrice
+  if (!raw || !box || !config) return null
+  const currency = template.showCurrency && !template.currencyFromBackground
+  const style = { ...config, fontFamily: config.fontFamily || '"Burbank Big Cd Bk"', fontMin: 0.6, scale: config.scale || 1 }
+  const widthMm = format.widthMm / format.columns * box.width / 100 * 0.94
+  const heightMm = format.heightMm / format.rows * box.height / 100 * 0.94
+  const measurePrice = (text, candidate) => {
+    const digits = measure(text, candidate)
+    const prefix = currency ? measure('R$', { ...candidate, fontSizeMm: candidate.fontSizeMm * 0.29 }).widthMm + candidate.fontSizeMm * 0.12 : 0
+    return { widthMm: digits.widthMm + prefix + candidate.fontSizeMm * 0.04, heightMm: Math.max(digits.heightMm, candidate.fontSizeMm * 0.94) }
+  }
+  const fitted = fitSingleLine({ text: raw, style, maxWidthMm: widthMm, maxHeightMm: heightMm, measure: measurePrice })
+  return Math.max(0.6, Number((fitted.fontSizeMm - 0.03).toFixed(3)))
 }
