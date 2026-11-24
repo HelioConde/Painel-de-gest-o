@@ -367,9 +367,10 @@ export default function CartazesPage() {
 
   const printPosters = (confirmedConfig) => {
     if (fontAvailable === false) return
-    setPrintConfig(confirmedConfig)
+    const effectiveConfig = { ...confirmedConfig, includeBackground: Boolean(formatConfig.specialLayout === 'app-offer' || formatConfig.requiresBackground || confirmedConfig.includeBackground) }
+    setPrintConfig(effectiveConfig)
     closePrintDialog()
-    applyPosterPrintPage(formatConfig, confirmedConfig.includeBackground)
+    applyPosterPrintPage(formatConfig, effectiveConfig.includeBackground)
     const cleanup = () => {
       clearPosterPrintPage()
       window.removeEventListener('afterprint', cleanup)

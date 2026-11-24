@@ -178,3 +178,24 @@ test('preço App ocupa a área amarela em A3, A4 e A4 2x1 e diminui para valores
     assert.equal(fitAppMainPrice({ product: {}, template, format }), null)
   }
 })
+
+test('preço App ampliado mantém a descrição e a faixa de validade livres', () => {
+  const template = {
+    ...appTemplate, showCurrency: true, priceDisplayMode: 'inline',
+    appTitleBox: { x: 7, y: 36.5, width: 86, height: 15 },
+    appPriceBox: { x: 7, y: 51.5, width: 86, height: 27.2 },
+    appValidityBox: { x: 19, y: 78.8, width: 62, height: 1.1 },
+    textStyles: { ...appTemplate.textStyles, appPrice: { fontMin: 3, fontMax: 102, fontWeight: 900, lineHeight: .88, scale: 1 } },
+  }
+  const format = { ...appFormat, id: 'A4_APP', widthMm: 210, heightMm: 297, columns: 1 }
+  const value = { price: '3,99' }
+  // Fonte condensada: reproduz o cenário em que a altura limita o preço.
+  const measure = (text, style) => { const size = estimateTextMeasure(text, style); return { ...size, widthMm: size.widthMm * 0.72 } }
+  const newSize = fitAppMainPrice({ product: value, template, format, measure })
+  const oldSize = fitAppMainPrice({ product: value, template: { ...template, appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 } }, format, measure })
+  assert.ok(newSize > oldSize * 1.08)
+  assert.ok(fitAppMainPrice({ product: value, template, format }) >= fitAppMainPrice({ product: value, template: { ...template, appPriceBox: { x: 8, y: 53.5, width: 84, height: 24.5 } }, format }))
+  assert.ok(template.appTitleBox.y + template.appTitleBox.height <= template.appPriceBox.y)
+  assert.ok(template.appPriceBox.y + template.appPriceBox.height <= template.appValidityBox.y)
+  assert.ok(template.appValidityBox.y + template.appValidityBox.height < 80)
+})

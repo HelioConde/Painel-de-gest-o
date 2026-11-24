@@ -194,10 +194,10 @@ test('escala o preço pela região física disponível em cada grid', () => {
   })
 })
 
-test('calcula geometria física para todos os dez formatos suportados', () => {
+test('calcula geometria física para todos os onze formatos suportados', () => {
   const template = createTestTemplate()
   const product = parseProductLine('Cerveja Heineken Long Neck 300ml 5,99')
-  ;['A5', 'A4', 'A3', 'SRA3', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A3_APP', 'A4_APP', 'A4X4'].forEach((formatId) => {
+  ;['A5', 'A4', 'A3', 'SRA3', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A3_APP', 'A4_APP', 'A3_BLACK_FRIDAY', 'A4X4'].forEach((formatId) => {
     const plan = createPosterLayout({ product, template, format: POSTER_FORMATS[formatId], measure: estimateTextMeasure })
     assert.ok(plan.geometry.poster.widthMm > 0, formatId)
     assert.ok(plan.geometry.poster.heightMm > 0, formatId)
@@ -208,10 +208,13 @@ test('calcula geometria física para todos os dez formatos suportados', () => {
 
 test('mantém somente a lista oficial de formatos de placa', () => {
   assert.deepEqual(Object.keys(POSTER_FORMATS), [
-    'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A4_APP', 'A5', 'A3', 'A3_APP', 'SRA3',
+    'A4X4', 'A4X2_CIMA_BAIXO', 'A4X2_INVERTIDO', 'A4X2_APP', 'A4', 'A4_APP', 'A5', 'A3', 'A3_APP', 'A3_BLACK_FRIDAY', 'SRA3',
   ])
   assert.deepEqual(POSTER_FORMATS.A4X2_INVERTIDO.invertedSlots, [0])
   assert.equal(POSTER_FORMATS.A4X2_APP.orientation, 'landscape')
+  const blackFriday = POSTER_FORMATS.A3_BLACK_FRIDAY
+  assert.deepEqual([blackFriday.widthMm, blackFriday.heightMm, blackFriday.postersPerSheet, blackFriday.orientation], [297, 420, 1, 'portrait'])
+  assert.equal(blackFriday.requiresBackground, true)
   const appA4 = POSTER_FORMATS.A4_APP
   assert.deepEqual([appA4.widthMm, appA4.heightMm, appA4.postersPerSheet], [210, 297, 1])
   assert.equal(appA4.specialLayout, 'app-offer')

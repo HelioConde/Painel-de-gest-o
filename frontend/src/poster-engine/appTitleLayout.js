@@ -122,7 +122,7 @@ export function fitAppMainPrice({ product, template, format, measure = estimateT
   if (!raw || !box || !config) return null
   const currency = template.showCurrency && !template.currencyFromBackground
   const style = { ...config, fontFamily: config.fontFamily || '"Burbank Big Cd Bk"', fontMin: 0.6, scale: config.scale || 1 }
-  const widthMm = format.widthMm / format.columns * box.width / 100 * 0.94
+  const widthMm = format.widthMm / format.columns * box.width / 100 * 0.94 / (template.priceDisplayMode === 'raised' ? 1 : 1.10)
   const heightMm = format.heightMm / format.rows * box.height / 100 * 0.94
   const measurePrice = (text, candidate) => {
     const digits = measure(text, candidate)
