@@ -367,7 +367,7 @@ export default function CartazesPage() {
 
   const printPosters = (confirmedConfig) => {
     if (fontAvailable === false) return
-    const effectiveConfig = { ...confirmedConfig, includeBackground: Boolean(formatConfig.specialLayout === 'app-offer' || formatConfig.requiresBackground || confirmedConfig.includeBackground) }
+    const effectiveConfig = { ...confirmedConfig, includeBackground: Boolean(confirmedConfig.includeBackground) }
     setPrintConfig(effectiveConfig)
     closePrintDialog()
     applyPosterPrintPage(formatConfig, effectiveConfig.includeBackground)
