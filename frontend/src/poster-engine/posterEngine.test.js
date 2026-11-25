@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
 import { POSTER_FORMATS } from '../config/posterFormats.js'
 import { createPosterLayout } from './layoutPlan.js'
 import { parseProductLine } from './parseProduct.js'
@@ -214,7 +215,7 @@ test('mantém somente a lista oficial de formatos de placa', () => {
   assert.equal(POSTER_FORMATS.A4X2_APP.orientation, 'landscape')
   const blackFriday = POSTER_FORMATS.A3_BLACK_FRIDAY
   assert.deepEqual([blackFriday.widthMm, blackFriday.heightMm, blackFriday.postersPerSheet, blackFriday.orientation], [297, 420, 1, 'portrait'])
-  assert.equal(blackFriday.requiresBackground, true)
+  assert.ok(Object.values(POSTER_FORMATS).every((format) => !format.requiresBackground))
   const appA4 = POSTER_FORMATS.A4_APP
   assert.deepEqual([appA4.widthMm, appA4.heightMm, appA4.postersPerSheet], [210, 297, 1])
   assert.equal(appA4.specialLayout, 'app-offer')
@@ -246,4 +247,20 @@ test('SRA3 preserva o formato e a composição A3, alterando somente o papel fí
   assert.deepEqual(sra3Plan.price.box, a3Plan.price.box)
   assert.equal(sra3Plan.geometry.poster.widthMm, 320)
   assert.equal(sra3Plan.geometry.poster.heightMm, 450)
+})
+
+
+test('impressão do fundo é opcional em todos os modelos, inclusive App e Black Friday', () => {
+  const dialog = readFileSync(new URL('../components/posters/PosterPrintDialog.jsx', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../pages/CartazesPage.jsx', import.meta.url), 'utf8')
+  const css = readFileSync(new URL('../styles/posters.css', import.meta.url), 'utf8')
+  const checkbox = dialog.match(/<input\s+type="checkbox"[\s\S]*?\/>/)?.[0]
+  assert.ok(checkbox)
+  assert.match(checkbox, /checked=\{includeBackground\}/)
+  assert.doesNotMatch(checkbox, /disabled/)
+  assert.match(dialog, /onPrint\(\{ \.\.\.printConfig, copies, includeBackground \}\)/)
+  assert.match(page, /includeBackground: Boolean\(confirmedConfig\.includeBackground\)/)
+  assert.match(css, /body\.poster-printing \.poster-sheet-background \{ display: none !important; \}/)
+  assert.match(css, /body\.poster-printing\.poster-print-with-background \.poster-sheet-background \{ display: block !important; \}/)
+  assert.doesNotMatch(css, /body\.poster-printing \.poster-sheet-app \.poster-sheet-background/)
 })
